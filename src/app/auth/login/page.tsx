@@ -113,32 +113,29 @@ function LoginPage() {
         </div>
         <div className="space-y-4 mt-8">
           <input
+            required
             id="username"
             type="text"
-            placeholder="*****@****.com"
+            placeholder="you@example.com"
             onFocus={handleFocus}
             onBlur={handleBlur}
             onChange={(e) => setUsername(e.target.value)}
-            autoComplete="off"
-            style={autofillStyles}
-            className="w-full rounded-md border-2 border-[#b08d57] bg-white/20 px-4 py-2 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-[#b08d57] transition duration-200"
+            className="w-full rounded-md border-2 border-[#b08d57] bg-white px-4 py-2 text-[#363636] focus:outline-none focus:ring-2 focus:ring-[#b08d57] transition duration-200"
           />
 
           <input
+            required
             id="password"
             type="password"
-            placeholder="*********"
+            placeholder="Enter your password *******"
             onFocus={handleFocus}
             onBlur={handleBlur}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete="off"
-            style={autofillStyles}
-            className="w-full rounded-md border-2 border-[#b08d57] bg-white/20 px-4 py-2 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-[#b08d57] transition duration-200"
+            className="w-full text-sm rounded-md border-2 border-[#b08d57] bg-white px-4 py-2 text-[#363636] focus:outline-none focus:ring-2 focus:ring-[#b08d57] transition duration-200"
           />
 
           <div onClick={handleSubmit}>
-            {/* <Button text="Log in" bg="#31DFD4" /> */}
-            <button className="w-full rounded-md bg-[#b08d57] px-4 py-2 font-semibold text-white hover:bg-[#a07b4f] hover:scale-105 hover:shadow-lg transition-transform duration-200 ease-in-out cursor-pointer disabled:opacity-50 flex items-center justify-center">
+            <button className="w-full rounded-md bg-[#b08d57] px-4 py-2 font-semibold text-white hover:bg-[#a07b4f] transition-transform duration-200 ease-in-out cursor-pointer flex items-center justify-center">
               {loading ? "" : "Log in"}
               {loading && (
                 <div className="w-6 h-6 border-4 border-t-transparent border-[#FFFF] rounded-full animate-spin"></div>
