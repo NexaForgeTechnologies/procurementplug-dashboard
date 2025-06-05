@@ -136,7 +136,7 @@ function LoginPage() {
 
           <div onClick={handleSubmit}>
             <button className="w-full rounded-md bg-[#b08d57] px-4 py-2 font-semibold text-white hover:bg-[#a07b4f] transition-transform duration-200 ease-in-out cursor-pointer flex items-center justify-center">
-              {loading ? "" : "Log in"}
+              {loading ? "" : "Plug in"}
               {loading && (
                 <div className="w-6 h-6 border-4 border-t-transparent border-[#FFFF] rounded-full animate-spin"></div>
               )}
