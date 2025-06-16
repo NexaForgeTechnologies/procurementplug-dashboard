@@ -45,22 +45,20 @@ export async function GET(req: Request) {
 //     }
 // }
 
-// export async function DELETE(request: NextRequest) {
-//     try {
-//         const json = await request.json();
-//         const data: ConsultantDM = {
-//             id: json.id
-//         };
-//         await ClientRepository.DeleteClient(data);
-//         return NextResponse.json(
-//             { message: "Client deleted successfully" },
-//             { status: 200 }
-//         );
-//     } catch (error) {
-//         console.error("Error deleting Client:", error);
-//         return NextResponse.json(
-//             { error: "Failed to delete Client" },
-//             { status: 500 }
-//         );
-//     }
-// }
+export async function DELETE(request: NextRequest) {
+    try {
+        const json = await request.json();
+
+        await ConsultantRepo.DeleteConsultant(json.id);
+        return NextResponse.json(
+            { message: "Consultant deleted successfully" },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error deleting Consultant:", error);
+        return NextResponse.json(
+            { error: "Failed to delete Consultant" },
+            { status: 500 }
+        );
+    }
+}

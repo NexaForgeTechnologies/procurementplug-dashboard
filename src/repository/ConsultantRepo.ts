@@ -29,4 +29,20 @@ export class ConsultantRepo {
             throw new Error("Unable to fetch consultants from the database");
         }
     }
+
+    static async DeleteConsultant(id: ConsultantDM) {
+        const currentTime = getFormattedTimestamp();
+        try {
+            await db.query(
+                `UPDATE consultants
+                    SET 
+                        deleted_at = ? 
+                    WHERE id = ?;`,
+                [currentTime, id]
+            );
+        } catch (error) {
+            console.error("Error deleting consultant:", error);
+            throw new Error("Failed to delete consultant");
+        }
+    }
 }

@@ -1,13 +1,39 @@
 import React from "react";
 import Image from "next/image";
 import { ConsultantDM } from "@/domain-models/ConsultantDM";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 type ConsultantProps = {
   data: ConsultantDM;
+  refetchConsultants: () => void;
 };
 
+const ConsultantCard: React.FC<ConsultantProps> = ({
+  data,
+  refetchConsultants,
+}) => {
+  // Mutation for deleting a Consultant
+  const deleteConsultant = useMutation({
+    mutationFn: async (data: ConsultantDM) => {
+      const response = await axios.delete("/api/consultants", {
+        data,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      refetchConsultants();
+    },
+    onError: (error) => {
+      console.error("Failed to delete Consultant:", error);
+    },
+  });
+  const handleDelete = () => {
+    deleteConsultant.mutate({
+      id: data.id,
+    });
+  };
 
-const ConsultantCard: React.FC<ConsultantProps> = ({ data }) => {
   return (
     <div
       style={{ backgroundColor: data.bg_color || "#faf8f5" }}
@@ -26,6 +52,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({ data }) => {
           ✏️
         </button>
         <button
+          onClick={handleDelete}
           className="cursor-pointer p-2 bg-white/90 hover:bg-red-100 text-red-600 rounded-full shadow-md transition-all duration-200"
           title="Delete"
         >
