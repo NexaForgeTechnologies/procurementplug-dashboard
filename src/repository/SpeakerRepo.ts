@@ -8,7 +8,8 @@ export class SpeakerRepo {
         try {
             const [rows] = await db.query<RowDataPacket[]>(`
                 SELECT * FROM speakers
-                WHERE deleted_at IS NULL;
+                WHERE deleted_at IS NULL
+                ORDER BY id DESC;
             `);
 
             const speakers: SpeakerDM[] = rows.map((row: any) => ({
@@ -51,9 +52,39 @@ export class SpeakerRepo {
         }
     }
 
+    static async UpdateSpeaker(speaker: SpeakerDM) {
+        try {
+            const currentTime = getFormattedTimestamp();
+            await db.execute(
+                `
+                UPDATE speakers
+                SET 
+                img = ?, name = ?, role = ?,  designation = ? , company = ?, bg_color = ?, updated_at = ?
+                WHERE id = ?
+            `,
+                [
+                    speaker.img,
+                    speaker.name,
+                    speaker.role,
+                    speaker.designation,
+                    speaker.company,
+                    speaker.bg_color,
+                    currentTime,
+                    speaker.id,
+                ]
+            );
+
+            return { message: "Speaker updated successfully" };
+        } catch (error) {
+            console.error("Error updating Speaker:", error);
+            throw new Error("Unable to update Speaker");
+        }
+    }
 
     static async DeleteSpeaker(id: SpeakerDM) {
         const currentTime = getFormattedTimestamp();
+        console.log(id);
+
         try {
             await db.query(
                 `UPDATE speakers

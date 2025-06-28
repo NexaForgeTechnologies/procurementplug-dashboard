@@ -11,6 +11,7 @@ import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/input-comps/ImgUploader";
 
 type SpeakerFormProps = {
+  speaker?: SpeakerDM;
   active: boolean;
   onClose: () => void;
   refetchSpeakers: () => void;

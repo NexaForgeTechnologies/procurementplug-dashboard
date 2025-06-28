@@ -7,6 +7,7 @@ import axios from "axios";
 import { SpeakerDM } from "@/domain-models/SpeakerDM";
 import SpeakerCard from "@/components/cards/SpeakerCard";
 import SpeakerForm from "@/components/forms/speaker/SpeakerComp";
+import EditSpeakerComp from "@/components/forms/speaker/EditSpeakerComp";
 
 function SpeakerCTR() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,6 +41,15 @@ function SpeakerCTR() {
   const [isActive, setIsActive] = useState(false);
   const handleClick = () => setIsActive(!isActive);
 
+  const [activeEditMode, setActiveEditMode] = useState(false);
+  const [selectedSpeaker, setSelectedSpeaker] = useState<SpeakerDM | null>(
+    null
+  );
+
+  const handleSpeakerEdit = (speaker: SpeakerDM) => {
+    setActiveEditMode(!activeEditMode);
+    setSelectedSpeaker((prev) => (prev?.id === speaker.id ? null : speaker));
+  };
   return (
     <>
       <div className="max-w-[780px] m-auto text-center">
@@ -78,6 +88,7 @@ function SpeakerCTR() {
               key={speaker.id}
               data={speaker}
               refetchSpeakers={refetch}
+              openEditForm={handleSpeakerEdit}
             />
           ))
         ) : (
@@ -93,6 +104,18 @@ function SpeakerCTR() {
           active={isActive}
           onClose={() => {
             setIsActive(false);
+            refetch();
+          }}
+          refetchSpeakers={refetch}
+        />
+      )}
+
+      {activeEditMode && selectedSpeaker && (
+        <EditSpeakerComp
+          speaker={selectedSpeaker}
+          onClose={() => {
+            setActiveEditMode(false);
+            setSelectedSpeaker(null);
             refetch();
           }}
           refetchSpeakers={refetch}

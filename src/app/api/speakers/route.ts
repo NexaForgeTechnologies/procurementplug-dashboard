@@ -14,7 +14,6 @@ export async function GET(req: Request) {
     }
 }
 
-
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
@@ -28,26 +27,26 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// export async function PUT(req: NextRequest) {
-//     try {
-//         const params = await req.json();
+export async function PUT(req: NextRequest) {
+    try {
+        const body = await req.json();
 
-//         await ClientRepository.UpdateClient(params);
+        await SpeakerRepo.UpdateSpeaker(body);
 
-//         return NextResponse.json({ message: "Partner updated successfully" });
+        return NextResponse.json({ message: "Speaker updated successfully" });
 
-//     } catch (error) {
-//         console.error("Error updating Client:", error);
-//         return NextResponse.json(
-//             { error: "Failed to update Client" },
-//             { status: 500 }
-//         );
-//     }
-// }
+    } catch (error) {
+        console.error("Error updating Speaker:", error);
+        return NextResponse.json(
+            { error: "Failed to update Speaker" },
+            { status: 500 }
+        );
+    }
+}
 
 export async function DELETE(request: NextRequest) {
     try {
-        const json = await request.json();
+        const json = await request.json();        
 
         await SpeakerRepo.DeleteSpeaker(json.id);
         return NextResponse.json(

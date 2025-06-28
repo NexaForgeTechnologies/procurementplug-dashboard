@@ -30,10 +30,10 @@ const ImageUpload: React.FC<Props> = ({
       img.src = base64;
 
       img.onload = () => {
-        if (img.width !== img.height) {
-          alert("Image must be a 1:1 square (equal width and height).");
-          return;
-        }
+        // if (img.width !== img.height) {
+        //   alert("Image must be a 1:1 square (equal width and height).");
+        //   return;
+        // }
 
         setPreview(base64);
         onImageUpload(base64);

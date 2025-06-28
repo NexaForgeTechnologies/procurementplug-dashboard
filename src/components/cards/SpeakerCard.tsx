@@ -12,16 +12,18 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 type ConsultantProps = {
   data: SpeakerDM;
   refetchSpeakers: () => void;
+  openEditForm: (data: SpeakerDM) => void;
 };
 
 const ConsultantCard: React.FC<ConsultantProps> = ({
   data,
   refetchSpeakers,
+  openEditForm,
 }) => {
   // Mutation for deleting a speaker
   const deleteSpeaker = useMutation({
     mutationFn: async (data: SpeakerDM) => {
-      const response = await axios.delete("/api/consultants", {
+      const response = await axios.delete("/api/speakers", {
         data,
       });
       return response.data;
@@ -33,16 +35,6 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
       console.error("Failed to delete Consultant:", error);
     },
   });
-  // const handleDelete = () => {
-  //   const confirmDelete = window.confirm(
-  //     `Are you sure you want to delete ${data.name}?`
-  //   );
-  //   if (confirmDelete) {
-  //     deleteSpeaker.mutate({
-  //       id: data.id,
-  //     });
-  //   }
-  // };
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -59,7 +51,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
     <>
       <div
         style={{ backgroundColor: data.bg_color || "#faf8f5" }}
-        className={`relative border px-4 pb-4 pt-10 rounded-xl w-full flex flex-col items-center justify-center gap-2 text-center shadow-md transition-transform duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-amber-200 ${
+        className={`relative border px-4 pb-4 pt-14 rounded-xl w-full flex flex-col items-center gap-2 text-center shadow-md transition-transform duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-amber-200 ${
           data.bg_color
             ? "text-white border-transparent"
             : "text-[#363636] border-[#b08d57]"
@@ -68,6 +60,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
         {/* Top-right edit/delete buttons */}
         <div className="absolute top-2 right-2 flex gap-2">
           <button
+            onClick={() => openEditForm(data)}
             className="cursor-pointer p-2 bg-white/90 hover:bg-blue-100 text-blue-600 rounded-full shadow-md transition-all duration-200"
             title="Edit"
           >
