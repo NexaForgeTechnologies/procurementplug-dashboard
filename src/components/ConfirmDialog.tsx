@@ -16,7 +16,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="mx-4 bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center">
         <p className="text-gray-800 text-lg mb-4">{message}</p>
         <div className="flex justify-center gap-4">

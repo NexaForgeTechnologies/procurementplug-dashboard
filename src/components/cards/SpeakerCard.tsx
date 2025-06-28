@@ -5,29 +5,29 @@ import Image from "next/image";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 
-import { ConsultantDM } from "@/domain-models/ConsultantDM";
+import { SpeakerDM } from "@/domain-models/SpeakerDM";
 
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type ConsultantProps = {
-  data: ConsultantDM;
-  refetchConsultants: () => void;
+  data: SpeakerDM;
+  refetchSpeakers: () => void;
 };
 
 const ConsultantCard: React.FC<ConsultantProps> = ({
   data,
-  refetchConsultants,
+  refetchSpeakers,
 }) => {
-  // Mutation for deleting a Consultant
-  const deleteConsultant = useMutation({
-    mutationFn: async (data: ConsultantDM) => {
+  // Mutation for deleting a speaker
+  const deleteSpeaker = useMutation({
+    mutationFn: async (data: SpeakerDM) => {
       const response = await axios.delete("/api/consultants", {
         data,
       });
       return response.data;
     },
     onSuccess: () => {
-      refetchConsultants();
+      refetchSpeakers();
     },
     onError: (error) => {
       console.error("Failed to delete Consultant:", error);
@@ -38,7 +38,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
   //     `Are you sure you want to delete ${data.name}?`
   //   );
   //   if (confirmDelete) {
-  //     deleteConsultant.mutate({
+  //     deleteSpeaker.mutate({
   //       id: data.id,
   //     });
   //   }
@@ -51,7 +51,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
   };
 
   const confirmDeletion = () => {
-    deleteConsultant.mutate({ id: data.id });
+    deleteSpeaker.mutate({ id: data.id });
     setIsConfirmOpen(false);
   };
 
@@ -104,7 +104,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
           {data.company && <span className="font-bold">{data.company}</span>}
         </div>
       </div>
-      
+
       <ConfirmDialog
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}

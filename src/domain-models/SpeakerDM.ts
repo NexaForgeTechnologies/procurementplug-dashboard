@@ -1,4 +1,4 @@
-export interface ConsultantDM {
+export interface SpeakerDM {
     id?: number;
     img?: string;
     name?: string;
@@ -6,11 +6,11 @@ export interface ConsultantDM {
     designation?: string;
     company?: string;
     bg_color?: string;
-    industry_id?: string;
-    industry_name?: string;
-    location?: string;
-    specialism_id?: string;
-    specialism_name?: string;
+    // industry_id?: string;
+    // industry_name?: string;
+    // location?: string;
+    // specialism_id?: string;
+    // specialism_name?: string;
 
     created_at?: Date | null;
     updated_at?: Date | null;
