@@ -33,7 +33,6 @@ function SpeakerCTR() {
     return (
       speaker.name?.toLowerCase().includes(term) ||
       speaker.company?.toLowerCase().includes(term) ||
-      speaker.role?.toLowerCase().includes(term) ||
       speaker.designation?.toLowerCase().includes(term)
     );
   });
@@ -67,7 +66,7 @@ function SpeakerCTR() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by name, company, role..."
+            placeholder="Search by name, company, designation..."
             className="w-full p-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           />
 

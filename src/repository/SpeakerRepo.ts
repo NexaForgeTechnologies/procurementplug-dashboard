@@ -16,10 +16,8 @@ export class SpeakerRepo {
                 id: row.id,
                 img: row.img,
                 name: row.name,
-                role: row.role,
                 designation: row.designation,
                 company: row.company,
-                bg_color: row.bg_color,
             }));
             return speakers;
         } catch (error) {
@@ -31,15 +29,13 @@ export class SpeakerRepo {
     static async AddSpeaker(speaker: Omit<SpeakerDM, "id">): Promise<SpeakerDM> {
         try {
             const [result]: any = await db.execute(
-                `INSERT INTO speakers (name, img, role, designation, company, bg_color)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO speakers (name, img, designation, company)
+         VALUES (?, ?, ?, ?)`,
                 [
                     speaker.name,
                     speaker.img,
-                    speaker.role,
                     speaker.designation,
                     speaker.company,
-                    speaker.bg_color,
                 ]
             );
 
@@ -59,16 +55,14 @@ export class SpeakerRepo {
                 `
                 UPDATE speakers
                 SET 
-                img = ?, name = ?, role = ?,  designation = ? , company = ?, bg_color = ?, updated_at = ?
+                img = ?, name = ?, designation = ?, company = ?, updated_at = ?
                 WHERE id = ?
             `,
                 [
                     speaker.img,
                     speaker.name,
-                    speaker.role,
                     speaker.designation,
                     speaker.company,
-                    speaker.bg_color,
                     currentTime,
                     speaker.id,
                 ]

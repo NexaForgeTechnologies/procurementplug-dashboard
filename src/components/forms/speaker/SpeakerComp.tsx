@@ -21,10 +21,8 @@ type SpeakerFormProps = {
 const initialFormValues: SpeakerDM = {
   img: "",
   name: "",
-  role: "",
   designation: "",
   company: "",
-  bg_color: "",
 };
 
 const SpeakerComp: React.FC<SpeakerFormProps> = ({
@@ -77,10 +75,8 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
     const newSpeaker: Omit<SpeakerDM, "id"> = {
       name: formValues.name,
       img: formValues.img,
-      role: formValues.role,
       designation: formValues.designation,
       company: formValues.company,
-      bg_color: formValues.bg_color,
     };
 
     addSpeakerMutation.mutate(newSpeaker);
@@ -129,7 +125,7 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
             </div>
 
             <div className="grid gap-4 grid-cols-2">
-              <div className="col-span-2 sm:col-span-1">
+              <div className="col-span-2">
                 <InputComponent
                   label="Speaker Name"
                   placeholder="Enter Speaker Name"
@@ -137,22 +133,6 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
                   value={formValues.name}
                   required
                   showError={validationErrors.name}
-                />
-              </div>
-              <div className="col-span-2 sm:col-span-1">
-                <InputComponent
-                  label="Role"
-                  placeholder="Enter Role (e.g., Host)"
-                  onChange={(value) => handleChange("role", value)}
-                  value={formValues.role}
-                />
-              </div>
-              <div className="col-span-2 sm:col-span-1">
-                <InputComponent
-                  label="Designation"
-                  placeholder="Enter Designation"
-                  onChange={(value) => handleChange("designation", value)}
-                  value={formValues.designation}
                 />
               </div>
               <div className="col-span-2 sm:col-span-1">
@@ -165,10 +145,10 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <InputComponent
-                  label="Background Color"
-                  placeholder="Enter BG Color (e.g., #d1a05c)"
-                  onChange={(value) => handleChange("bg_color", value)}
-                  value={formValues.bg_color}
+                  label="Designation"
+                  placeholder="Enter Designation"
+                  onChange={(value) => handleChange("designation", value)}
+                  value={formValues.designation}
                 />
               </div>
             </div>

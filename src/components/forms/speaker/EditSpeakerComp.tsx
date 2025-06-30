@@ -25,10 +25,8 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
   const initialFormValues: SpeakerDM = {
     img: speaker?.img || "",
     name: speaker?.name || "",
-    role: speaker?.role || "",
     designation: speaker?.designation || "",
     company: speaker?.company || "",
-    bg_color: speaker?.bg_color || "",
   };
 
   const [formValues, setFormValues] = useState<SpeakerDM>(initialFormValues);
@@ -79,10 +77,8 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
       id: speaker?.id,
       img: formValues.img,
       name: formValues.name,
-      role: formValues.role,
       designation: formValues.designation,
       company: formValues.company,
-      bg_color: formValues.bg_color,
     });
   };
 
@@ -117,7 +113,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
           </div>
 
           <div className="grid gap-4 grid-cols-2">
-            <div className="col-span-2 sm:col-span-1">
+            <div className="col-span-2">
               <InputComponent
                 label="Speaker Name"
                 placeholder="Enter Speaker Name"
@@ -125,22 +121,6 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                 value={formValues.name}
                 required
                 showError={validationErrors.name}
-              />
-            </div>
-            <div className="col-span-2 sm:col-span-1">
-              <InputComponent
-                label="Role"
-                placeholder="Enter Role (e.g., Host)"
-                onChange={(value) => handleChange("role", value)}
-                value={formValues.role}
-              />
-            </div>
-            <div className="col-span-2 sm:col-span-1">
-              <InputComponent
-                label="Designation"
-                placeholder="Enter Designation"
-                onChange={(value) => handleChange("designation", value)}
-                value={formValues.designation}
               />
             </div>
             <div className="col-span-2 sm:col-span-1">
@@ -153,10 +133,10 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
             </div>
             <div className="col-span-2 sm:col-span-1">
               <InputComponent
-                label="Background Color"
-                placeholder="Enter BG Color (e.g., #d1a05c)"
-                onChange={(value) => handleChange("bg_color", value)}
-                value={formValues.bg_color}
+                label="Designation"
+                placeholder="Enter Designation"
+                onChange={(value) => handleChange("designation", value)}
+                value={formValues.designation}
               />
             </div>
           </div>
