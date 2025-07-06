@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SpeakerRepo } from '@/repository/SpeakerRepo';
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
 
-
-export async function GET(req: Request) {
+export async function GET() {
     try {
         const speakers = await SpeakerRepo.getAllSpeakers();
         return NextResponse.json(speakers, { status: 200 });

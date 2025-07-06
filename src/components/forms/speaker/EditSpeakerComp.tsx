@@ -61,7 +61,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
       const response = await axios.put("/api/speakers", data);
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       refetchSpeakers();
       onClose();
     },

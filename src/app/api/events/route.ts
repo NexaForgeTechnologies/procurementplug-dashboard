@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EventRepo } from '@/repository/EventRepo';
 
-
 export async function GET() {
     try {
         const events = await EventRepo.getAllEvents();

@@ -11,6 +11,7 @@ export interface SpeakerDM {
     // location?: string;
     // specialism_id?: string;
     // specialism_name?: string;
+    value?: string;
 
     created_at?: Date | null;
     updated_at?: Date | null;

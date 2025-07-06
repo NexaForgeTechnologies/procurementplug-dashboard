@@ -4,24 +4,22 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import { EventDM } from "@/domain-models/EventDm";
+
 import AddEventForm from "@/components/forms/event/AddEvent";
 import EditEventComp from "@/components/forms/event/EditEventComp";
 import EventComp from "@/components/cards/EventCard";
-import { EventDM } from "@/domain-models/EventDm";
 
 function EventCTR() {
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Fetch Speaker
+    // Fetch Events
     const fetchEvents = async (): Promise<EventDM[]> => {
         const response = await axios.get<EventDM[]>("/api/events");
         return response.data;
     };
     const {
         data: events,
-        isLoading,
-        isError,
         refetch,
     } = useQuery<EventDM[]>({
         queryKey: ["events"],
@@ -42,13 +40,13 @@ function EventCTR() {
     const handleClick = () => setIsActive(!isActive);
 
     const [activeEditMode, setActiveEditMode] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState<SpeakerDM | null>(
+    const [selectedEvent, setSelectedEvent] = useState<EventDM | null>(
         null
     );
 
-    const handleEventEdit = (speaker: SpeakerDM) => {
+    const handleEventEdit = (event: EventDM) => {
         setActiveEditMode(!activeEditMode);
-        setSelectedEvent((prev) => (prev?.id === speaker.id ? null : speaker));
+        setSelectedEvent((prev) => (prev?.id === event.id ? null : event));
     };
     return (
         <>

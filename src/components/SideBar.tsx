@@ -10,8 +10,8 @@ export default function SideBar() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: "Dashboard", href: "/home", icon: "dashboard" },
-    { name: "Blogs", href: "/blogs", icon: "blog" },
+    // { name: "Dashboard", href: "/home", icon: "dashboard" },
+    // { name: "Blogs", href: "/blogs", icon: "blog" },
     { name: "Events", href: "/events", icon: "event" },
     { name: "Speakers", href: "/speakers", icon: "consultant" },
   ];

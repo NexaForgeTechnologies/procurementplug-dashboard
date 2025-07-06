@@ -20,8 +20,6 @@ function SpeakerCTR() {
 
   const {
     data: speakers,
-    isLoading,
-    isError,
     refetch,
   } = useQuery<SpeakerDM[]>({
     queryKey: ["speakers"],

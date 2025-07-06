@@ -97,14 +97,6 @@ const AddEventForm: React.FC<EventFormProps> = ({
       }
    }, [active]);
 
-
-
-   const speakerOptions = [
-      { id: 1, value: "Ace" },
-      { id: 2, value: "Annalisha" },
-      { id: 3, value: "Jythoi" },
-   ];
-
    // Fetch Speaker
    const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
       const response = await axios.get<SpeakerDM[]>("/api/speakers");
@@ -113,9 +105,6 @@ const AddEventForm: React.FC<EventFormProps> = ({
 
    const {
       data,
-      isLoading,
-      isError,
-      refetch,
    } = useQuery<SpeakerDM[]>({
       queryKey: ["speakers"],
       queryFn: fetchSpeakers,
@@ -249,32 +238,6 @@ const AddEventForm: React.FC<EventFormProps> = ({
                               handleChange("speakers_names", values);
                            }}
                         />
-                        {/* <MultiSelect
-                           label="Select Speakers"
-                           placeholder="Please select speakers"
-                           options={speakerOptions}
-                           value={speakerData.map((s) => s.id)} // Preselect by ID
-                           onSelect={(selectedUsers) => {
-                              const updated = selectedUsers.map((user) => {
-                                 const matched = speakerOptions.find((opt) => opt.id === user.id);
-                                 return {
-                                    id: user.id,
-                                    name: matched?.value || "",
-                                    role: user.role,
-                                 };
-                              });
-
-                              setSpeakerData(updated);
-
-                              // Optional: You can still separate for DB
-                              const speaker_ids = updated.map((s) => s.id);
-                              const speaker_names = updated;
-
-                              handleChange("speakers_ids", speaker_ids);
-                              handleChange("speakers_names", speaker_names); // This includes role & bgColor
-                           }}
-                        /> */}
-
                      </div>
 
                   </div>

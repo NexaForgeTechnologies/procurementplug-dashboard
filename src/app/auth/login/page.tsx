@@ -1,51 +1,18 @@
 "use client";
 
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import React, { FocusEvent, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 function LoginPage() {
-  const [focusedField, setFocusedField] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
-    setFocusedField(e.target.id);
-  };
-
-  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
-    if (!e.target.value) {
-      setFocusedField(null);
-    }
-  };
-
-  const autofillStyles: React.CSSProperties = {
-    backgroundColor: "white",
-    WebkitBoxShadow: "0 0 0 30px white inset",
-    boxShadow: "0 0 0 30px white inset",
-    WebkitTextFillColor: "#858484",
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setFocusedField(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setLoading(true);
 
@@ -65,7 +32,23 @@ function LoginPage() {
       alert(data.error);
       setLoading(false);
     }
-  };
+  }, [username, password, router]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        // Future logic like blur effect, etc.
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -78,7 +61,7 @@ function LoginPage() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [username, password]);
+  }, [handleSubmit]);
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center">
@@ -104,21 +87,22 @@ function LoginPage() {
         className="mx-6 relative z-10 w-full max-w-md rounded-xl border border-white/20 bg-white/10 px-6 md:px-8 py-14 shadow-2xl backdrop-blur-md"
       >
         <div className="text-center text-white">
-          <img
+          <Image
             src="/images/logo.png"
             alt="Logo"
+            width={300}
+            height={300}
             className="mx-auto w-full max-w-[300px] bg-white backdrop-blur-md rounded-lg p-6 mb-8"
           />
           <h1 className="mb-4 text-3xl font-semibold">Good to see you!</h1>
         </div>
-        <div className="space-y-4 mt-8">
+
+        <form onSubmit={handleSubmit} className="space-y-4 mt-8">
           <input
             required
             id="username"
             type="text"
             placeholder="you@example.com"
-            onFocus={handleFocus}
-            onBlur={handleBlur}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full rounded-md border-2 border-[#b08d57] bg-white px-4 py-2 text-[#363636] focus:outline-none focus:ring-2 focus:ring-[#b08d57] transition duration-200"
           />
@@ -128,21 +112,21 @@ function LoginPage() {
             id="password"
             type="password"
             placeholder="Enter your password *******"
-            onFocus={handleFocus}
-            onBlur={handleBlur}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full text-sm rounded-md border-2 border-[#b08d57] bg-white px-4 py-2 text-[#363636] focus:outline-none focus:ring-2 focus:ring-[#b08d57] transition duration-200"
           />
 
-          <div onClick={handleSubmit}>
-            <button className="w-full rounded-md bg-[#b08d57] px-4 py-2 font-semibold text-white hover:bg-[#a07b4f] transition-transform duration-200 ease-in-out cursor-pointer flex items-center justify-center">
-              {loading ? "" : "Plug in"}
-              {loading && (
-                <div className="w-6 h-6 border-4 border-t-transparent border-[#FFFF] rounded-full animate-spin"></div>
-              )}
-            </button>
-          </div>
-        </div>
+          <button
+            type="submit"
+            className="w-full rounded-md bg-[#b08d57] px-4 py-2 font-semibold text-white hover:bg-[#a07b4f] transition-transform duration-200 ease-in-out cursor-pointer flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <div className="w-5 h-5 border-4 border-t-transparent border-white rounded-full animate-spin" />
+            ) : (
+              "Plug in"
+            )}
+          </button>
+        </form>
       </div>
     </div>
   );
