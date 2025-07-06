@@ -2,6 +2,38 @@ import React from "react";
 
 const IconComponent = ({ name, size = 22, color = "white" }) => {
   const icons = {
+    "drop-down": (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 17 9"
+        fill="none"
+      >
+        <path
+          d="M16 0.5L8.5 8L1 0.500001"
+          stroke={color}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+    search: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 17 17"
+        fill="none"
+      >
+        <path
+          d="M10.9613 10.9548L16 16M12.6667 6.83333C12.6667 10.055 10.055 12.6667 6.83333 12.6667C3.61168 12.6667 1 10.055 1 6.83333C1 3.61168 3.61168 1 6.83333 1C10.055 1 12.6667 3.61168 12.6667 6.83333Z"
+          stroke={color}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
     dashboard: (
       <svg
         style={{ width: size, height: size, color: color }}

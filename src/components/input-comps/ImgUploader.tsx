@@ -56,9 +56,8 @@ const ImageUpload: React.FC<Props> = ({
   return (
     <div className="w-full">
       <div
-        className={`relative border-dashed border-2 ${
-          showError ? "border-red-500" : "border-gray-300"
-        } rounded-md w-full h-50 aspect-square flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100 transition`}
+        className={`relative border-dashed border-2 ${showError ? "border-red-500" : "border-gray-300"
+          } rounded-md w-full h-50 aspect-square flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100 transition`}
         onClick={triggerFileInput}
       >
         {preview ? (
@@ -80,7 +79,7 @@ const ImageUpload: React.FC<Props> = ({
             </button>
           </>
         ) : (
-          <span className="text-gray-400">Click to upload image</span>
+          <span className="text-gray-400">{label ? label : "Click to upload image"}</span>
         )}
       </div>
 

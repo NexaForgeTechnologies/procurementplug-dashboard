@@ -5,37 +5,38 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 import { SpeakerDM } from "@/domain-models/SpeakerDM";
-import SpeakerForm from "@/components/forms/speaker/SpeakerComp";
-import EditSpeakerComp from "@/components/forms/speaker/EditSpeakerComp";
+import AddEventForm from "@/components/forms/event/AddEvent";
+import EditEventComp from "@/components/forms/event/EditEventComp";
 import EventComp from "@/components/cards/EventCard";
+import { EventDM } from "@/domain-models/EventDm";
 
 function EventCTR() {
     const [searchTerm, setSearchTerm] = useState("");
 
     // Fetch Speaker
-    const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
-        const response = await axios.get<SpeakerDM[]>("/api/speakers");
+    const fetchEvents = async (): Promise<EventDM[]> => {
+        const response = await axios.get<EventDM[]>("/api/events");
         return response.data;
     };
-
     const {
-        data: speakers,
+        data: events,
         isLoading,
         isError,
         refetch,
-    } = useQuery<SpeakerDM[]>({
-        queryKey: ["speakers"],
-        queryFn: fetchSpeakers,
+    } = useQuery<EventDM[]>({
+        queryKey: ["events"],
+        queryFn: fetchEvents,
     });
 
-    const filteredEvents = speakers?.filter((speaker) => {
+    const filteredEvents = (events ?? []).filter((event) => {
         const term = searchTerm.toLowerCase();
         return (
-            speaker.name?.toLowerCase().includes(term) ||
-            speaker.company?.toLowerCase().includes(term) ||
-            speaker.designation?.toLowerCase().includes(term)
+            event.event_name?.toLowerCase().includes(term) ||
+            event.event_date?.toLowerCase().includes(term) ||
+            event.event_date_time?.toLowerCase().includes(term)
         );
     });
+
 
     const [isActive, setIsActive] = useState(false);
     const handleClick = () => setIsActive(!isActive);
@@ -65,7 +66,7 @@ function EventCTR() {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search by name, company, designation..."
+                        placeholder="Search by name, date..."
                         className="w-full p-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     />
 
@@ -85,6 +86,8 @@ function EventCTR() {
                         <EventComp
                             key={event.id}
                             data={event}
+                            refetchEvents={refetch}
+                            openEditForm={handleEventEdit}
                         />
                     ))
                 ) : (
@@ -94,27 +97,27 @@ function EventCTR() {
                 )}
             </div>
 
-            {/* Add Skill Modal */}
+            {/* Add Event */}
             {isActive && (
-                <SpeakerForm
+                <AddEventForm
                     active={isActive}
                     onClose={() => {
                         setIsActive(false);
                         refetch();
                     }}
-                    refetchSpeakers={refetch}
+                    refetchEvents={refetch}
                 />
             )}
 
             {activeEditMode && selectedEvent && (
-                <EditSpeakerComp
-                    speaker={selectedEvent}
+                <EditEventComp
+                    event={selectedEvent}
                     onClose={() => {
                         setActiveEditMode(false);
                         setSelectedEvent(null);
                         refetch();
                     }}
-                    refetchSpeakers={refetch}
+                    refetchEvents={refetch}
                 />
             )}
         </>

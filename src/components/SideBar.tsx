@@ -31,12 +31,11 @@ export default function SideBar() {
               href={item.href}
               data-drawer-hide="default-sidebar"
               className={`flex items-center p-2 rounded-lg group transition-colors
-                        text-gray-900 dark:text-white
-                        ${
-                          pathname === item.href
-                            ? "bg-white/10 dark:bg-[#b08d57]"
-                            : "hover:bg-gray-100 dark:hover:bg-[#b08d57]"
-                        }
+                        text-white
+                        ${pathname === item.href
+                  ? "bg-[#b08d57]"
+                  : "hover:bg-[#b08d57]"
+                }
                      `}
             >
               <Icon name={item.icon} />
@@ -50,7 +49,7 @@ export default function SideBar() {
           <Link
             href="/auth/login"
             className={`flex items-center p-2 rounded-lg group transition-colors
-                        text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-[#b08d57]
+                        text-white hover:bg-[#b08d57]
                      `}
           >
             <Icon name="signout" />
