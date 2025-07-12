@@ -1,5 +1,6 @@
 "use client";
 
+import { spawn } from "child_process";
 import React, { useRef, useState } from "react";
 
 type Props = {
@@ -79,7 +80,10 @@ const ImageUpload: React.FC<Props> = ({
                   </button>
                </>
             ) : (
-               <span className="text-gray-400">{label ? label : "Click to upload image"}</span>
+               <div className="text-center">
+                  <h2 className="font-semibold text-[#707070]">Upload Media For</h2>
+                  <span className="text-[#989898] text-sm">{label ? label : "Click to upload image"}</span>
+               </div>
             )}
          </div>
 

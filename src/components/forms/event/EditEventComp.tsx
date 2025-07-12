@@ -105,11 +105,17 @@ const EditEventForm: React.FC<EventFormProps> = ({
         queryFn: fetchSpeakers,
     });
 
-    const speakers =
-        data?.map((speaker: any) => ({
-            id: speaker.id,
-            value: speaker.name,
-        })) || [];
+    type Option = { id: number; value: string };
+
+    const speakers: Option[] = (data?.map((speaker) => {
+        if (typeof speaker.id === "number" && typeof speaker.name === "string") {
+            return {
+                id: speaker.id,
+                value: speaker.name,
+            };
+        }
+        return null;
+    })?.filter((s): s is Option => s !== null)) || [];
 
     return (
         <>
