@@ -134,7 +134,7 @@ const AddEventForm: React.FC<EventFormProps> = ({
       if (file) {
          console.log("Uploaded file:", file.name);
       } else {
-         console.log("File removed");
+         console.log("File remove");
       }
    };
 
