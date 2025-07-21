@@ -8,8 +8,8 @@ import { EventDM } from "@/domain-models/EventDm";
 
 import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/input-comps/CollaborationImgUploader";
-import MultiSelect from "@/components/select-comps/MultiSelect";
+import ImageUpload from "@/components/input-comps/ImgUploader";
+// import MultiSelect from "@/components/select-comps/MultiSelect";
 import { SpeakerDM } from "@/domain-models/SpeakerDM";
 import PdfUploader from "@/components/PdfUploader";
 
@@ -20,18 +20,18 @@ type EventFormProps = {
    refetchEvents: () => void;
 };
 
-interface DocumentFile {
-   id: string;
-   name?: string;
-   file?: File;
-   base64?: string; // Optional: if you want to store the base64 representation
-}
+// interface DocumentFile {
+//    id: string;
+//    name?: string;
+//    file?: File;
+//    base64?: string; // Optional: if you want to store the base64 representation
+// }
 
 // Initial state for form
 const initialFormValues: EventDM = {
    event_name: "",
    event_date: "",
-   collaboration: "",
+   collaboration: [],
    event_heading: "",
    heading_detail: "",
    event_date_time: "",
@@ -54,13 +54,16 @@ const AddEventForm: React.FC<EventFormProps> = ({
    const [validationErrors, setValidationErrors] = useState({
       event_name: false,
    });
-   const handleChange = (field: keyof EventDM, value: string) => {
+   const handleChange = (field: keyof EventDM, value: unknown) => {
       setFormValues((prev) => ({
          ...prev,
          [field]: value,
       }));
 
-      if (value.trim()) {
+      // if (value.trim()) {
+      //    setValidationErrors((prev) => ({ ...prev, [field]: false }));
+      // }
+      if (typeof value === "string" && value.trim()) {
          setValidationErrors((prev) => ({ ...prev, [field]: false }));
       }
    };
@@ -96,7 +99,7 @@ const AddEventForm: React.FC<EventFormProps> = ({
       console.log(formValues);
 
 
-      // addEventMutation.mutate(newEvent);
+      addEventMutation.mutate(newEvent);
    };
 
    useEffect(() => {
@@ -119,22 +122,23 @@ const AddEventForm: React.FC<EventFormProps> = ({
       queryKey: ["speakers"],
       queryFn: fetchSpeakers,
    });
+   console.log(data);
 
-   const optionsFromBackend = [
-      { id: 1, name: "Jyothi Hartley", role: "", bg_color: "" },
-      { id: 2, name: "Annalisha Noel", role: "", bg_color: "" },
-      { id: 3, name: "Blessed Agyemang", role: "", bg_color: "" },
-   ];
 
-   const [selectedSpeakers, setSelectedSpeakers] = useState<any[]>(optionsFromBackend);
-   console.log(selectedSpeakers);
+   // const optionsFromBackend = [
+   //    { id: 1, name: "Jyothi Hartley", role: "", bg_color: "" },
+   //    { id: 2, name: "Annalisha Noel", role: "", bg_color: "" },
+   //    { id: 3, name: "Blessed Agyemang", role: "", bg_color: "" },
+   // ];
+
+   // const [selectedSpeakers, setSelectedSpeakers] = useState<unknown[]>(optionsFromBackend);
 
 
    const handlePdfUpload = (file: File | null) => {
       if (file) {
-         console.log("Uploaded file:", file.name);
+         // console.log("Uploaded file:", file.name);
       } else {
-         console.log("File remove");
+         // console.log("File remove");
       }
    };
 
@@ -142,7 +146,8 @@ const AddEventForm: React.FC<EventFormProps> = ({
       <>
          {active && (
             <div className="fixed inset-0 bg-black/70 z-50 px-4">
-               <div className="pb-80 max-w-[800px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#ECECEC] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+               <div className="max-w-[800px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#ECECEC] relative 
+               top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
                   <div className="flex justify-between items-center">
                      <h2 className="font-semibold text-2xl text-[#565656]">
                         Add Event
@@ -189,10 +194,18 @@ const AddEventForm: React.FC<EventFormProps> = ({
                               />
                            </div>
                            <div className="col-span-2">
-                              <ImageUpload
+                              {/* <ImageUpload
                                  label="In Collaboration With"
                                  value={formValues.collaboration}
-                                 onImageUpload={(collaboration) => handleChange("collaboration", collaboration)}
+                                 onImageUpload={(collaboration) => {
+                                    handleChange("collaboration", collaboration);
+                                 }}
+                              /> */}
+                              <ImageUpload
+                                 label="In Collaboration With"
+                                 multiple
+                                 value={formValues.collaboration} // string[]
+                                 onImageUpload={(paths) => handleChange("collaboration", paths)}
                               />
                            </div>
                            <div className="col-span-2">
@@ -318,12 +331,12 @@ const AddEventForm: React.FC<EventFormProps> = ({
                               isTextArea
                               rows={5}
                            />
-                           <MultiSelect
+                           {/* <MultiSelect
                               label="Speakers"
                               options={optionsFromBackend}
                               value={selectedSpeakers}
                               onSelect={(speakers) => setSelectedSpeakers(speakers)}
-                           />
+                           /> */}
                         </div>
                      </div>
 

@@ -2,7 +2,7 @@ export interface EventDM {
     id?: number;
     event_name?: string;
     event_date?: string;
-    collaboration?: string;
+    collaboration?: string[];
     event_heading?: string;
     heading_detail?: string;
     event_date_time?: string;

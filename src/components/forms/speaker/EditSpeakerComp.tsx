@@ -8,7 +8,7 @@ import { SpeakerDM } from "@/domain-models/SpeakerDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/input-comps/ImgUploader";
+import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 
 type SpeakerFormProps = {
   speaker?: SpeakerDM;

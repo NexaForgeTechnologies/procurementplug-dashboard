@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 import { EventDM } from "@/domain-models/EventDm";
 
 import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/input-comps/CollaborationImgUploader";
-import MultiSelect from "@/components/select-comps/MultiSelect";
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import ImageUpload from "@/components/input-comps/ImgUploader";
+// import MultiSelect from "@/components/select-comps/MultiSelect";
+// import { SpeakerDM } from "@/domain-models/SpeakerDM";
 
 type EventFormProps = {
     event?: EventDM;
@@ -23,20 +23,22 @@ const EditEventForm: React.FC<EventFormProps> = ({
     onClose,
     refetchEvents,
 }) => {
+    console.log(event);
+
     // Initial state for form
     const initialFormValues: EventDM = {
-        event_name: event?.event_name || "",
-        event_date: event?.event_date || "",
-        collaboration: event?.collaboration || "",
-        event_heading: event?.event_heading || "",
-        event_detail: event?.event_detail || "",
-        event_date_time: event?.event_date_time || "",
-        event_location: event?.event_location || "",
-        event_designedfor: event?.event_designedfor || "",
-        event_ticket: event?.event_ticket || "",
-        event_booking_url: event?.event_booking_url || "",
-        speakers_ids: event?.speakers_ids || [],
-        speakers_names: event?.speakers_ids || []
+        // event_name: event?.event_name || "",
+        // event_date: event?.event_date || "",
+        // collaboration: event?.collaboration || [],
+        // event_heading: event?.event_heading || "",
+        // event_detail: event?.event_detail || "",
+        // event_date_time: event?.event_date_time || "",
+        // event_location: event?.event_location || "",
+        // event_designedfor: event?.event_designedfor || "",
+        // event_ticket: event?.event_ticket || "",
+        // event_booking_url: event?.event_booking_url || "",
+        // speakers_ids: event?.speakers_ids || [],
+        // speakers_names: event?.speakers_ids || []
 
     };
 
@@ -93,29 +95,29 @@ const EditEventForm: React.FC<EventFormProps> = ({
     };
 
     // Fetch Speaker
-    const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
-        const response = await axios.get<SpeakerDM[]>("/api/speakers");
-        return response.data;
-    };
+    // const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
+    //     const response = await axios.get<SpeakerDM[]>("/api/speakers");
+    //     return response.data;
+    // };
 
-    const {
-        data,
-    } = useQuery<SpeakerDM[]>({
-        queryKey: ["speakers"],
-        queryFn: fetchSpeakers,
-    });
+    // const {
+    //     data,
+    // } = useQuery<SpeakerDM[]>({
+    //     queryKey: ["speakers"],
+    //     queryFn: fetchSpeakers,
+    // });
 
-    type Option = { id: number; value: string };
+    // type Option = { id: number; value: string };
 
-    const speakers: Option[] = (data?.map((speaker) => {
-        if (typeof speaker.id === "number" && typeof speaker.name === "string") {
-            return {
-                id: speaker.id,
-                value: speaker.name,
-            };
-        }
-        return null;
-    })?.filter((s): s is Option => s !== null)) || [];
+    // const speakers: Option[] = (data?.map((speaker) => {
+    //     if (typeof speaker.id === "number" && typeof speaker.name === "string") {
+    //         return {
+    //             id: speaker.id,
+    //             value: speaker.name,
+    //         };
+    //     }
+    //     return null;
+    // })?.filter((s): s is Option => s !== null)) || [];
 
     return (
         <>
@@ -176,14 +178,14 @@ const EditEventForm: React.FC<EventFormProps> = ({
                             />
                         </div>
                         <div className="col-span-2">
-                            <InputText
+                            {/* <InputText
                                 label="Event Detail"
                                 placeholder="Enter evet detail"
                                 onChange={(value) => handleChange("event_detail", value)}
                                 value={formValues.event_detail}
                                 isTextArea
                                 rows={4}
-                            />
+                            /> */}
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                             <InputText
@@ -228,7 +230,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
                             />
                         </div>
                         <div className="col-span-2 sm:col-span-1">
-                            <MultiSelect
+                            {/* <MultiSelect
                                 label="Services"
                                 placeholder="Select Services"
                                 options={speakers}
@@ -237,7 +239,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
                                     handleChange("speakers_ids", ids);
                                     handleChange("speakers_names", values);
                                 }}
-                            />
+                            /> */}
                         </div>
 
                     </div>

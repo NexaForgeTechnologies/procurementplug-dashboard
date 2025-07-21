@@ -15,7 +15,7 @@ export async function signToken(payload: JWTPayload): Promise<string> {
   return token;
 }
 
-export async function verifyToken(token: string): Promise<any> {
+export async function verifyToken(token: string): Promise<unknown> {
   try {
     // console.log("Verification:");
     // console.log("type of SECRET_KEY", typeof SECRET_KEY);

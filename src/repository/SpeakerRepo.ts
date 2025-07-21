@@ -1,6 +1,6 @@
 import { SpeakerDM } from "@/domain-models/SpeakerDM";
 import { db } from "@/lib/db";
-import { RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { getFormattedTimestamp } from "@/utils/FormattedDate";
 
 export class SpeakerRepo {
@@ -12,7 +12,7 @@ export class SpeakerRepo {
                 ORDER BY id DESC;
             `);
 
-            const speakers: SpeakerDM[] = rows.map((row: any) => ({
+            const speakers: SpeakerDM[] = rows.map((row) => ({
                 id: row.id,
                 img: row.img,
                 name: row.name,
@@ -28,18 +28,26 @@ export class SpeakerRepo {
 
     static async AddSpeaker(speaker: Omit<SpeakerDM, "id">): Promise<SpeakerDM> {
         try {
-            const [result]: any = await db.execute(
+            const [result] = await db.execute(
                 `INSERT INTO speakers (name, img, designation, company)
-         VALUES (?, ?, ?, ?)`,
-                [
-                    speaker.name,
-                    speaker.img,
-                    speaker.designation,
-                    speaker.company,
-                ]
-            );
+   VALUES (?, ?, ?, ?)`,
+                [speaker.name, speaker.img, speaker.designation, speaker.company]
+            ) as [ResultSetHeader, unknown];
 
             const insertId = result.insertId;
+
+            //     const [result]: unknown = await db.execute(
+            //         `INSERT INTO speakers (name, img, designation, company)
+            //  VALUES (?, ?, ?, ?)`,
+            //         [
+            //             speaker.name,
+            //             speaker.img,
+            //             speaker.designation,
+            //             speaker.company,
+            //         ]
+            //     );
+
+            // const insertId = result.insertId;
 
             return { id: insertId, ...speaker };
         } catch (error) {

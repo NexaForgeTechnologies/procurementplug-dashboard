@@ -12,7 +12,7 @@ export class EventRepo {
                 ORDER BY id DESC;
             `);
 
-            const event: EventDM[] = rows.map((row: any) => ({
+            const event: EventDM[] = rows.map((row) => ({
                 id: row.id,
                 event_name: row.event_name,
                 event_date: row.event_date,
@@ -35,22 +35,27 @@ export class EventRepo {
         }
     }
 
-    static async AddEvent(event: Omit<EventDM, "id">): Promise<EventDM> {
-        try {
-            const [result]: any = await db.execute(
-                `INSERT INTO event ()
-                VALUES ()`,
-                [
-                ]
-            );
+    // static async AddEvent(event: Omit<EventDM, "id">): Promise<EventDM> {
+    //     try {
+    //         const [result]: unknows = await db.execute(
+    //             `INSERT INTO event ()
+    //             VALUES ()`,
+    //             [
+    //             ]
+    //         );
 
-            const insertId = result.insertId;
+    //         const insertId = result.insertId;
 
-            return { id: insertId, ...event };
-        } catch (error) {
-            console.error("Error inserting event:", error);
-            throw new Error("Failed to insert event");
-        }
+    //         // return { id: insertId, ...event };
+    //         return { id: insertId, ...event };
+    //     } catch (error) {
+    //         console.error("Error inserting event:", error);
+    //         throw new Error("Failed to insert event");
+    //     }
+    // }
+
+    static async AddEvent(event: Omit<EventDM, "id">) {
+        console.log(event);
     }
 
     static async UpdateEvent(event: EventDM) {
