@@ -18,6 +18,8 @@ export class SpeakerRepo {
                 name: row.name,
                 designation: row.designation,
                 company: row.company,
+                role: row.role,
+                bg_color: row.bg_color
             }));
             return speakers;
         } catch (error) {

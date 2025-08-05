@@ -9,7 +9,7 @@ import { EventDM } from "@/domain-models/EventDm";
 import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/input-comps/ImgUploader";
-// import MultiSelect from "@/components/select-comps/MultiSelect";
+import MultiSelect from "@/components/select-comps/MultiSelect";
 import { SpeakerDM } from "@/domain-models/SpeakerDM";
 import PdfUploader from "@/components/PdfUploader";
 
@@ -20,15 +20,16 @@ type EventFormProps = {
    refetchEvents: () => void;
 };
 
-// interface DocumentFile {
-//    id: string;
-//    name?: string;
-//    file?: File;
-//    base64?: string; // Optional: if you want to store the base64 representation
-// }
+type SelectedSpeaker = {
+   id: number;
+   name: string;
+   role: string;
+   bg_color: string;
+};
 
 // Initial state for form
 const initialFormValues: EventDM = {
+   // hero Detail
    event_name: "",
    event_date: "",
    collaboration: [],
@@ -39,10 +40,25 @@ const initialFormValues: EventDM = {
    event_designedfor: "",
    event_ticket: "",
    event_booking_url: "",
-   speakers_ids: [],
-   speakers_names: [],
-   documents: [],
 
+   // Workshop
+   workshops: [],
+
+   // Agenda PDF
+   agenda: "",
+
+   // Speakers
+   speakers_heading: "",
+   speakers: [],
+
+   // Highlight
+   event_highlight_detail: "",
+   event_highlight_img: [],
+   hightlight_heading: "",
+   hightlight_subheading_1: "",
+   hightlight_subdetail_1: "",
+   hightlight_subheading_2: "",
+   hightlight_subdetail_2: "",
 };
 
 const AddEventForm: React.FC<EventFormProps> = ({
@@ -51,9 +67,9 @@ const AddEventForm: React.FC<EventFormProps> = ({
    refetchEvents,
 }) => {
    const [formValues, setFormValues] = useState<EventDM>(initialFormValues);
-   const [validationErrors, setValidationErrors] = useState({
-      event_name: false,
-   });
+   // const [validationErrors, setValidationErrors] = useState({
+   //    event_name: false,
+   // });
    const handleChange = (field: keyof EventDM, value: unknown) => {
       setFormValues((prev) => ({
          ...prev,
@@ -63,22 +79,22 @@ const AddEventForm: React.FC<EventFormProps> = ({
       // if (value.trim()) {
       //    setValidationErrors((prev) => ({ ...prev, [field]: false }));
       // }
-      if (typeof value === "string" && value.trim()) {
-         setValidationErrors((prev) => ({ ...prev, [field]: false }));
-      }
+      // if (typeof value === "string" && value.trim()) {
+      //    setValidationErrors((prev) => ({ ...prev, [field]: false }));
+      // }
    };
-   const validateForm = () => {
-      const errors = {
-         event_name: !formValues.event_name?.trim(),
-      };
+   // const validateForm = () => {
+   //    const errors = {
+   //       event_name: !formValues.event_name?.trim(),
+   //    };
 
-      setValidationErrors(errors);
-      return !Object.values(errors).some((e) => e);
-   };
+   //    setValidationErrors(errors);
+   //    return !Object.values(errors).some((e) => e);
+   // };
 
    const addEventMutation = useMutation({
       mutationFn: async (data: EventDM) => {
-         const response = await axios.post("/api/eventa", data);
+         const response = await axios.post("/api/events", data);
          return response.data;
       },
       onSuccess: () => {
@@ -90,26 +106,20 @@ const AddEventForm: React.FC<EventFormProps> = ({
       },
    });
    const handleSubmit = () => {
-      if (!validateForm()) return;
+      // if (!validateForm()) return;
 
-      const newEvent: Omit<EventDM, "id"> = {
-         event_name: formValues.event_name,
-         event_date: formValues.event_date,
-      };
-      console.log(formValues);
-
-
+      const newEvent: Omit<EventDM, "id"> = formValues;
       addEventMutation.mutate(newEvent);
    };
 
-   useEffect(() => {
-      if (active) {
-         setValidationErrors({
-            event_name: false,
-         });
-         setFormValues(initialFormValues);
-      }
-   }, [active]);
+   // useEffect(() => {
+   //    if (active) {
+   //       setValidationErrors({
+   //          event_name: false,
+   //       });
+   //       setFormValues(initialFormValues);
+   //    }
+   // }, [active]);
 
    // Fetch Speaker
    const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
@@ -122,25 +132,59 @@ const AddEventForm: React.FC<EventFormProps> = ({
       queryKey: ["speakers"],
       queryFn: fetchSpeakers,
    });
-   console.log(data);
 
+   const [selectedSpeakers, setSelectedSpeakers] = useState<SelectedSpeaker[]>();
 
-   // const optionsFromBackend = [
-   //    { id: 1, name: "Jyothi Hartley", role: "", bg_color: "" },
-   //    { id: 2, name: "Annalisha Noel", role: "", bg_color: "" },
-   //    { id: 3, name: "Blessed Agyemang", role: "", bg_color: "" },
-   // ];
-
-   // const [selectedSpeakers, setSelectedSpeakers] = useState<unknown[]>(optionsFromBackend);
-
+   useEffect(() => {
+      handleChange("speakers", selectedSpeakers);
+   }, [selectedSpeakers]);
 
    const handlePdfUpload = (file: File | null) => {
       if (file) {
-         // console.log("Uploaded file:", file.name);
+         handleChange("agenda", file);
       } else {
          // console.log("File remove");
       }
    };
+
+   //Handle workshop section
+   type WorkshopTile = {
+      heading: string;
+      details: string;
+   };
+   type WorkshopSection = {
+      tiles: WorkshopTile[];
+   };
+   const [workshopSections, setWorkshopSections] = useState<WorkshopSection[]>([
+      { tiles: [{ heading: "", details: "" }, { heading: "", details: "" }] }, // Default Section 1 (Tile 1 & 2)
+   ]);
+   const addWorkshopSection = () => {
+      setWorkshopSections((prev) => [
+         ...prev,
+         { tiles: [{ heading: "", details: "" }, { heading: "", details: "" }] },
+      ]);
+   };
+   const removeWorkshopSection = (index: number) => {
+      setWorkshopSections((prev) => prev.filter((_, i) => i !== index));
+   };
+   const handleTileChange = (sectionIndex: number, tileIndex: number, field: keyof WorkshopTile, value: string) => {
+      setWorkshopSections((prev) =>
+         prev.map((section, sIndex) =>
+            sIndex === sectionIndex
+               ? {
+                  ...section,
+                  tiles: section.tiles.map((tile, tIndex) =>
+                     tIndex === tileIndex ? { ...tile, [field]: value } : tile
+                  ),
+               }
+               : section
+         )
+      );
+   };
+
+   useEffect(() => {
+      handleChange("workshops", workshopSections)
+   }, [workshopSections]);
 
    return (
       <>
@@ -181,8 +225,8 @@ const AddEventForm: React.FC<EventFormProps> = ({
                                  placeholder="Enter event name"
                                  onChange={(value) => handleChange("event_name", value)}
                                  value={formValues.event_name}
-                                 required
-                                 showError={validationErrors.event_name}
+                              // required
+                              // showError={validationErrors.event_name}
                               />
                            </div>
                            <div className="col-span-2 sm:col-span-1">
@@ -194,17 +238,10 @@ const AddEventForm: React.FC<EventFormProps> = ({
                               />
                            </div>
                            <div className="col-span-2">
-                              {/* <ImageUpload
-                                 label="In Collaboration With"
-                                 value={formValues.collaboration}
-                                 onImageUpload={(collaboration) => {
-                                    handleChange("collaboration", collaboration);
-                                 }}
-                              /> */}
                               <ImageUpload
                                  label="In Collaboration With"
                                  multiple
-                                 value={formValues.collaboration} // string[]
+                                 value={formValues.collaboration}
                                  onImageUpload={(paths) => handleChange("collaboration", paths)}
                               />
                            </div>
@@ -247,7 +284,7 @@ const AddEventForm: React.FC<EventFormProps> = ({
                                  label="Designed For"
                                  placeholder="Enter event information"
                                  onChange={(value) => handleChange("event_designedfor", value)}
-                                 value={formValues.event_date}
+                                 value={formValues.event_designedfor}
                                  isTextArea
                                  rows={4}
                               />
@@ -265,7 +302,7 @@ const AddEventForm: React.FC<EventFormProps> = ({
                                  label="Event Booking URL"
                                  placeholder="Enter event booking url"
                                  onChange={(value) => handleChange("event_booking_url", value)}
-                                 value={formValues.event_date}
+                                 value={formValues.event_booking_url}
                               />
                            </div>
                         </div>
@@ -273,40 +310,45 @@ const AddEventForm: React.FC<EventFormProps> = ({
 
                      {/* Workshops */}
                      <div>
-                        <h3 className="font-semibold text-2xl text-[#565656]">
-                           Workshops
-                        </h3>
+                        <h3 className="font-semibold text-2xl text-[#565656]">Workshops</h3>
                         <div className="my-4 space-y-4">
-                           <InputText
-                              label="Tile 1 Heading"
-                              placeholder="Enter tile 1 heading"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
-                           />
-                           <InputText
-                              label="Tile 1 Heading Details"
-                              placeholder="Enter tile 1 heading details"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
-                              isTextArea
-                              rows={5}
-                           />
-                           <InputText
-                              label="Tile 2 Heading"
-                              placeholder="Enter tile 2 heading"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
-                           />
-                           <InputText
-                              label="Tile 2 Heading Details"
-                              placeholder="Enter tile 2 heading details"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
-                              isTextArea
-                              rows={5}
-                           />
+                           {workshopSections.map((section, sIndex) => (
+                              <div key={sIndex} className="rounded relative space-y-4">
+                                 {section.tiles.map((tile, tIndex) => (
+                                    <div key={tIndex} className="rounded-md space-y-4">
+                                       <InputText
+                                          label={`Tile ${sIndex * 2 + tIndex + 1} Heading`}
+                                          placeholder={`Enter tile ${sIndex * 2 + tIndex + 1} heading`}
+                                          onChange={(value) => handleTileChange(sIndex, tIndex, "heading", value)}
+                                          value={tile.heading}
+                                       />
+                                       <InputText
+                                          label={`Tile ${sIndex * 2 + tIndex + 1} Heading Details`}
+                                          placeholder={`Enter tile ${sIndex * 2 + tIndex + 1} heading details`}
+                                          onChange={(value) => handleTileChange(sIndex, tIndex, "details", value)}
+                                          value={tile.details}
+                                          isTextArea
+                                          rows={5}
+                                       />
+                                    </div>
+                                 ))}
+                                 {sIndex > 0 && (
+                                    <button
+                                       className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
+                                       onClick={() => removeWorkshopSection(sIndex)}
+                                    >
+                                       Remove
+                                    </button>
+                                 )}
+                              </div>
+                           ))}
                         </div>
-                        <button className="px-4 py-3 rounded bg-white text-[#363636] cursor-pointer">+ Add More Workshop</button>
+                        <button
+                           onClick={addWorkshopSection}
+                           className="px-4 py-3 rounded bg-white text-[#363636] cursor-pointer"
+                        >
+                           + Add More Workshop
+                        </button>
                      </div>
 
                      {/* Agenda Section */}
@@ -326,17 +368,17 @@ const AddEventForm: React.FC<EventFormProps> = ({
                            <InputText
                               label="Speakers Heading"
                               placeholder="Enter speakers heading Details"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
+                              onChange={(value) => handleChange("speakers_heading", value)}
+                              value={formValues.speakers_heading}
                               isTextArea
                               rows={5}
                            />
-                           {/* <MultiSelect
+                           <MultiSelect
                               label="Speakers"
-                              options={optionsFromBackend}
+                              options={data || []}
                               value={selectedSpeakers}
                               onSelect={(speakers) => setSelectedSpeakers(speakers)}
-                           /> */}
+                           />
                         </div>
                      </div>
 
@@ -349,45 +391,45 @@ const AddEventForm: React.FC<EventFormProps> = ({
                            <InputText
                               label="Event Highlights Heading Details"
                               placeholder="Enter highlights heading details"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
+                              onChange={(value) => handleChange("event_highlight_detail", value)}
+                              value={formValues.event_highlight_detail}
                            />
                            <ImageUpload
                               label="Events Highlight"
-                              value={formValues.collaboration}
-                              onImageUpload={(collaboration) => handleChange("collaboration", collaboration)}
+                              value={formValues.event_highlight_img}
+                              onImageUpload={(event_highlight_img) => handleChange("event_highlight_img", event_highlight_img)}
                            />
                            <InputText
                               label="Heading"
                               placeholder="Enter Highlights Heading"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
+                              onChange={(value) => handleChange("hightlight_heading", value)}
+                              value={formValues.hightlight_heading}
                            />
                            <InputText
                               label="Sub Heading 1"
                               placeholder="Enter Sub Heading 1"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
+                              onChange={(value) => handleChange("hightlight_subheading_1", value)}
+                              value={formValues.hightlight_subheading_1}
                            />
                            <InputText
                               label="Sub heading 1 Details"
                               placeholder="Enter Sub heading Details"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
+                              onChange={(value) => handleChange("hightlight_subdetail_1", value)}
+                              value={formValues.hightlight_subdetail_1}
                               isTextArea
                               rows={5}
                            />
                            <InputText
                               label="Sub Heading 2"
                               placeholder="Enter Sub Heading 2"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
+                              onChange={(value) => handleChange("hightlight_subheading_2", value)}
+                              value={formValues.hightlight_subheading_2}
                            />
                            <InputText
                               label="Sub heading 2 Details"
                               placeholder="Enter Sub heading Details"
-                              onChange={(value) => handleChange("event_name", value)}
-                              value={formValues.event_name}
+                              onChange={(value) => handleChange("hightlight_subdetail_2", value)}
+                              value={formValues.hightlight_subdetail_2}
                               isTextArea
                               rows={5}
                            />
@@ -395,7 +437,7 @@ const AddEventForm: React.FC<EventFormProps> = ({
                      </div>
                   </div>
                </div>
-            </div >
+            </div>
          )}
       </>
    );

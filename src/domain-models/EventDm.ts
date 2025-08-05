@@ -1,5 +1,6 @@
 export interface EventDM {
     id?: number;
+    // Hero section
     event_name?: string;
     event_date?: string;
     collaboration?: string[];
@@ -10,8 +11,26 @@ export interface EventDM {
     event_designedfor?: string;
     event_ticket?: string;
     event_booking_url?: string;
-    speakers_ids?: string[];
-    speakers_names?: string[];
+
+    // Workshop
+    workshops?: string[];
+
+    // Agenda
+    agenda?: string;
+
+    // Speakers
+    speakers_heading?: string;
+    speakers: string[]; // ✅ add this
+
+    // Event Higfhtlight
+    event_highlight_detail?: string;
+    event_highlight_img?: string[];
+    hightlight_heading?: string;
+    hightlight_subheading_1?: string;
+    hightlight_subdetail_1?: string;
+    hightlight_subheading_2?: string;
+    hightlight_subdetail_2?: string;
+
     documents?: string[];
 
     created_at?: Date | null;
