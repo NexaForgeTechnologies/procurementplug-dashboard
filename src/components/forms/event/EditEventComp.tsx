@@ -26,8 +26,11 @@ const EditEventForm: React.FC<EventFormProps> = ({
   onClose,
   refetchEvents,
 }) => {
+  console.log(event);
+
   // Initial state for form
   const initialFormValues: EventDM = {
+    id: event?.id || undefined,
     // hero Detail
     event_name: event?.event_name || "",
     event_date: event?.event_date || "",
@@ -41,7 +44,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
     event_booking_url: event?.event_booking_url || "",
 
     // Workshop
-    workshops: event?.workshops || [],
+    workshops: event?.workshops || "",
 
     // Agenda PDF
     agenda: event?.agenda || "",
@@ -74,26 +77,6 @@ const EditEventForm: React.FC<EventFormProps> = ({
       [field]: value,
     }));
   };
-
-  const addEventMutation = useMutation({
-    mutationFn: async (data: EventDM) => {
-      const response = await axios.post("/api/events", data);
-      return response.data;
-    },
-    onSuccess: () => {
-      refetchEvents();
-      onClose();
-    },
-    onError: (error) => {
-      console.error("Failed to add event:", error);
-    },
-  });
-  const handleSubmit = () => {
-    const newEvent: Omit<EventDM, "id"> = formValues;
-    addEventMutation.mutate(newEvent);
-  };
-
-  ////////////////////
 
   const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
     const response = await axios.get<SpeakerDM[]>("/api/speakers");
@@ -149,7 +132,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
 
   //Handle workshop section
   const [workshopSections, setWorkshopSections] = useState<WorkshopSection[]>(
-    formValues.workshops || []
+    formValues.workshops ? JSON.parse(formValues.workshops) : []
   );
   const addWorkshopSection = () => {
     setWorkshopSections((prev) => [
@@ -190,8 +173,27 @@ const EditEventForm: React.FC<EventFormProps> = ({
   };
 
   useEffect(() => {
-    handleChange("workshops", JSON.stringify(workshopSections));
+    handleChange("workshops", JSON.stringify(workshopSections)); // ✅ store string in formValues
   }, [workshopSections]);
+
+  // Updated form submission logic
+  const addEventMutation = useMutation({
+    mutationFn: async (data: EventDM) => {
+      const response = await axios.put("/api/events", data);
+      return response.data;
+    },
+    onSuccess: () => {
+      refetchEvents();
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Failed to add event:", error);
+    },
+  });
+  const handleSubmit = () => {
+    const newEvent: EventDM = formValues;
+    addEventMutation.mutate(newEvent);
+  };
 
   return (
     <>

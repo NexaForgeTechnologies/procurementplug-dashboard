@@ -16,7 +16,8 @@ export interface EventDM {
     event_booking_url?: string;
 
     // Workshop
-    workshops?: WorkshopSection[];
+    // workshops?: WorkshopSection[];
+    workshops: string
 
     // Agenda
     agenda?: string;
