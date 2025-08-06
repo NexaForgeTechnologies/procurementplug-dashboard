@@ -7,25 +7,36 @@ export class EventRepo {
     static async getAllEvents(): Promise<EventDM[]> {
         try {
             const [rows] = await db.query<RowDataPacket[]>(`
-                SELECT * FROM events
+                SELECT * FROM event
                 WHERE deleted_at IS NULL
                 ORDER BY id DESC;
             `);
 
-            const event: EventDM[] = rows.map((row) => ({
-                id: row.id,
-                event_name: row.event_name,
-                event_date: row.event_date,
-                collaboration: row.collaboration,
-                event_heading: row.event_heading,
-                event_detail: row.event_detail,
-                event_date_time: row.event_date_time,
-                event_location: row.event_location,
-                event_designedfor: row.event_designedfor,
-                event_ticket: row.event_ticket,
-                event_booking_url: row.event_booking_url,
-                speakers: row.speakers,
-            }));
+            // const event: EventDM[] = rows.map((row) => ({
+            //     id: row.id,
+            //     event_name: row.event_name,
+            //     event_date: row.event_date,
+            //     collaboration: row.collaboration,
+            //     event_heading: row.event_heading,
+            //     heading_detail: row.heading_detail,
+            //     event_date_time: row.event_date_time,
+            //     event_location: row.event_location,
+            //     event_designedfor: row.event_designedfor,
+            //     event_ticket: row.event_ticket,
+            //     event_booking_url: row.event_booking_url,
+            //     workshops: row.workshops,
+            //     agenda: row.agenda,
+            //     speakers_heading: row.speakers_heading,
+            //     speakers: row.speakers,
+            //     event_highlight_detail: row.event_highlight_detail,
+            //     event_highlight_img: row.event_highlight_img,
+            //     hightlight_heading: row.hightlight_heading,
+            //     hightlight_subheading_1: row.hightlight_subheading_1,
+            //     hightlight_subdetail_1: row.hightlight_subdetail_1,
+            //     hightlight_subheading_2: row.hightlight_subheading_2,
+            //     hightlight_subdetail_2: row.hightlight_subdetail_2,
+            // }));
+            const event = rows as EventDM[];
             return event;
         } catch (error) {
             console.error("Error fetching all event:", error);
@@ -96,12 +107,6 @@ export class EventRepo {
         }
     }
 
-
-
-    // static async AddEvent(event: Omit<EventDM, "id">) {
-    //     console.log(event);
-    // }
-
     static async UpdateEvent(event: EventDM) {
         try {
             const currentTime = getFormattedTimestamp();
@@ -132,7 +137,7 @@ export class EventRepo {
 
         try {
             await db.query(
-                `UPDATE events
+                `UPDATE event
                     SET 
                         deleted_at = ? 
                     WHERE id = ?;`,

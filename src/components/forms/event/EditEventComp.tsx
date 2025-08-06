@@ -1,252 +1,484 @@
 "use client";
 
-import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { EventDM } from "@/domain-models/EventDm";
+import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import { SelectedSpeaker } from "@/domain-models/SelectedSpeaker";
+import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
 
 import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/input-comps/ImgUploader";
-// import MultiSelect from "@/components/select-comps/MultiSelect";
-// import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import MultiSelect from "@/components/select-comps/MultiSelect";
+import PdfUploader from "@/components/PdfUploader";
 
 type EventFormProps = {
-    event?: EventDM;
-    onClose: () => void;
-    refetchEvents: () => void;
+  event?: EventDM;
+  onClose: () => void;
+  refetchEvents: () => void;
 };
 
 const EditEventForm: React.FC<EventFormProps> = ({
-    event,
-    onClose,
-    refetchEvents,
+  event,
+  onClose,
+  refetchEvents,
 }) => {
-    console.log(event);
+  // Initial state for form
+  const initialFormValues: EventDM = {
+    // hero Detail
+    event_name: event?.event_name || "",
+    event_date: event?.event_date || "",
+    collaboration: event?.collaboration || [],
+    event_heading: event?.event_heading || "",
+    heading_detail: event?.heading_detail || "",
+    event_date_time: event?.event_date_time || "",
+    event_location: event?.event_location || "",
+    event_designedfor: event?.event_designedfor || "",
+    event_ticket: event?.event_ticket || "",
+    event_booking_url: event?.event_booking_url || "",
 
-    // Initial state for form
-    const initialFormValues: EventDM = {
-        // event_name: event?.event_name || "",
-        // event_date: event?.event_date || "",
-        // collaboration: event?.collaboration || [],
-        // event_heading: event?.event_heading || "",
-        // event_detail: event?.event_detail || "",
-        // event_date_time: event?.event_date_time || "",
-        // event_location: event?.event_location || "",
-        // event_designedfor: event?.event_designedfor || "",
-        // event_ticket: event?.event_ticket || "",
-        // event_booking_url: event?.event_booking_url || "",
-        // speakers_ids: event?.speakers_ids || [],
-        // speakers_names: event?.speakers_ids || []
+    // Workshop
+    workshops: event?.workshops || [],
 
+    // Agenda PDF
+    agenda: event?.agenda || "",
+
+    // Speakers
+    speakers_heading: event?.speakers_heading || "",
+    speakers:
+      typeof event?.speakers === "string"
+        ? JSON.parse(event.speakers)
+        : event?.speakers || [],
+
+    // Highlight
+    event_highlight_detail: event?.event_highlight_detail || "",
+    event_highlight_img: event?.event_highlight_img || [],
+    hightlight_heading: event?.hightlight_heading || "",
+    hightlight_subheading_1: event?.hightlight_subheading_1 || "",
+    hightlight_subdetail_1: event?.hightlight_subdetail_1 || "",
+    hightlight_subheading_2: event?.hightlight_subheading_2 || "",
+    hightlight_subdetail_2: event?.hightlight_subdetail_2 || "",
+  };
+
+  const [formValues, setFormValues] = useState<EventDM>(initialFormValues);
+
+  const handleChange = (
+    field: keyof EventDM,
+    value: string | number[] | string[]
+  ) => {
+    setFormValues((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const addEventMutation = useMutation({
+    mutationFn: async (data: EventDM) => {
+      const response = await axios.post("/api/events", data);
+      return response.data;
+    },
+    onSuccess: () => {
+      refetchEvents();
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Failed to add event:", error);
+    },
+  });
+  const handleSubmit = () => {
+    const newEvent: Omit<EventDM, "id"> = formValues;
+    addEventMutation.mutate(newEvent);
+  };
+
+  ////////////////////
+
+  const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
+    const response = await axios.get<SpeakerDM[]>("/api/speakers");
+    return response.data;
+  };
+  const { data: speakers } = useQuery<SpeakerDM[]>({
+    queryKey: ["speakers"],
+    queryFn: fetchSpeakers,
+  });
+
+  const [selectedSpeakers, setSelectedSpeakers] = useState<SelectedSpeaker[]>(
+    formValues.speakers || []
+  );
+
+  useEffect(() => {
+    handleChange("speakers", JSON.stringify(selectedSpeakers));
+  }, [selectedSpeakers]);
+
+  // Default FIle
+  const [defaultAgendaFile, setDefaultAgendaFile] = useState<
+    File | undefined
+  >();
+  const urlToFile = async (url: string, filename: string): Promise<File> => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new File([blob], filename, { type: blob.type });
+  };
+  useEffect(() => {
+    const loadAgendaFile = async () => {
+      if (formValues.agenda && typeof formValues.agenda === "string") {
+        const file = await urlToFile(formValues.agenda, "Agenda.pdf");
+        setDefaultAgendaFile(file);
+      }
     };
 
-    const [formValues, setFormValues] = useState<EventDM>(initialFormValues);
-    const [validationErrors, setValidationErrors] = useState({
-        event_name: false,
+    loadAgendaFile();
+  }, [formValues.agenda]);
+
+  const toBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
     });
 
-    const handleChange = (
-        field: keyof EventDM,
-        value: string | number[] | string[]
-    ) => {
-        setFormValues((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
+  const handlePdfUpload = async (file: File | null) => {
+    if (file) {
+      const base64 = await toBase64(file);
+      handleChange("agenda", base64);
+    }
+  };
 
-        if (typeof value === "string" && value.trim()) {
-            setValidationErrors((prev) => ({ ...prev, [field]: false }));
-        }
-    };
-
-    const validateForm = () => {
-        const errors = {
-            event_name: !formValues.event_name?.trim(),
-        };
-
-        setValidationErrors(errors);
-        return !Object.values(errors).some((e) => e);
-    };
-
-    const addEventMutation = useMutation({
-        mutationFn: async (data: EventDM) => {
-            const response = await axios.post("/api/eventa", data);
-            return response.data;
-        },
-        onSuccess: () => {
-            refetchEvents();
-            onClose();
-        },
-        onError: (error) => {
-            console.error("Failed to add event:", error);
-        },
-    });
-    const handleSubmit = () => {
-        if (!validateForm()) return;
-
-        const newEvent: Omit<EventDM, "id"> = {
-            event_name: formValues.event_name,
-            event_date: formValues.event_date,
-        };
-
-        addEventMutation.mutate(newEvent);
-    };
-
-    // Fetch Speaker
-    // const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
-    //     const response = await axios.get<SpeakerDM[]>("/api/speakers");
-    //     return response.data;
-    // };
-
-    // const {
-    //     data,
-    // } = useQuery<SpeakerDM[]>({
-    //     queryKey: ["speakers"],
-    //     queryFn: fetchSpeakers,
-    // });
-
-    // type Option = { id: number; value: string };
-
-    // const speakers: Option[] = (data?.map((speaker) => {
-    //     if (typeof speaker.id === "number" && typeof speaker.name === "string") {
-    //         return {
-    //             id: speaker.id,
-    //             value: speaker.name,
-    //         };
-    //     }
-    //     return null;
-    // })?.filter((s): s is Option => s !== null)) || [];
-
-    return (
-        <>
-            <div className="fixed inset-0 bg-black/70 z-50 px-4">
-                <div className="pb-80 max-w-[800px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
-                    <div className="flex justify-between items-center">
-                        <h2 className="font-medium text-2xl text-[#565656]">
-                            Add Event
-                        </h2>
-                        <div className="flex gap-3">
-                            <div
-                                className="bg-green-200 rounded-full p-3 cursor-pointer"
-                                onClick={handleSubmit}
-                            >
-                                <Icon color="#565656" size={16} name="save" />
-                            </div>
-                            <div
-                                className="bg-red-300 rounded-full p-3 cursor-pointer"
-                                onClick={onClose}
-                            >
-                                <Icon color="#565656" size={16} name="close" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-4 grid gap-4 grid-cols-2">
-                        <div className="col-span-2 sm:col-span-1">
-                            <InputText
-                                label="Event Name"
-                                placeholder="Enter event name"
-                                onChange={(value) => handleChange("event_name", value)}
-                                value={formValues.event_name}
-                                required
-                                showError={validationErrors.event_name}
-                            />
-                        </div>
-                        <div className="col-span-2 sm:col-span-1">
-                            <InputText
-                                label="Event Date"
-                                placeholder="Enter event date"
-                                onChange={(value) => handleChange("event_date", value)}
-                                value={formValues.event_date}
-                            />
-                        </div>
-                        <div className="col-span-2">
-                            <ImageUpload
-                                label="Upload Collaboration With"
-                                value={formValues.collaboration}
-                                onImageUpload={(collaboration) => handleChange("collaboration", collaboration)}
-                            />
-                        </div>
-                        <div className="col-span-2">
-                            <InputText
-                                label="Heading"
-                                placeholder="Enter heading"
-                                onChange={(value) => handleChange("event_heading", value)}
-                                value={formValues.event_heading}
-                            />
-                        </div>
-                        <div className="col-span-2">
-                            {/* <InputText
-                                label="Event Detail"
-                                placeholder="Enter evet detail"
-                                onChange={(value) => handleChange("event_detail", value)}
-                                value={formValues.event_detail}
-                                isTextArea
-                                rows={4}
-                            /> */}
-                        </div>
-                        <div className="col-span-2 sm:col-span-1">
-                            <InputText
-                                label="Event Date & Time"
-                                placeholder="Enter event date & time"
-                                onChange={(value) => handleChange("event_date_time", value)}
-                                value={formValues.event_date_time}
-                            />
-                        </div>
-                        <div className="col-span-2 sm:col-span-1">
-                            <InputText
-                                label="Location"
-                                placeholder="Enter event location"
-                                onChange={(value) => handleChange("event_location", value)}
-                                value={formValues.event_location}
-                            />
-                        </div>
-                        <div className="col-span-2">
-                            <InputText
-                                label="Designed For"
-                                placeholder="Enter event information"
-                                onChange={(value) => handleChange("event_designedfor", value)}
-                                value={formValues.event_designedfor}
-                                isTextArea
-                                rows={4}
-                            />
-                        </div>
-                        <div className="col-span-2 sm:col-span-1">
-                            <InputText
-                                label="Tickets"
-                                placeholder="Enter event ticket price"
-                                onChange={(value) => handleChange("event_ticket", value)}
-                                value={formValues.event_ticket}
-                            />
-                        </div>
-                        <div className="col-span-2 sm:col-span-1">
-                            <InputText
-                                label="Event Booking URL"
-                                placeholder="Enter event booking url"
-                                onChange={(value) => handleChange("event_booking_url", value)}
-                                value={formValues.event_date}
-                            />
-                        </div>
-                        <div className="col-span-2 sm:col-span-1">
-                            {/* <MultiSelect
-                                label="Services"
-                                placeholder="Select Services"
-                                options={speakers}
-                                value={formValues.speakers_ids}
-                                onSelect={(ids, values) => {
-                                    handleChange("speakers_ids", ids);
-                                    handleChange("speakers_names", values);
-                                }}
-                            /> */}
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </>
+  //Handle workshop section
+  const [workshopSections, setWorkshopSections] = useState<WorkshopSection[]>(
+    formValues.workshops || []
+  );
+  const addWorkshopSection = () => {
+    setWorkshopSections((prev) => [
+      ...prev,
+      {
+        tiles: [
+          { heading: "", details: "" },
+          { heading: "", details: "" },
+        ],
+      },
+    ]);
+  };
+  const removeWorkshopSection = (index: number) => {
+    setWorkshopSections((prev) => prev.filter((_, i) => i !== index));
+  };
+  type WorkshopTile = {
+    heading: string;
+    details: string;
+  };
+  const handleTileChange = (
+    sectionIndex: number,
+    tileIndex: number,
+    field: keyof WorkshopTile,
+    value: string
+  ) => {
+    setWorkshopSections((prev) =>
+      prev.map((section, sIndex) =>
+        sIndex === sectionIndex
+          ? {
+              ...section,
+              tiles: section.tiles.map((tile, tIndex) =>
+                tIndex === tileIndex ? { ...tile, [field]: value } : tile
+              ),
+            }
+          : section
+      )
     );
+  };
+
+  useEffect(() => {
+    handleChange("workshops", JSON.stringify(workshopSections));
+  }, [workshopSections]);
+
+  return (
+    <>
+      <div className="fixed inset-0 bg-black/70 z-50 px-4">
+        <div
+          className="max-w-[800px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#ECECEC] relative 
+               top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md"
+        >
+          <div className="flex justify-between items-center">
+            <h2 className="font-semibold text-2xl text-[#565656]">Add Event</h2>
+            <div className="flex gap-3">
+              <div
+                className="bg-green-200 rounded-full p-3 cursor-pointer"
+                onClick={handleSubmit}
+              >
+                <Icon color="#565656" size={16} name="save" />
+              </div>
+              <div
+                className="bg-red-300 rounded-full p-3 cursor-pointer"
+                onClick={onClose}
+              >
+                <Icon color="#565656" size={16} name="close" />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-8">
+            {/* Hero Section */}
+            <div>
+              <h3 className="mb-2 font-semibold text-2xl text-[#565656]">
+                Hero Section
+              </h3>
+              <div className="grid gap-4 grid-cols-2">
+                <div className="col-span-2 sm:col-span-1">
+                  <InputText
+                    label="Event Name"
+                    placeholder="Enter event name"
+                    onChange={(value) => handleChange("event_name", value)}
+                    value={formValues.event_name}
+                  />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <InputText
+                    label="Event Date"
+                    placeholder="Enter event date"
+                    onChange={(value) => handleChange("event_date", value)}
+                    value={formValues.event_date}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <ImageUpload
+                    label="In Collaboration With"
+                    multiple
+                    value={formValues.collaboration}
+                    onImageUpload={(paths) =>
+                      handleChange("collaboration", paths)
+                    }
+                  />
+                </div>
+                <div className="col-span-2">
+                  <InputText
+                    label="Heading"
+                    placeholder="Enter heading"
+                    onChange={(value) => handleChange("event_heading", value)}
+                    value={formValues.event_heading}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <InputText
+                    label="Heading Detail"
+                    placeholder="Enter heading detail"
+                    onChange={(value) => handleChange("heading_detail", value)}
+                    value={formValues.heading_detail}
+                    isTextArea
+                    rows={4}
+                  />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <InputText
+                    label="Event Date & Time"
+                    placeholder="Enter event date & time"
+                    onChange={(value) => handleChange("event_date_time", value)}
+                    value={formValues.event_date_time}
+                  />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <InputText
+                    label="Event Location"
+                    placeholder="Enter event location"
+                    onChange={(value) => handleChange("event_location", value)}
+                    value={formValues.event_location}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <InputText
+                    label="Designed For"
+                    placeholder="Enter event information"
+                    onChange={(value) =>
+                      handleChange("event_designedfor", value)
+                    }
+                    value={formValues.event_designedfor}
+                    isTextArea
+                    rows={4}
+                  />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <InputText
+                    label="Tickets"
+                    placeholder="Enter event ticket price"
+                    onChange={(value) => handleChange("event_ticket", value)}
+                    value={formValues.event_ticket}
+                  />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <InputText
+                    label="Event Booking URL"
+                    placeholder="Enter event booking url"
+                    onChange={(value) =>
+                      handleChange("event_booking_url", value)
+                    }
+                    value={formValues.event_booking_url}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Workshops */}
+            <div>
+              <h3 className="font-semibold text-2xl text-[#565656]">
+                Workshops
+              </h3>
+              <div className="my-4 space-y-4">
+                {workshopSections.map((section, sIndex) => (
+                  <div key={sIndex} className="rounded relative space-y-4">
+                    {section.tiles.map((tile, tIndex) => (
+                      <div key={tIndex} className="rounded-md space-y-4">
+                        <InputText
+                          label={`Tile ${sIndex * 2 + tIndex + 1} Heading`}
+                          placeholder={`Enter tile ${
+                            sIndex * 2 + tIndex + 1
+                          } heading`}
+                          onChange={(value) =>
+                            handleTileChange(sIndex, tIndex, "heading", value)
+                          }
+                          value={tile.heading}
+                        />
+                        <InputText
+                          label={`Tile ${
+                            sIndex * 2 + tIndex + 1
+                          } Heading Details`}
+                          placeholder={`Enter tile ${
+                            sIndex * 2 + tIndex + 1
+                          } heading details`}
+                          onChange={(value) =>
+                            handleTileChange(sIndex, tIndex, "details", value)
+                          }
+                          value={tile.details}
+                          isTextArea
+                          rows={5}
+                        />
+                      </div>
+                    ))}
+                    {sIndex > 0 && (
+                      <button
+                        className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
+                        onClick={() => removeWorkshopSection(sIndex)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={addWorkshopSection}
+                className="px-4 py-3 rounded bg-white text-[#363636] cursor-pointer"
+              >
+                + Add More Workshop
+              </button>
+            </div>
+
+            {/* Agenda Section */}
+            <div>
+              <h3 className="mb-2 font-semibold text-2xl text-[#565656]">
+                Agenda
+              </h3>
+              <PdfUploader
+                onUpload={handlePdfUpload}
+                defaultFile={defaultAgendaFile}
+              />
+            </div>
+
+            {/* Speaker Section */}
+            <div>
+              <h3 className="mb-2 font-semibold text-2xl text-[#565656]">
+                Event Speakers
+              </h3>
+              <div className="space-y-4">
+                <InputText
+                  label="Speakers Heading"
+                  placeholder="Enter speakers heading Details"
+                  onChange={(value) => handleChange("speakers_heading", value)}
+                  value={formValues.speakers_heading}
+                  isTextArea
+                  rows={5}
+                />
+                <MultiSelect
+                  label="Speakers"
+                  options={speakers || []}
+                  value={selectedSpeakers}
+                  onSelect={(speakers) => setSelectedSpeakers(speakers)}
+                />
+              </div>
+            </div>
+
+            {/* Event Highlights Section */}
+            <div>
+              <h3 className="font-semibold text-2xl text-[#565656]">
+                Event Highlights
+              </h3>
+              <div className="my-4 space-y-4">
+                <InputText
+                  label="Event Highlights Heading Details"
+                  placeholder="Enter highlights heading details"
+                  onChange={(value) =>
+                    handleChange("event_highlight_detail", value)
+                  }
+                  value={formValues.event_highlight_detail}
+                />
+                <ImageUpload
+                  label="Events Highlight"
+                  value={formValues.event_highlight_img}
+                  onImageUpload={(event_highlight_img) =>
+                    handleChange("event_highlight_img", event_highlight_img)
+                  }
+                />
+                <InputText
+                  label="Heading"
+                  placeholder="Enter Highlights Heading"
+                  onChange={(value) =>
+                    handleChange("hightlight_heading", value)
+                  }
+                  value={formValues.hightlight_heading}
+                />
+                <InputText
+                  label="Sub Heading 1"
+                  placeholder="Enter Sub Heading 1"
+                  onChange={(value) =>
+                    handleChange("hightlight_subheading_1", value)
+                  }
+                  value={formValues.hightlight_subheading_1}
+                />
+                <InputText
+                  label="Sub heading 1 Details"
+                  placeholder="Enter Sub heading Details"
+                  onChange={(value) =>
+                    handleChange("hightlight_subdetail_1", value)
+                  }
+                  value={formValues.hightlight_subdetail_1}
+                  isTextArea
+                  rows={5}
+                />
+                <InputText
+                  label="Sub Heading 2"
+                  placeholder="Enter Sub Heading 2"
+                  onChange={(value) =>
+                    handleChange("hightlight_subheading_2", value)
+                  }
+                  value={formValues.hightlight_subheading_2}
+                />
+                <InputText
+                  label="Sub heading 2 Details"
+                  placeholder="Enter Sub heading Details"
+                  onChange={(value) =>
+                    handleChange("hightlight_subdetail_2", value)
+                  }
+                  value={formValues.hightlight_subdetail_2}
+                  isTextArea
+                  rows={5}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default EditEventForm;

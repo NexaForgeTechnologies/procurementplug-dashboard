@@ -1,3 +1,6 @@
+import { SelectedSpeaker } from "@/domain-models/SelectedSpeaker";
+import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
+
 export interface EventDM {
     id?: number;
     // Hero section
@@ -13,14 +16,14 @@ export interface EventDM {
     event_booking_url?: string;
 
     // Workshop
-    workshops?: string[];
+    workshops?: WorkshopSection[];
 
     // Agenda
     agenda?: string;
 
     // Speakers
     speakers_heading?: string;
-    speakers: string[]; // ✅ add this
+    speakers?: SelectedSpeaker[]; // ✅ add this
 
     // Event Higfhtlight
     event_highlight_detail?: string;
