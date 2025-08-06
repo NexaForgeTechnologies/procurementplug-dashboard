@@ -13,6 +13,7 @@ import ImageUpload from "@/components/input-comps/ImgUploader";
 import MultiSelect from "@/components/select-comps/MultiSelect";
 import PdfUploader from "@/components/PdfUploader";
 import { SelectedSpeaker } from "@/domain-models/SelectedSpeaker";
+import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
 
 type EventFormProps = {
   event?: EventDM;
@@ -36,7 +37,7 @@ const initialFormValues: EventDM = {
   event_booking_url: "",
 
   // Workshop
-  workshops: [],
+  workshops: "",
 
   // Agenda PDF
   agenda: "",
@@ -143,9 +144,6 @@ const AddEventForm: React.FC<EventFormProps> = ({
   type WorkshopTile = {
     heading: string;
     details: string;
-  };
-  type WorkshopSection = {
-    tiles: WorkshopTile[];
   };
   const [workshopSections, setWorkshopSections] = useState<WorkshopSection[]>([
     {

@@ -1,5 +1,4 @@
 import { SelectedSpeaker } from "@/domain-models/SelectedSpeaker";
-import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
 
 export interface EventDM {
     id?: number;
@@ -17,7 +16,7 @@ export interface EventDM {
 
     // Workshop
     // workshops?: WorkshopSection[];
-    workshops: string
+    workshops?: string
 
     // Agenda
     agenda?: string;
