@@ -24,6 +24,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
 }) => {
     // Initial state for form
     const initialFormValues: ConsultantDM = {
+        id: consultant?.id,
         img: consultant?.img,
         name: consultant?.name,
         company: consultant?.company,
@@ -35,7 +36,6 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         clients: consultant?.clients,
         testimonials: consultant?.testimonials,
     };
-
 
     const [formValues, setFormValues] = useState<ConsultantDM>(initialFormValues);
 
@@ -65,7 +65,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
 
     const addConsultantMutation = useMutation({
         mutationFn: async (data: ConsultantDM) => {
-            const response = await axios.post("/api/consultants", data);
+            const response = await axios.put("/api/consultants", data);
             return response.data;
         },
         onSuccess: () => {
@@ -76,11 +76,10 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
             console.error("Failed to add consultant:", error);
         },
     });
-
     const handleSubmit = () => {
         if (!validateForm()) return;
 
-        const newConsultant: Omit<ConsultantDM, "id"> = formValues
+        const newConsultant: ConsultantDM = formValues
 
         addConsultantMutation.mutate(newConsultant);
     };

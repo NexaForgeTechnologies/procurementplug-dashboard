@@ -17,7 +17,7 @@ export interface ConsultantDM {
     // specialism_id?: string;
     // specialism_name?: string;
 
-    created_at?: Date | null;
-    updated_at?: Date | null;
-    deleted_at?: Date | null;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string | null;
 }
