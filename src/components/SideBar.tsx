@@ -14,6 +14,7 @@ export default function SideBar() {
     // { name: "Blogs", href: "/blogs", icon: "blog" },
     { name: "Events", href: "/events", icon: "event" },
     { name: "Speakers", href: "/speakers", icon: "consultant" },
+    { name: "Consulting Partner", href: "/consulting-partner", icon: "consulting-partner" },
   ];
 
   return (
