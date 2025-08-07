@@ -13,6 +13,7 @@ export default function SideBar() {
     { name: "Events", href: "/events", icon: "event" },
     { name: "Speakers", href: "/speakers", icon: "speaker" },
     { name: "Consulting Partner", href: "/consulting-partner", icon: "consulting-partner" },
+    { name: "Legal & Compliance", href: "/legal-compliance", icon: "consulting-partner" },
   ];
 
   return (
