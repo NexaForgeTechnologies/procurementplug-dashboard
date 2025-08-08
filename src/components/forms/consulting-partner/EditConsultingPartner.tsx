@@ -11,6 +11,7 @@ import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
+import { useGeneric } from "@/hooks/useGeneric";
 
 type SpeakerFormProps = {
     consultant?: ConsultantDM;
@@ -96,67 +97,16 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         addConsultantMutation.mutate(newConsultant);
     };
 
-    const consultanttypes = [
-        {
-            id: 1,
-            value: "Six Sigma & Change Management",
-        },
-        {
-            id: 2,
-            value: "Procurement",
-        },
-        {
-            id: 3,
-            value: "ESG & Sustainability",
-        }
-    ]
-    const industries = [
-        {
-            id: 1,
-            value: "Six Sigma & Change Management",
-        },
-        {
-            id: 2,
-            value: "Procurement",
-        },
-        {
-            id: 3,
-            value: "ESG & Sustainability",
-        }
-    ]
-    const locations = [
-        {
-            id: 1,
-            value: "Six Sigma & Change Management",
-        },
-        {
-            id: 2,
-            value: "Procurement",
-        },
-        {
-            id: 3,
-            value: "ESG & Sustainability",
-        }
-    ]
-    const specialisms = [
-        {
-            id: 1,
-            value: "Six Sigma & Change Management",
-        },
-        {
-            id: 2,
-            value: "Procurement",
-        },
-        {
-            id: 3,
-            value: "ESG & Sustainability",
-        }
-    ]
+    // fetching extra information like industry, location etc
+    const { data: consultantTypes } = useGeneric("consultant_types");
+    const { data: industries } = useGeneric("industries");
+    const { data: locations } = useGeneric("locations");
+    const { data: specialisms } = useGeneric("specialisms");
 
     return (
         <>
             <div className="fixed inset-0 bg-black/70 z-50 px-4">
-                <div className="max-w-[670px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+                <div className="max-w-[670px] max-h-[90vh] scroll overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
                     <div className="flex justify-between items-center">
                         <h2 className="font-medium text-2xl text-[#565656]">
                             Add Consultant
@@ -227,7 +177,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                             <DropdownComp
                                 label="Consultant Type"
                                 placeholder="Select consultant type"
-                                options={consultanttypes}
+                                options={consultantTypes || []}
                                 onSelect={(id, value) => {
                                     handleChange("consultant_type_id", id); // allow null
                                     handleChange("consultant_type_name", value); // allow null
@@ -239,7 +189,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                             <DropdownComp
                                 label="Industry"
                                 placeholder="Select industry"
-                                options={industries}
+                                options={industries || []}
                                 onSelect={(id, value) => {
                                     handleChange("industry_id", id); // allow null
                                     handleChange("industry_name", value); // allow null
@@ -251,7 +201,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                             <DropdownComp
                                 label="Location"
                                 placeholder="Select location"
-                                options={locations}
+                                options={locations || []}
                                 onSelect={(id, value) => {
                                     handleChange("location_id", id); // allow null
                                     handleChange("location_name", value); // allow null
@@ -263,7 +213,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                             <DropdownComp
                                 label="Specialism"
                                 placeholder="Select specialism"
-                                options={specialisms}
+                                options={specialisms || []}
                                 onSelect={(id, value) => {
                                     handleChange("specialism_id", id); // allow null
                                     handleChange("specialism_name", value); // allow null

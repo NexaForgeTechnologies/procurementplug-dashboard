@@ -11,55 +11,13 @@ import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
+import { useGeneric } from "@/hooks/useGeneric";
 
 type SpeakerFormProps = {
     compliance?: LegalComplianceDM;
     onClose: () => void;
     refetchLegalCompliance: () => void;
 };
-
-const compliancetypes = [
-    {
-        id: 1,
-        value: "Six Sigma & Change Management",
-    },
-    {
-        id: 2,
-        value: "Procurement",
-    },
-    {
-        id: 3,
-        value: "ESG & Sustainability",
-    }
-]
-const industries = [
-    {
-        id: 1,
-        value: "Six Sigma & Change Management",
-    },
-    {
-        id: 2,
-        value: "Procurement",
-    },
-    {
-        id: 3,
-        value: "ESG & Sustainability",
-    }
-]
-const regions = [
-    {
-        id: 1,
-        value: "Six Sigma & Change Management",
-    },
-    {
-        id: 2,
-        value: "Procurement",
-    },
-    {
-        id: 3,
-        value: "ESG & Sustainability",
-    }
-]
 
 const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     compliance,
@@ -138,11 +96,15 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         addConsultantMutation.mutate(newConsultant);
     };
 
+    // fetching extra information like industry, location etc
+    const { data: legal_compliance_type } = useGeneric("legal_compliance_types");
+    const { data: industries } = useGeneric("industries");
+    const { data: regions } = useGeneric("regions");
 
     return (
         <>
             <div className="fixed inset-0 bg-black/70 z-50 px-4">
-                <div className="max-w-[670px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+                <div className="max-w-[670px] max-h-[90vh] scroll overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
                     <div className="flex justify-between items-center">
                         <h2 className="font-medium text-2xl text-[#565656]">
                             Add Legal & Compliance
@@ -213,7 +175,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                             <DropdownComp
                                 label="Legal & Compliance Type"
                                 placeholder="Select legal & compliance type"
-                                options={compliancetypes}
+                                options={legal_compliance_type || []}
                                 onSelect={(id, value) => {
                                     handleChange("legal_compliance_type_id", id); // allow null
                                     handleChange("legal_compliance_type_name", value); // allow null
@@ -225,7 +187,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                             <DropdownComp
                                 label="Industry"
                                 placeholder="Select industry"
-                                options={industries}
+                                options={industries || []}
                                 onSelect={(id, value) => {
                                     handleChange("industry_id", id); // allow null
                                     handleChange("industry_name", value); // allow null
@@ -237,7 +199,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                             <DropdownComp
                                 label="Region"
                                 placeholder="Select region"
-                                options={regions}
+                                options={regions || []}
                                 onSelect={(id, value) => {
                                     handleChange("region_id", id); // allow null
                                     handleChange("region_name", value); // allow null

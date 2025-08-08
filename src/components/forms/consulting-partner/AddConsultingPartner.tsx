@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
+import { useGeneric } from "@/hooks/useGeneric";
+
 import { ConsultantDM } from "@/domain-models/consultant/ConsultantDM";
 
 import IconComponent from "@/components/icon/IconComp";
@@ -105,62 +107,11 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
         }
     }, [active]);
 
-    const consultanttypes = [
-        {
-            id: 1,
-            value: "Six Sigma & Change Management",
-        },
-        {
-            id: 2,
-            value: "Procurement",
-        },
-        {
-            id: 3,
-            value: "ESG & Sustainability",
-        }
-    ]
-    const industries = [
-        {
-            id: 1,
-            value: "Six Sigma & Change Management",
-        },
-        {
-            id: 2,
-            value: "Procurement",
-        },
-        {
-            id: 3,
-            value: "ESG & Sustainability",
-        }
-    ]
-    const locations = [
-        {
-            id: 1,
-            value: "Six Sigma & Change Management",
-        },
-        {
-            id: 2,
-            value: "Procurement",
-        },
-        {
-            id: 3,
-            value: "ESG & Sustainability",
-        }
-    ]
-    const specialisms = [
-        {
-            id: 1,
-            value: "Six Sigma & Change Management",
-        },
-        {
-            id: 2,
-            value: "Procurement",
-        },
-        {
-            id: 3,
-            value: "ESG & Sustainability",
-        }
-    ]
+    // fetching extra information like industry, location etc
+    const { data: consultantTypes } = useGeneric("consultant_types");
+    const { data: industries } = useGeneric("industries");
+    const { data: locations } = useGeneric("locations");
+    const { data: specialisms } = useGeneric("specialisms");
 
     return (
         <>
@@ -237,7 +188,7 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
                                 <DropdownComp
                                     label="Consultant Type"
                                     placeholder="Select consultant type"
-                                    options={consultanttypes}
+                                    options={consultantTypes || []}
                                     onSelect={(id, value) => {
                                         handleChange("consultant_type_id", id); // allow null
                                         handleChange("consultant_type_name", value); // allow null
@@ -249,7 +200,7 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
                                 <DropdownComp
                                     label="Industry"
                                     placeholder="Select industry"
-                                    options={industries}
+                                    options={industries || []}
                                     onSelect={(id, value) => {
                                         handleChange("industry_id", id); // allow null
                                         handleChange("industry_name", value); // allow null
@@ -261,7 +212,7 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
                                 <DropdownComp
                                     label="Location"
                                     placeholder="Select location"
-                                    options={locations}
+                                    options={locations || []}
                                     onSelect={(id, value) => {
                                         handleChange("location_id", id); // allow null
                                         handleChange("location_name", value); // allow null
@@ -273,7 +224,7 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
                                 <DropdownComp
                                     label="Specialism"
                                     placeholder="Select specialism"
-                                    options={specialisms}
+                                    options={specialisms || []}
                                     onSelect={(id, value) => {
                                         handleChange("specialism_id", id); // allow null
                                         handleChange("specialism_name", value); // allow null
