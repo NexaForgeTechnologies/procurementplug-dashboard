@@ -29,8 +29,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         id: compliance?.id,
         img: compliance?.img,
         name: compliance?.name,
-        company: compliance?.company,
-        designation: compliance?.designation,
+        experties: compliance?.experties,
         overview: compliance?.overview,
         email: compliance?.email,
         experties_areas: compliance?.experties_areas,
@@ -134,7 +133,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                     </div>
 
                     <div className="grid gap-4 grid-cols-2">
-                        <div className="col-span-2">
+                        <div className="col-span-2 sm:col-span-1">
                             <InputComponent
                                 label="Legal & Compliance Name"
                                 placeholder="Enter legal & compliance name"
@@ -146,20 +145,13 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                             <InputComponent
-                                label="Company"
-                                placeholder="Enter company"
-                                onChange={(value) => handleChange("company", value)}
-                                value={formValues.company}
+                                label="Experties"
+                                placeholder="Enter experties"
+                                onChange={(value) => handleChange("experties", value)}
+                                value={formValues.experties}
                             />
                         </div>
-                        <div className="col-span-2 sm:col-span-1">
-                            <InputComponent
-                                label="Designation"
-                                placeholder="Enter designation"
-                                onChange={(value) => handleChange("designation", value)}
-                                value={formValues.designation}
-                            />
-                        </div>
+
                         <div className="col-span-2">
                             <InputComponent
                                 label="Overview"

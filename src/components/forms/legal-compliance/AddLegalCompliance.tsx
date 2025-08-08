@@ -23,8 +23,7 @@ type LegalComplianceProps = {
 const initialFormValues: LegalComplianceDM = {
     img: "",
     name: "",
-    company: "",
-    designation: "",
+    experties: "",
     overview: "",
     email: "",
     experties_areas: "",
@@ -143,7 +142,7 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
                         </div>
 
                         <div className="grid gap-4 grid-cols-2">
-                            <div className="col-span-2">
+                            <div className="col-span-2 sm:col-span-1">
                                 <InputComponent
                                     label="Legal & Compliance Name"
                                     placeholder="Enter legal & compliance name"
@@ -155,18 +154,10 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
                             </div>
                             <div className="col-span-2 sm:col-span-1">
                                 <InputComponent
-                                    label="Company"
-                                    placeholder="Enter company"
-                                    onChange={(value) => handleChange("company", value)}
-                                    value={formValues.company}
-                                />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <InputComponent
-                                    label="Designation"
-                                    placeholder="Enter designation"
-                                    onChange={(value) => handleChange("designation", value)}
-                                    value={formValues.designation}
+                                    label="Experties"
+                                    placeholder="Enter experties"
+                                    onChange={(value) => handleChange("experties", value)}
+                                    value={formValues.experties}
                                 />
                             </div>
                             <div className="col-span-2">

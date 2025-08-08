@@ -80,8 +80,7 @@ const ConsultantCard: React.FC<ComplianceProps> = ({
                 <h2 className="text-xl md:text-2xl font-semibold">{data.name}</h2>
 
                 <div className="my-2">
-                    <p className="text-[#1B1B1B] text-base group-hover:text-white">{data.company}</p>
-                    <p className="text-[#1B1B1B] text-base group-hover:text-white">{data.designation}</p>
+                    <p className="text-[#1B1B1B] text-base group-hover:text-white">{data.experties}</p>
                 </div>
 
                 <button onClick={() => openEditForm(data)} className="mt-auto flex items-center cursor-pointer bg-[#b08d57] text-white px-4 py-2 rounded-[6px]">View Details

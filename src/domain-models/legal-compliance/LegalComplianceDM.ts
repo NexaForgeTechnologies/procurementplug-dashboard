@@ -4,8 +4,7 @@ export interface LegalComplianceDM {
     name?: string;
     email?: string;
     contact?: string;
-    designation?: string;
-    company?: string;
+    experties?: string;
     overview?: string;
     experties_areas?: string;
     engagement_models?: string;
