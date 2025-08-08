@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { UsersDM } from "@/domain-models/UsersDM";
+import { UsersDM } from "@/domain-models/user/UsersDM";
 import { RowDataPacket } from "mysql2";
 
 export class UserRepository {

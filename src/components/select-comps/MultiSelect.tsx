@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Icon from "@/components/icon/IconComp";
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
 
 type SelectedSpeaker = {
    id: number;

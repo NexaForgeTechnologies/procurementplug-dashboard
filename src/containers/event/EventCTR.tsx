@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { EventDM } from "@/domain-models/EventDm";
+import { EventDM } from "@/domain-models/event/EventDm";
 
 import AddEventForm from "@/components/forms/event/AddEvent";
 import EditEventComp from "@/components/forms/event/EditEventComp";

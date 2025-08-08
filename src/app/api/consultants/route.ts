@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ConsultantRepo } from '@/repository/ConsultantRepo';
+import { ConsultantRepo } from '@/repository/consultant/ConsultantRepo';
 
 export async function GET() {
     try {

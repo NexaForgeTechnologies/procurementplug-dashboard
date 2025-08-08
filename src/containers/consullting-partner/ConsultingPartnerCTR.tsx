@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { ConsultantDM } from "@/domain-models/ConsultantDM";
+import { ConsultantDM } from "@/domain-models/consultant/ConsultantDM";
 
 import ConsultantCard from "@/components/cards/ConsultantCard";
 import AddConsultantCatd from "@/components/forms/consulting-partner/AddConsultingPartner";

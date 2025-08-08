@@ -1,4 +1,4 @@
-import { EventDM } from "@/domain-models/EventDm";
+import { EventDM } from "@/domain-models/event/EventDm";
 import { db } from "@/lib/db";
 import { RowDataPacket } from "mysql2";
 import { getFormattedTimestamp } from "@/utils/FormattedDate";

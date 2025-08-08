@@ -4,15 +4,15 @@ import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { EventDM } from "@/domain-models/EventDm";
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import { EventDM } from "@/domain-models/event/EventDm";
+import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
 
 import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/input-comps/ImgUploader";
 import MultiSelect from "@/components/select-comps/MultiSelect";
 import PdfUploader from "@/components/PdfUploader";
-import { SelectedSpeaker } from "@/domain-models/SelectedSpeaker";
+import { SelectedSpeaker } from "@/domain-models/speaker/SelectedSpeaker";
 import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
 
 type EventFormProps = {

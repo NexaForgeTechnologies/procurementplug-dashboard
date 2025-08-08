@@ -4,18 +4,62 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-import { ConsultantDM } from "@/domain-models/ConsultantDM";
+import { LegalComplianceDM } from "@/domain-models/legal-compliance/LegalComplianceDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
+import DropdownComp from "@/components/select/DropdownComp";
 
 type SpeakerFormProps = {
-    compliance?: ConsultantDM;
+    compliance?: LegalComplianceDM;
     onClose: () => void;
     refetchLegalCompliance: () => void;
 };
+
+const compliancetypes = [
+    {
+        id: 1,
+        value: "Six Sigma & Change Management",
+    },
+    {
+        id: 2,
+        value: "Procurement",
+    },
+    {
+        id: 3,
+        value: "ESG & Sustainability",
+    }
+]
+const industries = [
+    {
+        id: 1,
+        value: "Six Sigma & Change Management",
+    },
+    {
+        id: 2,
+        value: "Procurement",
+    },
+    {
+        id: 3,
+        value: "ESG & Sustainability",
+    }
+]
+const regions = [
+    {
+        id: 1,
+        value: "Six Sigma & Change Management",
+    },
+    {
+        id: 2,
+        value: "Procurement",
+    },
+    {
+        id: 3,
+        value: "ESG & Sustainability",
+    }
+]
 
 const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     compliance,
@@ -23,7 +67,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     refetchLegalCompliance,
 }) => {
     // Initial state for form
-    const initialFormValues: ConsultantDM = {
+    const initialFormValues: LegalComplianceDM = {
         id: compliance?.id,
         img: compliance?.img,
         name: compliance?.name,
@@ -35,22 +79,32 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         engagement_models: compliance?.engagement_models,
         clients: compliance?.clients,
         testimonials: compliance?.testimonials,
+
+        legal_compliance_type_id: compliance?.legal_compliance_type_id,
+        legal_compliance_type_name: compliance?.legal_compliance_type_name,
+        industry_id: compliance?.industry_id,
+        industry_name: compliance?.industry_name,
+        region_id: compliance?.region_id,
+        region_name: compliance?.region_name,
     };
 
-    const [formValues, setFormValues] = useState<ConsultantDM>(initialFormValues);
+    const [formValues, setFormValues] = useState<LegalComplianceDM>(initialFormValues);
 
     const [validationErrors, setValidationErrors] = useState({
         name: false,
     });
 
-    const handleChange = (field: keyof ConsultantDM, value: string) => {
-        setFormValues((prev) => ({
+    const handleChange = <K extends keyof LegalComplianceDM>(
+        field: K,
+        value: LegalComplianceDM[K] | null
+    ) => {
+        setFormValues(prev => ({
             ...prev,
             [field]: value,
         }));
 
-        if (value.trim()) {
-            setValidationErrors((prev) => ({ ...prev, [field]: false }));
+        if (typeof value === "string" && value.trim()) {
+            setValidationErrors(prev => ({ ...prev, [field]: false }));
         }
     };
 
@@ -64,8 +118,8 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     };
 
     const addConsultantMutation = useMutation({
-        mutationFn: async (data: ConsultantDM) => {
-            const response = await axios.put("/api/consultants", data);
+        mutationFn: async (data: LegalComplianceDM) => {
+            const response = await axios.put("/api/legal-compliance", data);
             return response.data;
         },
         onSuccess: () => {
@@ -73,13 +127,13 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
             onClose();
         },
         onError: (error) => {
-            console.error("Failed to add consultant:", error);
+            console.error("Failed to updated compliance:", error);
         },
     });
     const handleSubmit = () => {
         if (!validateForm()) return;
 
-        const newConsultant: ConsultantDM = formValues
+        const newConsultant: LegalComplianceDM = formValues
 
         addConsultantMutation.mutate(newConsultant);
     };
@@ -91,7 +145,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                 <div className="max-w-[670px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
                     <div className="flex justify-between items-center">
                         <h2 className="font-medium text-2xl text-[#565656]">
-                            Add Consultant
+                            Add Legal & Compliance
                         </h2>
                         <div className="flex gap-3">
                             <div
@@ -111,7 +165,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
 
                     <div className="my-4">
                         <ImageUpload
-                            label="Consultant Image"
+                            label="Legal & Compliance Image"
                             value={formValues.img}
                             onImageUpload={(img) => handleChange("img", img)}
                         />
@@ -120,8 +174,8 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                     <div className="grid gap-4 grid-cols-2">
                         <div className="col-span-2">
                             <InputComponent
-                                label="Consultant Name"
-                                placeholder="Enter consultant name"
+                                label="Legal & Compliance Name"
+                                placeholder="Enter legal & compliance name"
                                 onChange={(value) => handleChange("name", value)}
                                 value={formValues.name}
                                 required
@@ -152,6 +206,43 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                                 value={formValues.overview}
                                 isTextArea
                                 rows={5}
+                            />
+                        </div>
+
+                        <div className="col-span-2">
+                            <DropdownComp
+                                label="Legal & Compliance Type"
+                                placeholder="Select legal & compliance type"
+                                options={compliancetypes}
+                                onSelect={(id, value) => {
+                                    handleChange("legal_compliance_type_id", id); // allow null
+                                    handleChange("legal_compliance_type_name", value); // allow null
+                                }}
+                                value={formValues.legal_compliance_type_name || ""}
+                            />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                            <DropdownComp
+                                label="Industry"
+                                placeholder="Select industry"
+                                options={industries}
+                                onSelect={(id, value) => {
+                                    handleChange("industry_id", id); // allow null
+                                    handleChange("industry_name", value); // allow null
+                                }}
+                                value={formValues.industry_name || ""}
+                            />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                            <DropdownComp
+                                label="Region"
+                                placeholder="Select region"
+                                options={regions}
+                                onSelect={(id, value) => {
+                                    handleChange("region_id", id); // allow null
+                                    handleChange("region_name", value); // allow null
+                                }}
+                                value={formValues.region_name || ""}
                             />
                         </div>
 

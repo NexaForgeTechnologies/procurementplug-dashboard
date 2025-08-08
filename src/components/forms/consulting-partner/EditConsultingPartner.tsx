@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-import { ConsultantDM } from "@/domain-models/ConsultantDM";
+import { ConsultantDM } from "@/domain-models/consultant/ConsultantDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
+import DropdownComp from "@/components/select/DropdownComp";
 
 type SpeakerFormProps = {
     consultant?: ConsultantDM;
@@ -35,6 +36,14 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         engagement_models: consultant?.engagement_models,
         clients: consultant?.clients,
         testimonials: consultant?.testimonials,
+        consultant_type_id: consultant?.consultant_type_id,
+        consultant_type_name: consultant?.consultant_type_name,
+        industry_id: consultant?.industry_id,
+        industry_name: consultant?.industry_name,
+        location_id: consultant?.location_id,
+        location_name: consultant?.location_name,
+        specialism_id: consultant?.specialism_id,
+        specialism_name: consultant?.specialism_name,
     };
 
     const [formValues, setFormValues] = useState<ConsultantDM>(initialFormValues);
@@ -43,14 +52,17 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         name: false,
     });
 
-    const handleChange = (field: keyof ConsultantDM, value: string) => {
-        setFormValues((prev) => ({
+    const handleChange = <K extends keyof ConsultantDM>(
+        field: K,
+        value: ConsultantDM[K] | null
+    ) => {
+        setFormValues(prev => ({
             ...prev,
             [field]: value,
         }));
 
-        if (value.trim()) {
-            setValidationErrors((prev) => ({ ...prev, [field]: false }));
+        if (typeof value === "string" && value.trim()) {
+            setValidationErrors(prev => ({ ...prev, [field]: false }));
         }
     };
 
@@ -84,6 +96,62 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         addConsultantMutation.mutate(newConsultant);
     };
 
+    const consultanttypes = [
+        {
+            id: 1,
+            value: "Six Sigma & Change Management",
+        },
+        {
+            id: 2,
+            value: "Procurement",
+        },
+        {
+            id: 3,
+            value: "ESG & Sustainability",
+        }
+    ]
+    const industries = [
+        {
+            id: 1,
+            value: "Six Sigma & Change Management",
+        },
+        {
+            id: 2,
+            value: "Procurement",
+        },
+        {
+            id: 3,
+            value: "ESG & Sustainability",
+        }
+    ]
+    const locations = [
+        {
+            id: 1,
+            value: "Six Sigma & Change Management",
+        },
+        {
+            id: 2,
+            value: "Procurement",
+        },
+        {
+            id: 3,
+            value: "ESG & Sustainability",
+        }
+    ]
+    const specialisms = [
+        {
+            id: 1,
+            value: "Six Sigma & Change Management",
+        },
+        {
+            id: 2,
+            value: "Procurement",
+        },
+        {
+            id: 3,
+            value: "ESG & Sustainability",
+        }
+    ]
 
     return (
         <>
@@ -152,6 +220,55 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                                 value={formValues.overview}
                                 isTextArea
                                 rows={5}
+                            />
+                        </div>
+
+                        <div className="col-span-2 sm:col-span-1">
+                            <DropdownComp
+                                label="Consultant Type"
+                                placeholder="Select consultant type"
+                                options={consultanttypes}
+                                onSelect={(id, value) => {
+                                    handleChange("consultant_type_id", id); // allow null
+                                    handleChange("consultant_type_name", value); // allow null
+                                }}
+                                value={formValues.consultant_type_name || ""}
+                            />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                            <DropdownComp
+                                label="Industry"
+                                placeholder="Select industry"
+                                options={industries}
+                                onSelect={(id, value) => {
+                                    handleChange("industry_id", id); // allow null
+                                    handleChange("industry_name", value); // allow null
+                                }}
+                                value={formValues.industry_name || ""}
+                            />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                            <DropdownComp
+                                label="Location"
+                                placeholder="Select location"
+                                options={locations}
+                                onSelect={(id, value) => {
+                                    handleChange("location_id", id); // allow null
+                                    handleChange("location_name", value); // allow null
+                                }}
+                                value={formValues.location_name || ""}
+                            />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                            <DropdownComp
+                                label="Specialism"
+                                placeholder="Select specialism"
+                                options={specialisms}
+                                onSelect={(id, value) => {
+                                    handleChange("specialism_id", id); // allow null
+                                    handleChange("specialism_name", value); // allow null
+                                }}
+                                value={formValues.specialism_name || ""}
                             />
                         </div>
 

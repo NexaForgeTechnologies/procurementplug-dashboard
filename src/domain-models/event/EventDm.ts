@@ -1,4 +1,4 @@
-import { SelectedSpeaker } from "@/domain-models/SelectedSpeaker";
+import { SelectedSpeaker } from "@/domain-models/speaker/SelectedSpeaker";
 
 export interface EventDM {
     id?: number;

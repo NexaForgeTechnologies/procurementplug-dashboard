@@ -1,4 +1,4 @@
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
 import { db } from "@/lib/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { getFormattedTimestamp } from "@/utils/FormattedDate";

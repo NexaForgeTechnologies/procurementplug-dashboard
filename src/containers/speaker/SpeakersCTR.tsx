@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
 import SpeakerCard from "@/components/cards/SpeakerCard";
 import SpeakerForm from "@/components/forms/speaker/SpeakerComp";
 import EditSpeakerComp from "@/components/forms/speaker/EditSpeakerComp";

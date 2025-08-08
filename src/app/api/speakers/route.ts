@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SpeakerRepo } from '@/repository/SpeakerRepo';
+import { SpeakerRepo } from '@/repository/speaker/SpeakerRepo';
 
 export async function GET() {
     try {

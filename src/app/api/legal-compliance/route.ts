@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LegalComplianceRepo } from '@/repository/LegalComplianceRepo';
+import { LegalComplianceRepo } from '@/repository/legal-compliance/LegalComplianceRepo';
 
 export async function GET() {
     try {

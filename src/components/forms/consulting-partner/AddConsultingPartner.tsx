@@ -4,12 +4,13 @@ import React, { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-import { ConsultantDM } from "@/domain-models/ConsultantDM";
+import { ConsultantDM } from "@/domain-models/consultant/ConsultantDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
+import DropdownComp from "@/components/select/DropdownComp";
 
 type ConsultingFormProps = {
     consultant?: ConsultantDM;
@@ -29,7 +30,15 @@ const initialFormValues: ConsultantDM = {
     experties_areas: "",
     engagement_models: "",
     clients: "",
-    testimonials: ""
+    testimonials: "",
+    consultant_type_id: undefined,
+    consultant_type_name: "",
+    industry_id: undefined,
+    industry_name: "",
+    location_id: undefined,
+    location_name: "",
+    specialism_id: undefined,
+    specialism_name: "",
 };
 
 const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
@@ -43,14 +52,17 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
         name: false,
     });
 
-    const handleChange = (field: keyof ConsultantDM, value: string) => {
-        setFormValues((prev) => ({
+    const handleChange = <K extends keyof ConsultantDM>(
+        field: K,
+        value: ConsultantDM[K] | null
+    ) => {
+        setFormValues(prev => ({
             ...prev,
             [field]: value,
         }));
 
-        if (value.trim()) {
-            setValidationErrors((prev) => ({ ...prev, [field]: false }));
+        if (typeof value === "string" && value.trim()) {
+            setValidationErrors(prev => ({ ...prev, [field]: false }));
         }
     };
 
@@ -93,12 +105,68 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
         }
     }, [active]);
 
+    const consultanttypes = [
+        {
+            id: 1,
+            value: "Six Sigma & Change Management",
+        },
+        {
+            id: 2,
+            value: "Procurement",
+        },
+        {
+            id: 3,
+            value: "ESG & Sustainability",
+        }
+    ]
+    const industries = [
+        {
+            id: 1,
+            value: "Six Sigma & Change Management",
+        },
+        {
+            id: 2,
+            value: "Procurement",
+        },
+        {
+            id: 3,
+            value: "ESG & Sustainability",
+        }
+    ]
+    const locations = [
+        {
+            id: 1,
+            value: "Six Sigma & Change Management",
+        },
+        {
+            id: 2,
+            value: "Procurement",
+        },
+        {
+            id: 3,
+            value: "ESG & Sustainability",
+        }
+    ]
+    const specialisms = [
+        {
+            id: 1,
+            value: "Six Sigma & Change Management",
+        },
+        {
+            id: 2,
+            value: "Procurement",
+        },
+        {
+            id: 3,
+            value: "ESG & Sustainability",
+        }
+    ]
 
     return (
         <>
             {active && (
                 <div className="fixed inset-0 bg-black/70 z-50 px-4">
-                    <div className="max-w-[670px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+                    <div className="max-w-[670px] max-h-[90vh] scroll overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
                         <div className="flex justify-between items-center">
                             <h2 className="font-medium text-2xl text-[#565656]">
                                 Add Consultant
@@ -162,6 +230,55 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
                                     value={formValues.overview}
                                     isTextArea
                                     rows={5}
+                                />
+                            </div>
+
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Consultant Type"
+                                    placeholder="Select consultant type"
+                                    options={consultanttypes}
+                                    onSelect={(id, value) => {
+                                        handleChange("consultant_type_id", id); // allow null
+                                        handleChange("consultant_type_name", value); // allow null
+                                    }}
+                                    value={formValues.consultant_type_name || ""}
+                                />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Industry"
+                                    placeholder="Select industry"
+                                    options={industries}
+                                    onSelect={(id, value) => {
+                                        handleChange("industry_id", id); // allow null
+                                        handleChange("industry_name", value); // allow null
+                                    }}
+                                    value={formValues.industry_name || ""}
+                                />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Location"
+                                    placeholder="Select location"
+                                    options={locations}
+                                    onSelect={(id, value) => {
+                                        handleChange("location_id", id); // allow null
+                                        handleChange("location_name", value); // allow null
+                                    }}
+                                    value={formValues.location_name || ""}
+                                />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Specialism"
+                                    placeholder="Select specialism"
+                                    options={specialisms}
+                                    onSelect={(id, value) => {
+                                        handleChange("specialism_id", id); // allow null
+                                        handleChange("specialism_name", value); // allow null
+                                    }}
+                                    value={formValues.specialism_name || ""}
                                 />
                             </div>
 

@@ -5,7 +5,7 @@ import Image from "next/image";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
 
 import ConfirmDialog from "@/components/ConfirmDialog";
 

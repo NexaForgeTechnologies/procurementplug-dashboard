@@ -4,12 +4,13 @@ import React, { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-import { LegalComplianceDM } from "@/domain-models/LegalComplianceDM";
+import { LegalComplianceDM } from "@/domain-models/legal-compliance/LegalComplianceDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
+import DropdownComp from "@/components/select/DropdownComp";
 
 type LegalComplianceProps = {
     active: boolean;
@@ -28,8 +29,58 @@ const initialFormValues: LegalComplianceDM = {
     experties_areas: "",
     engagement_models: "",
     clients: "",
-    testimonials: ""
+    testimonials: "",
+
+    legal_compliance_type_id: undefined,
+    legal_compliance_type_name: "",
+    industry_id: undefined,
+    industry_name: "",
+    region_id: undefined,
+    region_name: "",
 };
+
+const compliancetypes = [
+    {
+        id: 1,
+        value: "Six Sigma & Change Management",
+    },
+    {
+        id: 2,
+        value: "Procurement",
+    },
+    {
+        id: 3,
+        value: "ESG & Sustainability",
+    }
+]
+const industries = [
+    {
+        id: 1,
+        value: "Six Sigma & Change Management",
+    },
+    {
+        id: 2,
+        value: "Procurement",
+    },
+    {
+        id: 3,
+        value: "ESG & Sustainability",
+    }
+]
+const regions = [
+    {
+        id: 1,
+        value: "Six Sigma & Change Management",
+    },
+    {
+        id: 2,
+        value: "Procurement",
+    },
+    {
+        id: 3,
+        value: "ESG & Sustainability",
+    }
+]
 
 const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
     active,
@@ -42,14 +93,17 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
         name: false,
     });
 
-    const handleChange = (field: keyof LegalComplianceDM, value: string) => {
-        setFormValues((prev) => ({
+    const handleChange = <K extends keyof LegalComplianceDM>(
+        field: K,
+        value: LegalComplianceDM[K] | null
+    ) => {
+        setFormValues(prev => ({
             ...prev,
             [field]: value,
         }));
 
-        if (value.trim()) {
-            setValidationErrors((prev) => ({ ...prev, [field]: false }));
+        if (typeof value === "string" && value.trim()) {
+            setValidationErrors(prev => ({ ...prev, [field]: false }));
         }
     };
 
@@ -61,6 +115,7 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
         setValidationErrors(errors);
         return !Object.values(errors).some((e) => e);
     };
+
     const addLegalCompliance = useMutation({
         mutationFn: async (data: LegalComplianceDM) => {
             const response = await axios.post("/api/legal-compliance", data);
@@ -74,7 +129,6 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
             console.error("Failed to add LegalCompliance:", error);
         },
     });
-
     const handleSubmit = () => {
         if (!validateForm()) return;
 
@@ -161,6 +215,43 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
                                     value={formValues.overview}
                                     isTextArea
                                     rows={5}
+                                />
+                            </div>
+
+                            <div className="col-span-2">
+                                <DropdownComp
+                                    label="Legal & Compliance Type"
+                                    placeholder="Select legal & compliance type"
+                                    options={compliancetypes}
+                                    onSelect={(id, value) => {
+                                        handleChange("legal_compliance_type_id", id); // allow null
+                                        handleChange("legal_compliance_type_name", value); // allow null
+                                    }}
+                                    value={formValues.legal_compliance_type_name || ""}
+                                />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Industry"
+                                    placeholder="Select industry"
+                                    options={industries}
+                                    onSelect={(id, value) => {
+                                        handleChange("industry_id", id); // allow null
+                                        handleChange("industry_name", value); // allow null
+                                    }}
+                                    value={formValues.industry_name || ""}
+                                />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Region"
+                                    placeholder="Select region"
+                                    options={regions}
+                                    onSelect={(id, value) => {
+                                        handleChange("region_id", id); // allow null
+                                        handleChange("region_name", value); // allow null
+                                    }}
+                                    value={formValues.region_name || ""}
                                 />
                             </div>
 

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
+import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";

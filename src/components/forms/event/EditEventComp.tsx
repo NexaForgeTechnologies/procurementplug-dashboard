@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { EventDM } from "@/domain-models/EventDm";
-import { SpeakerDM } from "@/domain-models/SpeakerDM";
-import { SelectedSpeaker } from "@/domain-models/SelectedSpeaker";
+import { EventDM } from "@/domain-models/event/EventDm";
+import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
+import { SelectedSpeaker } from "@/domain-models/speaker/SelectedSpeaker";
 import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
 
 import Icon from "@/components/icon/IconComp";

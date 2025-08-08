@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import { LegalComplianceDM } from "@/domain-models/LegalComplianceDM";
+import { LegalComplianceDM } from "@/domain-models/legal-compliance/LegalComplianceDM";
 
 import ComplianceCard from "@/components/cards/LegalCompliance";
 import AddLegalComplianceComp from "@/components/forms/legal-compliance/AddLegalCompliance";

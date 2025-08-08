@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { UsersDM } from '@/domain-models/UsersDM';
-import { UserRepository } from '@/repository/UserRepository';
+import { UsersDM } from '@/domain-models/user/UsersDM';
+import { UserRepository } from '@/repository/user/UserRepository';
 
 export async function POST(req: NextRequest) {
     const { username, password } = await req.json();

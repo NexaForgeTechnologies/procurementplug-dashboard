@@ -5,7 +5,7 @@ import Image from "next/image";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 
-import { LegalComplianceDM } from "@/domain-models/LegalComplianceDM";
+import { LegalComplianceDM } from "@/domain-models/legal-compliance/LegalComplianceDM";
 
 import ConfirmDialog from "@/components/ConfirmDialog";
 

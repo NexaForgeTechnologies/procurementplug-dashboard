@@ -1,4 +1,4 @@
-export interface ConsultantDM {
+export interface LegalComplianceDM {
     id?: number;
     img?: string;
     name?: string;
@@ -11,11 +11,12 @@ export interface ConsultantDM {
     engagement_models?: string;
     clients?: string;
     testimonials?: string;
-    // industry_id?: string;
-    // industry_name?: string;
-    // location?: string;
-    // specialism_id?: string;
-    // specialism_name?: string;
+    legal_compliance_type_id?: number;
+    legal_compliance_type_name?: string;
+    industry_id?: number;
+    industry_name?: string;
+    region_id?: number;
+    region_name?: string;
 
     created_at?: string;
     updated_at?: string;

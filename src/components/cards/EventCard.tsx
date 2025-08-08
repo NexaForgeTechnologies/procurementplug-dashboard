@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
-import { EventDM } from "@/domain-models/EventDm";
+import { EventDM } from "@/domain-models/event/EventDm";
 
 import ConfirmDialog from "@/components/ConfirmDialog";
 
