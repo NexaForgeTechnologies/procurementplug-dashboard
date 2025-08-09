@@ -6,9 +6,12 @@ export interface LegalComplianceDM {
     contact?: string;
     experties?: string;
     overview?: string;
-    experties_areas?: string;
-    engagement_models?: string;
-    clients?: string;
+    jurisdictional_coverage?: string;
+    company_logo?: string[];
+    practice_areas?: string;
+    services?: string[];
+    sample_templates?: string[];
+
     testimonials?: string;
     legal_compliance_type_id?: number;
     legal_compliance_type_name?: string;

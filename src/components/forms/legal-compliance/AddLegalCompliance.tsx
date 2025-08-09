@@ -11,6 +11,9 @@ import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
+import MultipleImageUpload from "@/components/input-comps/ImgUploader";
+import ServicesList from "@/components/input-comps/ListItemComponent";
+
 import { useGeneric } from "@/hooks/useGeneric";
 
 type LegalComplianceProps = {
@@ -26,9 +29,11 @@ const initialFormValues: LegalComplianceDM = {
     experties: "",
     overview: "",
     email: "",
-    experties_areas: "",
-    engagement_models: "",
-    clients: "",
+    jurisdictional_coverage: "",
+    company_logo: [],
+    practice_areas: "",
+    services: [],
+    sample_templates: [],
     testimonials: "",
 
     legal_compliance_type_id: undefined,
@@ -108,6 +113,14 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
     const { data: industries } = useGeneric("industries");
     const { data: regions } = useGeneric("regions");
 
+    const handleServicesChange = (services: string[]) => {
+        handleChange("services", services)
+    };
+
+    const handleSampleChange = (sample: string[]) => {
+        handleChange("sample_templates", sample)
+    };
+    
     return (
         <>
             {active && (
@@ -210,29 +223,48 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
 
                             <div className="col-span-2 sm:col-span-1">
                                 <CommaInputTextArea
-                                    label="Expertise Areas"
-                                    placeholder="Enter comma-separated experties areas ( area 1, area 2, ...)"
-                                    onChange={(val) => handleChange("experties_areas", val)}
+                                    label="Jurisdictional Coverage"
+                                    placeholder="Enter comma-separated jurisdictional coverage ( value 1, value 2, ...)"
+                                    onChange={(val) => handleChange("jurisdictional_coverage", val)}
                                     rows={5}
                                 />
                             </div>
+
                             <div className="col-span-2 sm:col-span-1">
                                 <CommaInputTextArea
-                                    label="Engagement Models"
-                                    placeholder="Enter comma-separated engagement models ( model 1, model 2, ...)"
-                                    onChange={(val) => handleChange("engagement_models", val)}
+                                    label="Practice Areas"
+                                    placeholder="Enter comma-separated practice areas ( area 1, area 2, ...)"
+                                    onChange={(val) => handleChange("practice_areas", val)}
                                     rows={5}
                                 />
                             </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <CommaInputTextArea
-                                    label="Clients"
-                                    placeholder="Enter comma-separated clients ( client 1, client 2, ...)"
-                                    onChange={(val) => handleChange("clients", val)}
-                                    rows={5}
+
+                            <div className="col-span-2">
+                                <MultipleImageUpload
+                                    label="Company Logo"
+                                    multiple
+                                    value={formValues.company_logo}
+                                    onImageUpload={(paths) =>
+                                        handleChange("company_logo", paths)
+                                    }
                                 />
                             </div>
-                            <div className="col-span-2 sm:col-span-1">
+
+                            <div className="col-span-2">
+                                <ServicesList
+                                    heading="Services"
+                                    onChange={handleServicesChange}
+                                />
+                            </div>
+
+                            <div className="col-span-2">
+                                <ServicesList
+                                    heading="Sample Templates"
+                                    onChange={handleSampleChange}
+                                />
+                            </div>
+
+                            <div className="col-span-2">
                                 <InputComponent
                                     label="Testimonials"
                                     placeholder="Enter testimonials"

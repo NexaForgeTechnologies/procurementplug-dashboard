@@ -11,6 +11,9 @@ import InputComponent from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
+import MultipleImageUpload from "@/components/input-comps/ImgUploader";
+import ServicesList from "@/components/input-comps/ListItemComponent";
+
 import { useGeneric } from "@/hooks/useGeneric";
 
 type SpeakerFormProps = {
@@ -26,15 +29,16 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
 }) => {
     // Initial state for form
     const initialFormValues: LegalComplianceDM = {
-        id: compliance?.id,
         img: compliance?.img,
         name: compliance?.name,
         experties: compliance?.experties,
         overview: compliance?.overview,
         email: compliance?.email,
-        experties_areas: compliance?.experties_areas,
-        engagement_models: compliance?.engagement_models,
-        clients: compliance?.clients,
+        jurisdictional_coverage: compliance?.jurisdictional_coverage,
+        company_logo: compliance?.company_logo,
+        practice_areas: compliance?.practice_areas,
+        services: compliance?.services,
+        sample_templates: compliance?.sample_templates,
         testimonials: compliance?.testimonials,
 
         legal_compliance_type_id: compliance?.legal_compliance_type_id,
@@ -100,6 +104,14 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     const { data: industries } = useGeneric("industries");
     const { data: regions } = useGeneric("regions");
 
+    const handleServicesChange = (services: string[]) => {
+        handleChange("services", services)
+    };
+
+    const handleSampleChange = (sample: string[]) => {
+        handleChange("sample_templates", sample)
+    };
+
     return (
         <>
             <div className="fixed inset-0 bg-black/70 z-50 px-4">
@@ -151,7 +163,6 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                                 value={formValues.experties}
                             />
                         </div>
-
                         <div className="col-span-2">
                             <InputComponent
                                 label="Overview"
@@ -202,29 +213,50 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
 
                         <div className="col-span-2 sm:col-span-1">
                             <CommaInputTextArea
-                                label="Expertise Areas"
-                                placeholder="Enter comma-separated experties areas ( area 1, area 2, ...)"
-                                onChange={(val) => handleChange("experties_areas", val)}
+                                label="Jurisdictional Coverage"
+                                placeholder="Enter comma-separated jurisdictional coverage ( value 1, value 2, ...)"
+                                onChange={(val) => handleChange("jurisdictional_coverage", val)}
                                 rows={5}
                             />
                         </div>
+
                         <div className="col-span-2 sm:col-span-1">
                             <CommaInputTextArea
-                                label="Engagement Models"
-                                placeholder="Enter comma-separated engagement models ( model 1, model 2, ...)"
-                                onChange={(val) => handleChange("engagement_models", val)}
+                                label="Practice Areas"
+                                placeholder="Enter comma-separated practice areas ( area 1, area 2, ...)"
+                                onChange={(val) => handleChange("practice_areas", val)}
                                 rows={5}
                             />
                         </div>
-                        <div className="col-span-2 sm:col-span-1">
-                            <CommaInputTextArea
-                                label="Clients"
-                                placeholder="Enter comma-separated clients ( client 1, client 2, ...)"
-                                onChange={(val) => handleChange("clients", val)}
-                                rows={5}
+
+                        <div className="col-span-2">
+                            <MultipleImageUpload
+                                label="Company Logo"
+                                multiple
+                                value={formValues.company_logo}
+                                onImageUpload={(paths) =>
+                                    handleChange("company_logo", paths)
+                                }
                             />
                         </div>
-                        <div className="col-span-2 sm:col-span-1">
+
+                        <div className="col-span-2">
+                            <ServicesList
+                                heading="Services"
+                                initialList={formValues.services}
+                                onChange={handleServicesChange}
+                            />
+                        </div>
+
+                        <div className="col-span-2">
+                            <ServicesList
+                                heading="Sample Templates"
+                                initialList={formValues.sample_templates}
+                                onChange={handleSampleChange}
+                            />
+                        </div>
+
+                        <div className="col-span-2">
                             <InputComponent
                                 label="Testimonials"
                                 placeholder="Enter testimonials"
