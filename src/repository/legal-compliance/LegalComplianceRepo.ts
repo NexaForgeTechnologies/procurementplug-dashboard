@@ -1,11 +1,29 @@
 import { db } from "@/lib/db";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
-
+import { RowDataPacket } from "mysql2";
 import { getFormattedTimestamp } from "@/utils/FormattedDate";
-
 import { LegalComplianceDM } from "@/domain-models/legal-compliance/LegalComplianceDM";
 
+// Safe JSON parser to avoid crashes
+function safeJsonParse<T>(value: any, fallback: T): T {
+    if (!value || typeof value !== "string") return fallback;
+    try {
+        return JSON.parse(value);
+    } catch {
+        return fallback;
+    }
+}
+
+// Safe JSON stringify to avoid "undefined" binding errors
+function safeJsonStringify(value: any): string {
+    return JSON.stringify(value || []);
+}
+
 export class LegalComplianceRepo {
+    // Convert undefined or empty strings to null
+    private static toNull(value: any) {
+        return value === undefined || value === "" ? null : value;
+    }
+
     static async getAllCompliance(): Promise<LegalComplianceDM[]> {
         try {
             const [rows] = await db.query<RowDataPacket[]>(`
@@ -22,9 +40,11 @@ export class LegalComplianceRepo {
                     lc.experties,
                     lc.overview,
                     lc.email,
-                    lc.experties_areas,
-                    lc.engagement_models,
-                    lc.clients,
+                    lc.jurisdictional_coverage,
+                    lc.company_logo,
+                    lc.practice_areas,
+                    lc.services,
+                    lc.sample_templates,
                     lc.testimonials,
                     lc.created_at,
                     lc.updated_at,
@@ -50,9 +70,11 @@ export class LegalComplianceRepo {
                 experties: row.experties,
                 overview: row.overview,
                 email: row.email,
-                experties_areas: row.experties_areas,
-                engagement_models: row.engagement_models,
-                clients: row.clients,
+                jurisdictional_coverage: row.jurisdictional_coverage,
+                company_logo: safeJsonParse<string[]>(row.company_logo, []),
+                practice_areas: row.practice_areas,
+                services: safeJsonParse<string[]>(row.services, []),
+                sample_templates: safeJsonParse<string[]>(row.sample_templates, []),
                 testimonials: row.testimonials,
                 created_at: row.created_at,
                 updated_at: row.updated_at,
@@ -68,7 +90,7 @@ export class LegalComplianceRepo {
         legal_compliance: Omit<LegalComplianceDM, "id" | "created_at" | "updated_at" | "deleted_at">
     ): Promise<LegalComplianceDM> {
         try {
-            const [result] = await db.execute(
+            const [result]: any = await db.execute(
                 `INSERT INTO legal_compliance (
                     legal_compliance_type_id,
                     industry_id,
@@ -78,34 +100,32 @@ export class LegalComplianceRepo {
                     experties,
                     overview,
                     email,
-                    experties_areas,
-                    engagement_models,
-                    clients,
+                    jurisdictional_coverage,
+                    company_logo,
+                    practice_areas,
+                    services,
+                    sample_templates,
                     testimonials
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
-                    legal_compliance.legal_compliance_type_id,
-                    legal_compliance.industry_id,
-                    legal_compliance.region_id,
-                    legal_compliance.img,
-                    legal_compliance.name,
-                    legal_compliance.experties,
-                    legal_compliance.overview,
-                    legal_compliance.email,
-                    legal_compliance.experties_areas,
-                    legal_compliance.engagement_models,
-                    legal_compliance.clients,
-                    legal_compliance.testimonials,
+                    this.toNull(legal_compliance.legal_compliance_type_id),
+                    this.toNull(legal_compliance.industry_id),
+                    this.toNull(legal_compliance.region_id),
+                    this.toNull(legal_compliance.img),
+                    this.toNull(legal_compliance.name),
+                    this.toNull(legal_compliance.experties),
+                    this.toNull(legal_compliance.overview),
+                    this.toNull(legal_compliance.email),
+                    this.toNull(legal_compliance.jurisdictional_coverage),
+                    safeJsonStringify(legal_compliance.company_logo),
+                    this.toNull(legal_compliance.practice_areas),
+                    safeJsonStringify(legal_compliance.services),
+                    safeJsonStringify(legal_compliance.sample_templates),
+                    this.toNull(legal_compliance.testimonials),
                 ]
-            ) as [ResultSetHeader, unknown];
+            );
 
-            return {
-                id: result.insertId,
-                ...legal_compliance,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                deleted_at: null,
-            };
+            return { ...legal_compliance, id: result.insertId };
         } catch (error) {
             console.error("Error inserting legal_compliance:", error);
             throw new Error("Failed to insert legal_compliance");
@@ -114,49 +134,47 @@ export class LegalComplianceRepo {
 
     static async UpdateLegalCompliance(legal_compliance: LegalComplianceDM) {
         try {
-            const currentTime = getFormattedTimestamp();
-
-            await db.execute(
-                `
-                UPDATE legal_compliance
-                SET 
-                    legal_compliance_type_id = ?,
-                    industry_id = ?,
-                    region_id = ?,
-                    img = ?, 
-                    name = ?,  
-                    experties = ?, 
-                    overview = ?, 
-                    email = ?, 
-                    experties_areas = ?, 
-                    engagement_models = ?, 
-                    clients = ?, 
-                    testimonials = ?, 
-                    updated_at = ?
-                WHERE id = ?
-                `,
+            const [result]: any = await db.execute(
+                `UPDATE legal_compliance SET
+                legal_compliance_type_id = ?,
+                industry_id = ?,
+                region_id = ?,
+                img = ?,
+                name = ?,
+                experties = ?,
+                overview = ?,
+                email = ?,
+                jurisdictional_coverage = ?,
+                company_logo = ?,
+                practice_areas = ?,
+                services = ?,
+                sample_templates = ?,
+                testimonials = ?,
+                updated_at = NOW()
+            WHERE id = ? AND deleted_at IS NULL`,
                 [
-                    legal_compliance.legal_compliance_type_id,
-                    legal_compliance.industry_id,
-                    legal_compliance.region_id,
-                    legal_compliance.img,
-                    legal_compliance.name,
-                    legal_compliance.experties,
-                    legal_compliance.overview,
-                    legal_compliance.email,
-                    legal_compliance.experties_areas,
-                    legal_compliance.engagement_models,
-                    legal_compliance.clients,
-                    legal_compliance.testimonials,
-                    currentTime,
-                    legal_compliance.id,
+                    this.toNull(legal_compliance.legal_compliance_type_id),
+                    this.toNull(legal_compliance.industry_id),
+                    this.toNull(legal_compliance.region_id),
+                    this.toNull(legal_compliance.img),
+                    this.toNull(legal_compliance.name),
+                    this.toNull(legal_compliance.experties),
+                    this.toNull(legal_compliance.overview),
+                    this.toNull(legal_compliance.email),
+                    this.toNull(legal_compliance.jurisdictional_coverage),
+                    this.toNull(safeJsonStringify(legal_compliance.company_logo)),
+                    this.toNull(legal_compliance.practice_areas),
+                    this.toNull(safeJsonStringify(legal_compliance.services)),
+                    this.toNull(safeJsonStringify(legal_compliance.sample_templates)),
+                    this.toNull(legal_compliance.testimonials),
+                    this.toNull(legal_compliance.id) // wrap id too
                 ]
             );
 
-            return { message: "Legal Compliance updated successfully" };
+            return result.affectedRows > 0;
         } catch (error) {
-            console.error("Error updating Legal Compliance:", error);
-            throw new Error("Unable to update Legal Compliance");
+            console.error("Error updating legal_compliance:", error);
+            throw new Error("Failed to update legal_compliance");
         }
     }
 
@@ -165,11 +183,9 @@ export class LegalComplianceRepo {
 
         try {
             await db.query(
-                `
-                UPDATE legal_compliance
-                SET deleted_at = ?
-                WHERE id = ?
-                `,
+                `UPDATE legal_compliance
+                 SET deleted_at = ?
+                 WHERE id = ?`,
                 [currentTime, id]
             );
 

@@ -27,6 +27,8 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     onClose,
     refetchLegalCompliance,
 }) => {
+    console.log(compliance);
+
     // Initial state for form
     const initialFormValues: LegalComplianceDM = {
         img: compliance?.img,
