@@ -31,8 +31,7 @@ function LegalComplianceCTR() {
         const term = searchTerm.toLowerCase();
         return (
             compliance.name?.toLowerCase().includes(term) ||
-            compliance.company?.toLowerCase().includes(term) ||
-            compliance.designation?.toLowerCase().includes(term)
+            compliance.experties?.toLowerCase().includes(term)
         );
     });
 
@@ -63,7 +62,7 @@ function LegalComplianceCTR() {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search by name, company, designation..."
+                        placeholder="Search by name or experties..."
                         className="w-full p-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     />
 

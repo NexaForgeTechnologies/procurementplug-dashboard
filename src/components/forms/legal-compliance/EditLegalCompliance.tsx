@@ -219,6 +219,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                                 placeholder="Enter comma-separated jurisdictional coverage ( value 1, value 2, ...)"
                                 onChange={(val) => handleChange("jurisdictional_coverage", val)}
                                 rows={5}
+                                value={formValues.jurisdictional_coverage}
                             />
                         </div>
 
@@ -228,6 +229,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                                 placeholder="Enter comma-separated practice areas ( area 1, area 2, ...)"
                                 onChange={(val) => handleChange("practice_areas", val)}
                                 rows={5}
+                                value={formValues.practice_areas}
                             />
                         </div>
 

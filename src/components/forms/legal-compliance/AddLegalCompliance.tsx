@@ -117,10 +117,10 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
         handleChange("services", services)
     };
 
-    const handleSampleChange = (sample: string[]) => {
-        handleChange("sample_templates", sample)
+    const handleSampleChange = (samples: string[]) => {
+        handleChange("sample_templates", samples)
     };
-    
+
     return (
         <>
             {active && (
