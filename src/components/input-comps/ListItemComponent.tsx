@@ -15,19 +15,19 @@ export default function ServicesList({
 }: ListProps) {
     const [lists, setLists] = useState<string[]>(initialList);
     const [newList, setNewList] = useState("");
-    const [isFocused, setIsFocused] = useState(false);
-    const [showError, setShowError] = useState(false);
+    // const [isFocused, setIsFocused] = useState(false);
+    // const [showError, setShowError] = useState(false);
 
     const addList = () => {
         if (!newList.trim()) {
-            setShowError(true);
+            // setShowError(true);
             return;
         }
         const updated = [...lists, newList.trim()];
         setLists(updated);
         onChange?.(updated);
         setNewList("");
-        setShowError(false);
+        // setShowError(false);
     };
 
     const removeService = (index: number) => {
@@ -54,8 +54,8 @@ export default function ServicesList({
                          bg-white"
                         onChange={(e) => setNewList(e.target.value)}
                         value={newList}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
+                        // onFocus={() => setIsFocused(true)}
+                        // onBlur={() => setIsFocused(false)}
                     />
                 </div>
 

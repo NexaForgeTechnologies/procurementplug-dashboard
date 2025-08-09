@@ -1,26 +1,16 @@
 import { db } from "@/lib/db";
-import { RowDataPacket } from "mysql2";
+import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { getFormattedTimestamp } from "@/utils/FormattedDate";
 import { LegalComplianceDM } from "@/domain-models/legal-compliance/LegalComplianceDM";
 
-// Safe JSON parser to avoid crashes
-function safeJsonParse<T>(value: any, fallback: T): T {
-    if (!value || typeof value !== "string") return fallback;
-    try {
-        return JSON.parse(value);
-    } catch {
-        return fallback;
-    }
-}
-
 // Safe JSON stringify to avoid "undefined" binding errors
-function safeJsonStringify(value: any): string {
+function safeJsonStringify(value: unknown): string {
     return JSON.stringify(value || []);
 }
 
 export class LegalComplianceRepo {
     // Convert undefined or empty strings to null
-    private static toNull(value: any) {
+    private static toNull(value: unknown) {
         return value === undefined || value === "" ? null : value;
     }
 
@@ -90,7 +80,7 @@ export class LegalComplianceRepo {
         legal_compliance: Omit<LegalComplianceDM, "id" | "created_at" | "updated_at" | "deleted_at">
     ): Promise<LegalComplianceDM> {
         try {
-            const [result]: any = await db.execute(
+            const [result] = await db.execute<ResultSetHeader>(
                 `INSERT INTO legal_compliance (
                     legal_compliance_type_id,
                     industry_id,
@@ -132,26 +122,26 @@ export class LegalComplianceRepo {
         }
     }
 
-    static async UpdateLegalCompliance(legal_compliance: LegalComplianceDM) {
+    static async UpdateLegalCompliance(legal_compliance: LegalComplianceDM): Promise<boolean> {
         try {
-            const [result]: any = await db.execute(
+            const [result] = await db.execute<ResultSetHeader>(
                 `UPDATE legal_compliance SET
-                legal_compliance_type_id = ?,
-                industry_id = ?,
-                region_id = ?,
-                img = ?,
-                name = ?,
-                experties = ?,
-                overview = ?,
-                email = ?,
-                jurisdictional_coverage = ?,
-                company_logo = ?,
-                practice_areas = ?,
-                services = ?,
-                sample_templates = ?,
-                testimonials = ?,
-                updated_at = NOW()
-            WHERE id = ? AND deleted_at IS NULL`,
+                    legal_compliance_type_id = ?,
+                    industry_id = ?,
+                    region_id = ?,
+                    img = ?,
+                    name = ?,
+                    experties = ?,
+                    overview = ?,
+                    email = ?,
+                    jurisdictional_coverage = ?,
+                    company_logo = ?,
+                    practice_areas = ?,
+                    services = ?,
+                    sample_templates = ?,
+                    testimonials = ?,
+                    updated_at = NOW()
+                WHERE id = ? AND deleted_at IS NULL`,
                 [
                     this.toNull(legal_compliance.legal_compliance_type_id),
                     this.toNull(legal_compliance.industry_id),
@@ -167,7 +157,7 @@ export class LegalComplianceRepo {
                     this.toNull(safeJsonStringify(legal_compliance.services)),
                     this.toNull(safeJsonStringify(legal_compliance.sample_templates)),
                     this.toNull(legal_compliance.testimonials),
-                    this.toNull(legal_compliance.id) // wrap id too
+                    this.toNull(legal_compliance.id),
                 ]
             );
 
@@ -178,7 +168,7 @@ export class LegalComplianceRepo {
         }
     }
 
-    static async DeleteLegalCompliance(id: number) {
+    static async DeleteLegalCompliance(id: number): Promise<{ message: string }> {
         const currentTime = getFormattedTimestamp();
 
         try {

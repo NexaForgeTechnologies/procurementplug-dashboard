@@ -31,17 +31,17 @@ const DropdownComp: React.FC<SelectProps> = ({
     const [searchTerm, setSearchTerm] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const [selectedValue, setSelectedValue] = useState<string | null>(null);
+    // const [selectedValue, setSelectedValue] = useState<string | null>(null);
 
     const handleSelect = (id: number | null, value: string | null) => {
-        setSelectedValue(value);
+        // setSelectedValue(value);
         setIsOpen(false);
         setSearchTerm("");
         onSelect?.(id, value);
     };
 
     const handleClear = () => {
-        setSelectedValue(null);
+        // setSelectedValue(null);
         onSelect?.(null, null);
     };
 
