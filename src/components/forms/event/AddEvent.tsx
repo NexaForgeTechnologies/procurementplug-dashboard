@@ -10,7 +10,7 @@ import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
 import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
 import ImageUpload from "@/components/input-comps/ImgUploader";
-import MultiSelect from "@/components/select-comps/MultiSelect";
+import MultiSelect from "@/components/select-comps/MultiSelectSpeakers";
 import PdfUploader from "@/components/PdfUploader";
 import { SelectedSpeaker } from "@/domain-models/speaker/SelectedSpeaker";
 import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
