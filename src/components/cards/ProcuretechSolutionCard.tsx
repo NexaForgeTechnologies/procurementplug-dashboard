@@ -75,12 +75,11 @@ const ProcuretechSolutionCard: React.FC<ProcuretechSolutionProps> = ({
                 </div>
 
                 <Image
-                    className="group-hover:transition-all duration-200 ease-in-out object-contain"
+                    className="group-hover:transition-all duration-200 ease-in-out"
                     src={data.img || ""}
                     alt={data.img || ""}
-                    width={0}   // or remove width/height props if using next/image
-                    height={0}
-                    style={{ width: '100%', maxHeight: '120px' }}  // If you want to enforce responsive
+                    width={240}   // or remove width/height props if using next/image
+                    height={240}
                 />
 
                 <h2 className="text-xl md:text-2xl font-extrabold">{data.name}</h2>

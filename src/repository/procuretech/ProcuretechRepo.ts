@@ -4,42 +4,53 @@ import { getFormattedTimestamp } from "@/utils/FormattedDate";
 import { ProcuretechSolutionDM } from "@/domain-models/procuretech-solution/ProcuretechSolutionDM";
 import { ProcuretechTypeDM } from "@/domain-models/procuretech-solution/type/ProcuretechTypeDM";
 
+// Safe JSON stringify to avoid "undefined" binding errors
+function safeJsonStringify(value: unknown): string {
+    return JSON.stringify(value || []);
+}
+
 export class ProcuretechRepo {
+
+    // Convert undefined or empty strings to null
+    private static toNull(value: unknown) {
+        return value === undefined || value === "" ? null : value;
+    }
+
     static async getAllProcuretechSolutions(): Promise<ProcuretechSolutionDM[]> {
         try {
             const [rows] = await db.query<RowDataPacket[]>(`
-                SELECT 
-                    ps.id,
-                    ps.img,
-                    ps.name,
-                    ps.type_id,
-                    t.value AS type_name,
-                    ps.overview,
-                    ps.key_features,
-                    ps.develpment,
-                    ps.integration,
-                    ps.pricing,
-                    ps.recommended,
-                    ps.deployment_model_id,
-                    dm.value AS deployment_model_name,
-                    ps.pricing_model_id,
-                    pm.value AS pricing_model_name,
-                    ps.integration_model_id,
-                    im.value AS integration_model_name,
-                    ps.procuretech_type_id,
-                    pt.value AS procuretech_type_name,
-                    ps.created_at,
-                    ps.updated_at,
-                    ps.deleted_at
-                FROM procuretech_solutions ps
-                LEFT JOIN procuretech_solution_types t ON ps.type_id = t.id
-                LEFT JOIN deployment_model dm ON ps.deployment_model_id = dm.id
-                LEFT JOIN pricing_model pm ON ps.pricing_model_id = pm.id
-                LEFT JOIN integration_model im ON ps.integration_model_id = im.id
-                LEFT JOIN procuretech_solution_types pt ON ps.procuretech_type_id = pt.id
-                WHERE ps.deleted_at IS NULL
-                ORDER BY ps.id DESC;
-            `);
+            SELECT 
+                ps.id,
+                ps.img,
+                ps.name,
+                ps.type_id,
+                t.value AS type_name,
+                ps.overview,
+                ps.key_features,
+                ps.develpment,
+                ps.integration,
+                ps.pricing,
+                ps.recommended,
+                ps.deployment_model_id,
+                dm.value AS deployment_model_name,
+                ps.pricing_model_id,
+                pm.value AS pricing_model_name,
+                ps.integration_model_id,
+                im.value AS integration_model_name,
+                ps.procuretech_type_id,
+                pt.value AS procuretech_type_name,
+                ps.created_at,
+                ps.updated_at,
+                ps.deleted_at
+            FROM procuretech_solutions ps
+            LEFT JOIN procuretech_solution_types t ON ps.type_id = t.id
+            LEFT JOIN deployment_model dm ON ps.deployment_model_id = dm.id
+            LEFT JOIN pricing_model pm ON ps.pricing_model_id = pm.id
+            LEFT JOIN integration_model im ON ps.integration_model_id = im.id
+            LEFT JOIN procuretech_solution_types pt ON ps.procuretech_type_id = pt.id
+            WHERE ps.deleted_at IS NULL
+            ORDER BY ps.id DESC;
+        `);
 
             return rows.map((row) => ({
                 id: row.id,
@@ -48,11 +59,11 @@ export class ProcuretechRepo {
                 type_id: row.type_id,
                 type_name: row.type_name,
                 overview: row.overview,
-                key_features: row.key_features ? JSON.parse(row.key_features) : [],
-                develpment: row.develpment,
-                integration: row.integration,
-                pricing: row.pricing,
-                recommended: row.recommended,
+                key_features: JSON.parse(row.key_features) || [],
+                develpment: row.develpment || "", // plain string
+                integration: row.integration || "", // plain string
+                pricing: row.pricing || "", // plain string
+                recommended: row.recommended || "",
                 deployment_model_id: row.deployment_model_id,
                 deployment_model_name: row.deployment_model_name,
                 pricing_model_id: row.pricing_model_id,
@@ -77,34 +88,34 @@ export class ProcuretechRepo {
         try {
             const [result] = await db.execute(
                 `INSERT INTO procuretech_solutions (
-                    img,
-                    name,
-                    type_id,
-                    overview,
-                    key_features,
-                    develpment,
-                    integration,
-                    pricing,
-                    recommended,
-                    deployment_model_id,
-                    pricing_model_id,
-                    integration_model_id,
-                    procuretech_type_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                img,
+                name,
+                type_id,
+                overview,
+                key_features,
+                develpment,
+                integration,
+                pricing,
+                recommended,
+                deployment_model_id,
+                pricing_model_id,
+                integration_model_id,
+                procuretech_type_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
-                    solution.img,
-                    solution.name,
-                    solution.type_id,
-                    solution.overview,
+                    solution.img ?? null,
+                    solution.name ?? null,
+                    solution.type_id ?? null,
+                    solution.overview ?? null,
                     JSON.stringify(solution.key_features || []),
                     solution.develpment,
                     solution.integration,
                     solution.pricing,
                     solution.recommended,
-                    solution.deployment_model_id,
-                    solution.pricing_model_id,
-                    solution.integration_model_id,
-                    solution.procuretech_type_id,
+                    solution.deployment_model_id ?? null,
+                    solution.pricing_model_id ?? null,
+                    solution.integration_model_id ?? null,
+                    solution.procuretech_type_id ?? null,
                 ]
             ) as [ResultSetHeader, unknown];
 
@@ -144,21 +155,21 @@ export class ProcuretechRepo {
                     updated_at = ?
                  WHERE id = ?`,
                 [
-                    solution.img,
-                    solution.name,
-                    solution.type_id,
-                    solution.overview,
-                    JSON.stringify(solution.key_features || []),
-                    solution.develpment,
-                    solution.integration,
-                    solution.pricing,
-                    solution.recommended,
-                    solution.deployment_model_id,
-                    solution.pricing_model_id,
-                    solution.integration_model_id,
-                    solution.procuretech_type_id,
+                    this.toNull(solution.img),
+                    this.toNull(solution.name),
+                    this.toNull(solution.type_id),
+                    this.toNull(solution.overview),
+                    this.toNull(safeJsonStringify((JSON.stringify(solution.key_features || [])))),
+                    this.toNull(solution.develpment),
+                    this.toNull(solution.integration),
+                    this.toNull(solution.pricing),
+                    this.toNull(solution.recommended),
+                    this.toNull(solution.deployment_model_id),
+                    this.toNull(solution.pricing_model_id),
+                    this.toNull(solution.integration_model_id),
+                    this.toNull(solution.procuretech_type_id),
                     currentTime,
-                    solution.id,
+                    this.toNull(solution.id),
                 ]
             );
 

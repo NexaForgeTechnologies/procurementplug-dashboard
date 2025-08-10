@@ -109,7 +109,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                 <div className="max-w-[670px] max-h-[90vh] scroll overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
                     <div className="flex justify-between items-center">
                         <h2 className="font-medium text-2xl text-[#565656]">
-                            Add Consultant
+                            Edit Consultant
                         </h2>
                         <div className="flex gap-3">
                             <div

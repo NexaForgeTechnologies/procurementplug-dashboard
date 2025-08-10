@@ -203,7 +203,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
                top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md"
         >
           <div className="flex justify-between items-center">
-            <h2 className="font-semibold text-2xl text-[#565656]">Add Event</h2>
+            <h2 className="font-semibold text-2xl text-[#565656]">Edit Event</h2>
             <div className="flex gap-3">
               <div
                 className="bg-green-200 rounded-full p-3 cursor-pointer"

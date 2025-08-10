@@ -101,19 +101,19 @@ function ProcuretechSolutionCTR() {
                         setIsActive(false);
                         refetch();
                     }}
-                    refetchLegalCompliance={refetch}
+                    refetchProcuretech={refetch}
                 />
             )}
 
             {activeEditMode && selectedprocuretechSolution && (
                 <EditProcuretechSolution
-                    compliance={selectedprocuretechSolution}
+                    procuretech={selectedprocuretechSolution}
                     onClose={() => {
                         setActiveEditMode(false);
                         setSelectedProcuretechSolution(null);
                         refetch();
                     }}
-                    refetchLegalCompliance={refetch}
+                    refetchProcuretech={refetch}
                 />
             )}
         </>

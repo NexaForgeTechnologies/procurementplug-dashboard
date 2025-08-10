@@ -15,10 +15,12 @@ import { useProcuretechTypes } from "@/hooks/useProcuretechType";
 import DropdownComp from "@/components/select/DropdownComp";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 
+import { useGeneric } from "@/hooks/useGeneric";
+
 type ProcureTechSolutionProps = {
     active: boolean;
     onClose: () => void;
-    refetchLegalCompliance: () => void;
+    refetchProcuretech: () => void;
 };
 
 // Initial state for form
@@ -50,7 +52,7 @@ const initialFormValues: ProcuretechSolutionDM = {
 const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
     active,
     onClose,
-    refetchLegalCompliance,
+    refetchProcuretech,
 }) => {
     const [formValues, setFormValues] = useState<ProcuretechSolutionDM>(initialFormValues);
 
@@ -87,7 +89,7 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
             return response.data;
         },
         onSuccess: () => {
-            refetchLegalCompliance();
+            refetchProcuretech();
             onClose();
         },
         onError: (error) => {
@@ -99,7 +101,9 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
 
         const newProcuretechSolution: Omit<ProcuretechSolutionDM, "id"> = formValues
 
-        addProcureTechSolution.mutate(newProcuretechSolution);
+        // addProcureTechSolution.mutate(newProcuretechSolution);
+        console.log(newProcuretechSolution);
+
     };
 
     useEffect(() => {
@@ -124,6 +128,12 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
     const handleKeyFeaturesChange = (keyFeatures: string[]) => {
         handleChange("key_features", keyFeatures)
     };
+
+
+    // fetching extra information like industry, location etc
+    const { data: deploymentModel } = useGeneric("deployment_model");
+    const { data: pricingModel } = useGeneric("pricing_model");
+    const { data: integrationModel } = useGeneric("integration_model");
 
     return (
         <>
@@ -159,7 +169,7 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
                                 />
                             </div>
 
-                            <div className="col-span-2 sm:col-span-1">
+                            <div className="col-span-2">
                                 <InputComponent
                                     label="ProcureTech Solution Name"
                                     placeholder="Enter procuretech solution name"
@@ -176,10 +186,48 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
                                     placeholder="Select type"
                                     options={typeOptions || []}
                                     onSelect={(id, value) => {
-                                        handleChange("procuretech_type_id", id); // allow null
-                                        handleChange("procuretech_type_name", value); // allow null
+                                        handleChange("type_id", id); // allow null
+                                        handleChange("type_name", value); // allow null
                                     }}
-                                    value={formValues.procuretech_type_name || ""}
+                                    value={formValues.type_name || ""}
+                                />
+                            </div>
+
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Deployment Modal"
+                                    placeholder="Select deployment modal"
+                                    options={deploymentModel || []}
+                                    onSelect={(id, value) => {
+                                        handleChange("deployment_model_id", id); // allow null
+                                        handleChange("deployment_model_name", value); // allow null
+                                    }}
+                                    value={formValues.deployment_model_name || ""}
+                                />
+                            </div>
+
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Pricing Modal"
+                                    placeholder="Select pricing modal"
+                                    options={pricingModel || []}
+                                    onSelect={(id, value) => {
+                                        handleChange("pricing_model_id", id); // allow null
+                                        handleChange("pricing_model_name", value); // allow null
+                                    }}
+                                    value={formValues.pricing_model_name || ""}
+                                />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <DropdownComp
+                                    label="Integration Modal"
+                                    placeholder="Select integration modal"
+                                    options={integrationModel || []}
+                                    onSelect={(id, value) => {
+                                        handleChange("integration_model_id", id); // allow null
+                                        handleChange("integration_model_name", value); // allow null
+                                    }}
+                                    value={formValues.integration_model_name || ""}
                                 />
                             </div>
 
