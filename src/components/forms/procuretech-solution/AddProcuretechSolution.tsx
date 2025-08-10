@@ -101,8 +101,7 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
 
         const newProcuretechSolution: Omit<ProcuretechSolutionDM, "id"> = formValues
 
-        // addProcureTechSolution.mutate(newProcuretechSolution);
-        console.log(newProcuretechSolution);
+        addProcureTechSolution.mutate(newProcuretechSolution);
 
     };
 
