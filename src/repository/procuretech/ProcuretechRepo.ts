@@ -1,0 +1,221 @@
+import { db } from "@/lib/db";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { getFormattedTimestamp } from "@/utils/FormattedDate";
+import { ProcuretechSolutionDM } from "@/domain-models/procuretech-solution/ProcuretechSolutionDM";
+import { ProcuretechTypeDM } from "@/domain-models/procuretech-solution/type/ProcuretechTypeDM";
+
+export class ProcuretechRepo {
+    static async getAllProcuretechSolutions(): Promise<ProcuretechSolutionDM[]> {
+        try {
+            const [rows] = await db.query<RowDataPacket[]>(`
+                SELECT 
+                    ps.id,
+                    ps.img,
+                    ps.name,
+                    ps.type_id,
+                    t.value AS type_name,
+                    ps.overview,
+                    ps.key_features,
+                    ps.develpment,
+                    ps.integration,
+                    ps.pricing,
+                    ps.recommended,
+                    ps.deployment_model_id,
+                    dm.value AS deployment_model_name,
+                    ps.pricing_model_id,
+                    pm.value AS pricing_model_name,
+                    ps.integration_model_id,
+                    im.value AS integration_model_name,
+                    ps.procuretech_type_id,
+                    pt.value AS procuretech_type_name,
+                    ps.created_at,
+                    ps.updated_at,
+                    ps.deleted_at
+                FROM procuretech_solutions ps
+                LEFT JOIN procuretech_solution_types t ON ps.type_id = t.id
+                LEFT JOIN deployment_model dm ON ps.deployment_model_id = dm.id
+                LEFT JOIN pricing_model pm ON ps.pricing_model_id = pm.id
+                LEFT JOIN integration_model im ON ps.integration_model_id = im.id
+                LEFT JOIN procuretech_solution_types pt ON ps.procuretech_type_id = pt.id
+                WHERE ps.deleted_at IS NULL
+                ORDER BY ps.id DESC;
+            `);
+
+            return rows.map((row) => ({
+                id: row.id,
+                img: row.img,
+                name: row.name,
+                type_id: row.type_id,
+                type_name: row.type_name,
+                overview: row.overview,
+                key_features: row.key_features ? JSON.parse(row.key_features) : [],
+                develpment: row.develpment,
+                integration: row.integration,
+                pricing: row.pricing,
+                recommended: row.recommended,
+                deployment_model_id: row.deployment_model_id,
+                deployment_model_name: row.deployment_model_name,
+                pricing_model_id: row.pricing_model_id,
+                pricing_model_name: row.pricing_model_name,
+                integration_model_id: row.integration_model_id,
+                integration_model_name: row.integration_model_name,
+                procuretech_type_id: row.procuretech_type_id,
+                procuretech_type_name: row.procuretech_type_name,
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                deleted_at: row.deleted_at,
+            }));
+        } catch (error) {
+            console.error("Error fetching procuretech solutions:", error);
+            throw new Error("Unable to fetch procuretech solutions from the database");
+        }
+    }
+
+    static async addProcuretechSolution(
+        solution: Omit<ProcuretechSolutionDM, "id" | "created_at" | "updated_at" | "deleted_at">
+    ): Promise<ProcuretechSolutionDM> {
+        try {
+            const [result] = await db.execute(
+                `INSERT INTO procuretech_solutions (
+                    img,
+                    name,
+                    type_id,
+                    overview,
+                    key_features,
+                    develpment,
+                    integration,
+                    pricing,
+                    recommended,
+                    deployment_model_id,
+                    pricing_model_id,
+                    integration_model_id,
+                    procuretech_type_id
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    solution.img,
+                    solution.name,
+                    solution.type_id,
+                    solution.overview,
+                    JSON.stringify(solution.key_features || []),
+                    solution.develpment,
+                    solution.integration,
+                    solution.pricing,
+                    solution.recommended,
+                    solution.deployment_model_id,
+                    solution.pricing_model_id,
+                    solution.integration_model_id,
+                    solution.procuretech_type_id,
+                ]
+            ) as [ResultSetHeader, unknown];
+
+            return {
+                id: result.insertId,
+                ...solution,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                deleted_at: null,
+            };
+        } catch (error) {
+            console.error("Error inserting procuretech solution:", error);
+            throw new Error("Failed to insert procuretech solution");
+        }
+    }
+
+    static async updateProcuretechSolution(solution: ProcuretechSolutionDM) {
+        try {
+            const currentTime = getFormattedTimestamp();
+
+            await db.execute(
+                `UPDATE procuretech_solutions
+                 SET 
+                    img = ?,
+                    name = ?,
+                    type_id = ?,
+                    overview = ?,
+                    key_features = ?,
+                    develpment = ?,
+                    integration = ?,
+                    pricing = ?,
+                    recommended = ?,
+                    deployment_model_id = ?,
+                    pricing_model_id = ?,
+                    integration_model_id = ?,
+                    procuretech_type_id = ?,
+                    updated_at = ?
+                 WHERE id = ?`,
+                [
+                    solution.img,
+                    solution.name,
+                    solution.type_id,
+                    solution.overview,
+                    JSON.stringify(solution.key_features || []),
+                    solution.develpment,
+                    solution.integration,
+                    solution.pricing,
+                    solution.recommended,
+                    solution.deployment_model_id,
+                    solution.pricing_model_id,
+                    solution.integration_model_id,
+                    solution.procuretech_type_id,
+                    currentTime,
+                    solution.id,
+                ]
+            );
+
+            return { message: "Procuretech solution updated successfully" };
+        } catch (error) {
+            console.error("Error updating procuretech solution:", error);
+            throw new Error("Unable to update procuretech solution");
+        }
+    }
+
+    static async deleteProcuretechSolution(id: number) {
+        try {
+            const currentTime = getFormattedTimestamp();
+
+            await db.execute(
+                `UPDATE procuretech_solutions
+                 SET deleted_at = ?
+                 WHERE id = ?`,
+                [currentTime, id]
+            );
+
+            return { message: "Procuretech solution deleted successfully" };
+        } catch (error) {
+            console.error("Error deleting procuretech solution:", error);
+            throw new Error("Failed to delete procuretech solution");
+        }
+    }
+
+    static async getAllProcureTechtTypes(): Promise<ProcuretechTypeDM[]> {
+        try {
+            const [rows] = await db.query<RowDataPacket[]>(`
+            SELECT 
+                id,
+                value,
+                icon,
+                description,
+                created_at,
+                updated_at,
+                deleted_at
+            FROM procuretech_solution_types
+            WHERE deleted_at IS NULL;
+        `);
+
+            const types: ProcuretechSolutionDM[] = rows.map((row) => ({
+                id: row.id,
+                value: row.value,
+                icon: row.icon,
+                description: row.description,
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                deleted_at: row.deleted_at,
+            }));
+
+            return types;
+        } catch (error) {
+            console.error("Error fetching types:", error);
+            throw new Error("Unable to fetch types from the database");
+        }
+    }
+}
