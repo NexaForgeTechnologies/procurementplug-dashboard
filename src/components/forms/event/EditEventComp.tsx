@@ -132,8 +132,13 @@ const EditEventForm: React.FC<EventFormProps> = ({
 
   //Handle workshop section
   const [workshopSections, setWorkshopSections] = useState<WorkshopSection[]>(
-    formValues.workshops ? JSON.parse(formValues.workshops) : []
+    formValues.workshops
+      ? typeof formValues.workshops === "string"
+        ? JSON.parse(formValues.workshops)
+        : formValues.workshops
+      : []
   );
+
   const addWorkshopSection = () => {
     setWorkshopSections((prev) => [
       ...prev,
@@ -162,11 +167,11 @@ const EditEventForm: React.FC<EventFormProps> = ({
       prev.map((section, sIndex) =>
         sIndex === sectionIndex
           ? {
-              ...section,
-              tiles: section.tiles.map((tile, tIndex) =>
-                tIndex === tileIndex ? { ...tile, [field]: value } : tile
-              ),
-            }
+            ...section,
+            tiles: section.tiles.map((tile, tIndex) =>
+              tIndex === tileIndex ? { ...tile, [field]: value } : tile
+            ),
+          }
           : section
       )
     );
@@ -332,21 +337,18 @@ const EditEventForm: React.FC<EventFormProps> = ({
                       <div key={tIndex} className="rounded-md space-y-4">
                         <InputText
                           label={`Tile ${sIndex * 2 + tIndex + 1} Heading`}
-                          placeholder={`Enter tile ${
-                            sIndex * 2 + tIndex + 1
-                          } heading`}
+                          placeholder={`Enter tile ${sIndex * 2 + tIndex + 1
+                            } heading`}
                           onChange={(value) =>
                             handleTileChange(sIndex, tIndex, "heading", value)
                           }
                           value={tile.heading}
                         />
                         <InputText
-                          label={`Tile ${
-                            sIndex * 2 + tIndex + 1
-                          } Heading Details`}
-                          placeholder={`Enter tile ${
-                            sIndex * 2 + tIndex + 1
-                          } heading details`}
+                          label={`Tile ${sIndex * 2 + tIndex + 1
+                            } Heading Details`}
+                          placeholder={`Enter tile ${sIndex * 2 + tIndex + 1
+                            } heading details`}
                           onChange={(value) =>
                             handleTileChange(sIndex, tIndex, "details", value)
                           }
