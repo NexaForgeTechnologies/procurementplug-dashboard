@@ -24,6 +24,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     onClose,
     refetchConsultants,
 }) => {
+
     // Initial state for form
     const initialFormValues: ConsultantDM = {
         id: consultant?.id,
@@ -228,6 +229,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                                 placeholder="Enter comma-separated experties areas ( area 1, area 2, ...)"
                                 onChange={(val) => handleChange("experties_areas", val)}
                                 rows={5}
+                                value={formValues.experties_areas}
                             />
                         </div>
                         <div className="col-span-2 sm:col-span-1">
@@ -236,6 +238,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                                 placeholder="Enter comma-separated engagement models ( model 1, model 2, ...)"
                                 onChange={(val) => handleChange("engagement_models", val)}
                                 rows={5}
+                                value={formValues.engagement_models}
                             />
                         </div>
                         <div className="col-span-2 sm:col-span-1">
@@ -244,6 +247,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                                 placeholder="Enter comma-separated clients ( client 1, client 2, ...)"
                                 onChange={(val) => handleChange("clients", val)}
                                 rows={5}
+                                value={formValues.clients}
                             />
                         </div>
                         <div className="col-span-2 sm:col-span-1">

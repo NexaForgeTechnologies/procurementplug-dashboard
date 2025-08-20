@@ -69,11 +69,11 @@ const VenuePartnerCard: React.FC<VenueProps> = ({
                     </button>
                 </div>
 
-                <h2 className="text-xl md:text-2xl font-extrabold">Grand Horizon Hall</h2>
+                <h2 className="text-xl md:text-2xl font-extrabold">{data.name}</h2>
 
                 <div>
-                    <p className="text-[#1B1B1B] text-base group-hover:text-white">New York City</p>
-                    <p className="text-[#1B1B1B] text-base group-hover:text-white">500+ Capacity</p>
+                    <p className="text-[#1B1B1B] text-base group-hover:text-white">{data.location}</p>
+                    <p className="text-[#1B1B1B] text-base group-hover:text-white">{data.capacity_name + " Capacity"}</p>
                 </div>
 
                 <button onClick={() => openEditForm(data)} className="mt-auto flex items-center cursor-pointer bg-[#b08d57] text-white px-4 py-2 rounded-[6px]">View Details
