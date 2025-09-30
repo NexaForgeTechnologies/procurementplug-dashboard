@@ -34,6 +34,9 @@ export interface EventDM {
     hightlight_subheading_2?: string;
     hightlight_subdetail_2?: string;
 
+    // Youtube Link
+    youtube_link?: string;
+
     documents?: string[];
 
     created_at?: Date | null;

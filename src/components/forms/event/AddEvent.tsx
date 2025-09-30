@@ -54,6 +54,9 @@ const initialFormValues: EventDM = {
   hightlight_subdetail_1: "",
   hightlight_subheading_2: "",
   hightlight_subdetail_2: "",
+
+  // Youtube Link
+  youtube_link: "",
 };
 
 const AddEventForm: React.FC<EventFormProps> = ({
@@ -177,11 +180,11 @@ const AddEventForm: React.FC<EventFormProps> = ({
       prev.map((section, sIndex) =>
         sIndex === sectionIndex
           ? {
-              ...section,
-              tiles: section.tiles.map((tile, tIndex) =>
-                tIndex === tileIndex ? { ...tile, [field]: value } : tile
-              ),
-            }
+            ...section,
+            tiles: section.tiles.map((tile, tIndex) =>
+              tIndex === tileIndex ? { ...tile, [field]: value } : tile
+            ),
+          }
           : section
       )
     );
@@ -232,8 +235,8 @@ const AddEventForm: React.FC<EventFormProps> = ({
                       placeholder="Enter event name"
                       onChange={(value) => handleChange("event_name", value)}
                       value={formValues.event_name}
-                      // required
-                      // showError={validationErrors.event_name}
+                    // required
+                    // showError={validationErrors.event_name}
                     />
                   </div>
                   <div className="col-span-2 sm:col-span-1">
@@ -339,21 +342,18 @@ const AddEventForm: React.FC<EventFormProps> = ({
                         <div key={tIndex} className="rounded-md space-y-4">
                           <InputText
                             label={`Tile ${sIndex * 2 + tIndex + 1} Heading`}
-                            placeholder={`Enter tile ${
-                              sIndex * 2 + tIndex + 1
-                            } heading`}
+                            placeholder={`Enter tile ${sIndex * 2 + tIndex + 1
+                              } heading`}
                             onChange={(value) =>
                               handleTileChange(sIndex, tIndex, "heading", value)
                             }
                             value={tile.heading}
                           />
                           <InputText
-                            label={`Tile ${
-                              sIndex * 2 + tIndex + 1
-                            } Heading Details`}
-                            placeholder={`Enter tile ${
-                              sIndex * 2 + tIndex + 1
-                            } heading details`}
+                            label={`Tile ${sIndex * 2 + tIndex + 1
+                              } Heading Details`}
+                            placeholder={`Enter tile ${sIndex * 2 + tIndex + 1
+                              } heading details`}
                             onChange={(value) =>
                               handleTileChange(sIndex, tIndex, "details", value)
                             }
@@ -479,6 +479,23 @@ const AddEventForm: React.FC<EventFormProps> = ({
                     value={formValues.hightlight_subdetail_2}
                     isTextArea
                     rows={5}
+                  />
+                </div>
+              </div>
+
+              {/* YOutube Link */}
+              <div>
+                <h3 className="font-semibold text-2xl text-[#565656]">
+                  Youtube Link
+                </h3>
+                <div className="my-4 space-y-4">
+                  <InputText
+                    label="Youtube Link"
+                    placeholder="Enter youtube link"
+                    onChange={(value) =>
+                      handleChange("youtube_link", value)
+                    }
+                    value={formValues.youtube_link}
                   />
                 </div>
               </div>
