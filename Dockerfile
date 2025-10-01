@@ -15,6 +15,6 @@ COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/package.json ./package.json
 
-EXPOSE 3000
-ENV PORT=3000
+EXPOSE 5000
+ENV PORT=5000
 CMD ["node", "server.js"]
