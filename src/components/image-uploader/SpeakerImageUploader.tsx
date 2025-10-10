@@ -26,7 +26,7 @@ const ImageUpload: React.FC<Props> = ({
     formData.append("file", file);
 
     try {
-      const res = await fetch("/api/image-uploads", {
+      const res = await fetch("/api/img-uploads", {
         method: "POST",
         body: formData,
       });
