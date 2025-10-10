@@ -57,7 +57,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
           : "text-[#363636] border-[#b08d57]"
           }`}
       >
-        {/* Top-right edit/delete buttons */}
+        {/* Top-right edit/delete buttons test*/}
         <div className="absolute top-2 right-2 flex gap-2">
           <button
             onClick={() => openEditForm(data)}
