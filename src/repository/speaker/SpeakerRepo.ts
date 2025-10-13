@@ -18,6 +18,7 @@ export class SpeakerRepo {
                 name: row.name,
                 designation: row.designation,
                 company: row.company,
+                bio: row.bio,
                 role: row.role,
                 bg_color: row.bg_color
             }));
@@ -31,25 +32,12 @@ export class SpeakerRepo {
     static async AddSpeaker(speaker: Omit<SpeakerDM, "id">): Promise<SpeakerDM> {
         try {
             const [result] = await db.execute(
-                `INSERT INTO speakers (name, img, designation, company)
-   VALUES (?, ?, ?, ?)`,
-                [speaker.name, speaker.img, speaker.designation, speaker.company]
+                `INSERT INTO speakers (name, img, designation, company, bio)
+   VALUES (?, ?, ?, ?, ?)`,
+                [speaker.name, speaker.img, speaker.designation, speaker.company, speaker.bio]
             ) as [ResultSetHeader, unknown];
 
             const insertId = result.insertId;
-
-            //     const [result]: unknown = await db.execute(
-            //         `INSERT INTO speakers (name, img, designation, company)
-            //  VALUES (?, ?, ?, ?)`,
-            //         [
-            //             speaker.name,
-            //             speaker.img,
-            //             speaker.designation,
-            //             speaker.company,
-            //         ]
-            //     );
-
-            // const insertId = result.insertId;
 
             return { id: insertId, ...speaker };
         } catch (error) {
@@ -65,7 +53,7 @@ export class SpeakerRepo {
                 `
                 UPDATE speakers
                 SET 
-                img = ?, name = ?, designation = ?, company = ?, updated_at = ?
+                img = ?, name = ?, designation = ?, company = ?, bio = ?, updated_at = ?
                 WHERE id = ?
             `,
                 [
@@ -73,6 +61,7 @@ export class SpeakerRepo {
                     speaker.name,
                     speaker.designation,
                     speaker.company,
+                    speaker.bio,
                     currentTime,
                     speaker.id,
                 ]

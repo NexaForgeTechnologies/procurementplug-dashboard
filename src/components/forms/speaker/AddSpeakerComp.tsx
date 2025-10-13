@@ -22,6 +22,7 @@ const initialFormValues: SpeakerDM = {
   name: "",
   designation: "",
   company: "",
+  bio: "",
 };
 
 const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
@@ -102,6 +103,7 @@ const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
       img: imageUrl,
       designation: formValues.designation,
       company: formValues.company,
+      bio: formValues.bio,
     };
 
     addSpeakerMutation.mutate(newSpeaker);
@@ -201,6 +203,16 @@ const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
                   placeholder="Enter Designation"
                   onChange={(value) => handleChange("designation", value)}
                   value={formValues.designation}
+                />
+              </div>
+              <div className="col-span-2">
+                <InputComponent
+                  label="Bio"
+                  isTextArea
+                  rows={4}
+                  placeholder="Enter Bio"
+                  onChange={(value) => handleChange("bio", value)}
+                  value={formValues.bio}
                 />
               </div>
             </div>

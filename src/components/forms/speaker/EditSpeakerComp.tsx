@@ -27,6 +27,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     name: speaker?.name || "",
     designation: speaker?.designation || "",
     company: speaker?.company || "",
+    bio: speaker?.bio || "",
   };
 
   const [formValues, setFormValues] = useState<SpeakerDM>(initialFormValues);
@@ -106,7 +107,9 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
         name: formValues.name,
         designation: formValues.designation,
         company: formValues.company,
+        bio: formValues.bio,
       });
+
     } catch (error) {
       console.error("Update error:", error);
     } finally {
@@ -210,6 +213,17 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
               placeholder="Enter Designation"
               onChange={(value) => handleChange("designation", value)}
               value={formValues.designation}
+            />
+          </div>
+
+          <div className="col-span-2">
+            <InputComponent
+              label="Bio"
+              isTextArea
+              rows={4}
+              placeholder="Enter Bio"
+              onChange={(value) => handleChange("bio", value)}
+              value={formValues.bio}
             />
           </div>
         </div>
