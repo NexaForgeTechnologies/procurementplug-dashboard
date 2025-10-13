@@ -17,7 +17,6 @@ type SpeakerFormProps = {
   refetchSpeakers: () => void;
 };
 
-// Initial state for form
 const initialFormValues: SpeakerDM = {
   img: "",
   name: "",
@@ -25,16 +24,15 @@ const initialFormValues: SpeakerDM = {
   company: "",
 };
 
-const SpeakerComp: React.FC<SpeakerFormProps> = ({
+const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
   active,
   onClose,
   refetchSpeakers,
 }) => {
   const [formValues, setFormValues] = useState<SpeakerDM>(initialFormValues);
-
-  const [validationErrors, setValidationErrors] = useState({
-    name: false,
-  });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({ name: false });
 
   const handleChange = (field: keyof SpeakerDM, value: string) => {
     setFormValues((prev) => ({
@@ -51,10 +49,10 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
     const errors = {
       name: !formValues.name?.trim(),
     };
-
     setValidationErrors(errors);
     return !Object.values(errors).some((e) => e);
   };
+
   const addSpeakerMutation = useMutation({
     mutationFn: async (data: SpeakerDM) => {
       const response = await axios.post("/api/speakers", data);
@@ -62,19 +60,46 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
     },
     onSuccess: () => {
       refetchSpeakers();
+      setIsSubmitting(false);
       onClose();
     },
     onError: (error) => {
       console.error("Failed to add speaker:", error);
+      alert("Failed to save speaker. Please try again.");
+      setIsSubmitting(false);
     },
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateForm()) return;
+    setIsSubmitting(true);
+
+    let imageUrl = formValues.img;
+
+    // 👇 Upload image only when Save is clicked
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        const res = await fetch("/api/img-uploads", {
+          method: "POST",
+          body: formData,
+        });
+        if (!res.ok) throw new Error("Image upload failed");
+        const data = await res.json();
+        imageUrl = data.url;
+      } catch (error) {
+        console.error("Upload failed:", error);
+        alert("Image upload failed");
+        setIsSubmitting(false);
+        return;
+      }
+    }
 
     const newSpeaker: Omit<SpeakerDM, "id"> = {
       name: formValues.name,
-      img: formValues.img,
+      img: imageUrl,
       designation: formValues.designation,
       company: formValues.company,
     };
@@ -84,10 +109,10 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
 
   useEffect(() => {
     if (active) {
-      setValidationErrors({
-        name: false,
-      });
+      setValidationErrors({ name: false });
       setFormValues(initialFormValues);
+      setSelectedFile(null);
+      setIsSubmitting(false);
     }
   }, [active]);
 
@@ -95,18 +120,45 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
     <>
       {active && (
         <div className="fixed inset-0 bg-black/70 z-50 px-4">
-          <div className="max-w-[570px] max-h-[90vh] scroll overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+          <div className="max-w-[570px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
             <div className="flex justify-between items-center">
               <h2 className="font-medium text-2xl text-[#565656]">
                 Add Speaker
               </h2>
               <div className="flex gap-3">
-                <div
-                  className="bg-green-200 rounded-full p-3 cursor-pointer"
-                  onClick={handleSubmit}
-                >
-                  <IconComponent color="#565656" size={16} name="save" />
-                </div>
+                {isSubmitting ? (
+                  <div className="bg-green-200 rounded-full p-3 flex items-center justify-center">
+                    {/* Loader Spinner */}
+                    <svg
+                      className="animate-spin h-4 w-4 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                      ></path>
+                    </svg>
+                  </div>
+                ) : (
+                  <div
+                    className="bg-green-200 rounded-full p-3 cursor-pointer"
+                    onClick={handleSubmit}
+                  >
+                    <IconComponent color="#565656" size={16} name="save" />
+                  </div>
+                )}
+
                 <div
                   className="bg-red-300 rounded-full p-3 cursor-pointer"
                   onClick={onClose}
@@ -120,7 +172,7 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
               <ImageUpload
                 label="Speaker Image"
                 value={formValues.img}
-                onImageUpload={(img) => handleChange("img", img)}
+                onImageSelect={(file) => setSelectedFile(file)}
               />
             </div>
 
@@ -159,4 +211,4 @@ const SpeakerComp: React.FC<SpeakerFormProps> = ({
   );
 };
 
-export default SpeakerComp;
+export default AddSpeakerComp;

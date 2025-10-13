@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
 
 const s3 = new S3Client({
@@ -39,5 +39,34 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error("S3 upload error:", error);
         return NextResponse.json({ error: "Failed to upload" }, { status: 500 });
+    }
+}
+
+// 🗑️ DELETE IMAGE FROM S3
+export async function DELETE(request: Request) {
+    try {
+        const { url } = await request.json();
+
+        if (!url) {
+            return NextResponse.json({ error: "Missing image URL" }, { status: 400 });
+        }
+
+        // Extract S3 key (everything after .amazonaws.com/)
+        const key = url.split(".amazonaws.com/")[1];
+        if (!key) {
+            return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
+        }
+
+        await s3.send(
+            new DeleteObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET!,
+                Key: key,
+            })
+        );
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("S3 delete error:", error);
+        return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
     }
 }

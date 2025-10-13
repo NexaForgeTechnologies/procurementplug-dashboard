@@ -21,7 +21,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
   onClose,
   refetchSpeakers,
 }) => {
-  // Initial state for form
+  // ✅ Initial values
   const initialFormValues: SpeakerDM = {
     img: speaker?.img || "",
     name: speaker?.name || "",
@@ -30,11 +30,11 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
   };
 
   const [formValues, setFormValues] = useState<SpeakerDM>(initialFormValues);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [validationErrors, setValidationErrors] = useState({ name: false });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [validationErrors, setValidationErrors] = useState({
-    name: false,
-  });
-
+  // ✅ Handle input change
   const handleChange = (field: keyof SpeakerDM, value: string) => {
     setFormValues((prev) => ({
       ...prev,
@@ -46,16 +46,16 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     }
   };
 
+  // ✅ Validate form
   const validateForm = () => {
     const errors = {
       name: !formValues.name?.trim(),
     };
-
     setValidationErrors(errors);
     return !Object.values(errors).some((e) => e);
   };
 
-  // Mutation for updating a speaker
+  // ✅ Mutation for speaker update
   const update = useMutation({
     mutationFn: async (data: SpeakerDM) => {
       const response = await axios.put("/api/speakers", data);
@@ -69,80 +69,152 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
       console.error("Failed to update speaker:", error);
     },
   });
-  const handleUpdate = () => {
-    if (!validateForm()) {
-      return; // Prevent submission if validation fails
+
+  // ✅ Handle form submit
+  const handleUpdate = async () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+
+    try {
+      let imageUrl = formValues.img;
+
+      // 1️⃣ If user selected a new file
+      if (selectedFile) {
+        // Delete old image if exists
+        if (speaker?.img && speaker.img !== "") {
+          await axios.delete("/api/img-uploads", { data: { url: speaker.img } });
+        }
+
+        // Upload new image
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        const uploadRes = await axios.post("/api/img-uploads", formData);
+        imageUrl = uploadRes.data.url;
+      }
+
+      // 2️⃣ If user removed image manually
+      if (!formValues.img && speaker?.img) {
+        await axios.delete("/api/img-uploads", { data: { url: speaker.img } });
+        imageUrl = "";
+      }
+
+      // 3️⃣ Update database
+      await update.mutateAsync({
+        id: speaker?.id,
+        img: imageUrl,
+        name: formValues.name,
+        designation: formValues.designation,
+        company: formValues.company,
+      });
+    } catch (error) {
+      console.error("Update error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-    update.mutate({
-      id: speaker?.id,
-      img: formValues.img,
-      name: formValues.name,
-      designation: formValues.designation,
-      company: formValues.company,
-    });
   };
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/70 z-50 px-4">
-        <div className="max-w-[570px] max-h-[90vh] scroll overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
-          <div className="flex justify-between items-center">
-            <h2 className="font-medium text-2xl text-[#565656]">Edit Speaker</h2>
-            <div className="flex gap-3 items-center">
+    <div className="fixed inset-0 bg-black/70 z-50 px-4">
+      <div className="max-w-[570px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+        <div className="flex justify-between items-center">
+          <h2 className="font-medium text-2xl text-[#565656]">Edit Speaker</h2>
+
+          {/* ✅ Buttons Section */}
+          <div className="flex gap-3 items-center">
+            {isSubmitting ? (
+              <div className="bg-green-200 rounded-full p-3 flex items-center justify-center">
+                <svg
+                  className="animate-spin h-4 w-4 text-gray-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                  ></path>
+                </svg>
+              </div>
+            ) : (
               <div
                 className="bg-green-200 rounded-full p-3 cursor-pointer"
                 onClick={handleUpdate}
               >
                 <IconComponent color="#565656" size={16} name="save" />
               </div>
-              <div
-                className="bg-red-300 rounded-full p-3 cursor-pointer"
-                onClick={onClose}
-              >
-                <IconComponent color="#565656" size={16} name="close" />
-              </div>
-            </div>
-          </div>
+            )}
 
-          <div className="my-4">
-            <ImageUpload
-              label="Speaker Image"
-              value={formValues.img}
-              onImageUpload={(img) => handleChange("img", img)}
-            />
-          </div>
-
-          <div className="grid gap-4 grid-cols-2">
-            <div className="col-span-2">
-              <InputComponent
-                label="Speaker Name"
-                placeholder="Enter Speaker Name"
-                onChange={(value) => handleChange("name", value)}
-                value={formValues.name}
-                required
-                showError={validationErrors.name}
-              />
-            </div>
-            <div className="col-span-2 sm:col-span-1">
-              <InputComponent
-                label="Company"
-                placeholder="Enter Company"
-                onChange={(value) => handleChange("company", value)}
-                value={formValues.company}
-              />
-            </div>
-            <div className="col-span-2 sm:col-span-1">
-              <InputComponent
-                label="Designation"
-                placeholder="Enter Designation"
-                onChange={(value) => handleChange("designation", value)}
-                value={formValues.designation}
-              />
+            <div
+              className="bg-red-300 rounded-full p-3 cursor-pointer"
+              onClick={onClose}
+            >
+              <IconComponent color="#565656" size={16} name="close" />
             </div>
           </div>
         </div>
+
+        {/* ✅ Image Upload */}
+        <div className="my-4">
+          <ImageUpload
+            label="Speaker Image"
+            value={formValues.img}
+            onImageSelect={(file) => {
+              setSelectedFile(file);
+              if (file) {
+                // Temporarily show preview
+                const previewUrl = URL.createObjectURL(file);
+                setFormValues((prev) => ({ ...prev, img: previewUrl }));
+              } else {
+                // Remove image
+                setFormValues((prev) => ({ ...prev, img: "" }));
+              }
+            }}
+          />
+        </div>
+
+        {/* ✅ Input Fields */}
+        <div className="grid gap-4 grid-cols-2">
+          <div className="col-span-2">
+            <InputComponent
+              label="Speaker Name"
+              placeholder="Enter Speaker Name"
+              onChange={(value) => handleChange("name", value)}
+              value={formValues.name}
+              required
+              showError={validationErrors.name}
+            />
+          </div>
+
+          <div className="col-span-2 sm:col-span-1">
+            <InputComponent
+              label="Company"
+              placeholder="Enter Company"
+              onChange={(value) => handleChange("company", value)}
+              value={formValues.company}
+            />
+          </div>
+
+          <div className="col-span-2 sm:col-span-1">
+            <InputComponent
+              label="Designation"
+              placeholder="Enter Designation"
+              onChange={(value) => handleChange("designation", value)}
+              value={formValues.designation}
+            />
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

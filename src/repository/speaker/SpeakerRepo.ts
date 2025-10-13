@@ -87,13 +87,12 @@ export class SpeakerRepo {
 
     static async DeleteSpeaker(id: SpeakerDM) {
         const currentTime = getFormattedTimestamp();
-        console.log(id);
-
         try {
             await db.query(
                 `UPDATE speakers
                     SET 
-                        deleted_at = ? 
+                        deleted_at = ?,
+                        img = '' 
                     WHERE id = ?;`,
                 [currentTime, id]
             );

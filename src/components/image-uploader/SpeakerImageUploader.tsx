@@ -4,58 +4,38 @@ import React, { useRef, useState } from "react";
 
 type Props = {
   label: string;
-  onImageUpload: (imagePath: string) => void;
+  onImageSelect: (file: File | null) => void;
   showError?: boolean;
-  value?: string; // preview if already uploaded
+  value?: string; // optional preview URL if already uploaded
 };
 
-const ImageUpload: React.FC<Props> = ({
-  label,
-  onImageUpload,
-  showError,
-  value,
-}) => {
+const ImageUpload: React.FC<Props> = ({ label, onImageSelect, showError, value }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | undefined>(value);
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    // Create a temporary preview
+    const localPreview = URL.createObjectURL(file);
+    setPreview(localPreview);
 
-    try {
-      const res = await fetch("/api/img-uploads", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Upload failed");
-
-      const data = await res.json();
-      const imagePath = data.url; // e.g. "/uploads/speaker_123.png"
-
-      setPreview(imagePath);
-      onImageUpload(imagePath); // send path to parent
-    } catch (error) {
-      console.error("Upload error:", error);
-      alert("Failed to upload image");
-    }
+    // Pass file to parent for later upload
+    onImageSelect(file);
   };
 
   const handleRemoveImage = () => {
     setPreview(undefined);
-    onImageUpload(""); // notify parent
+    onImageSelect(null);
     if (inputRef.current) inputRef.current.value = "";
   };
 
   return (
     <div className="w-full">
       <div
-        className={`relative border-dashed border-2 ${
-          showError ? "border-red-500" : "border-gray-300"
-        } rounded-md w-full h-50 aspect-square flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100 transition`}
+        className={`relative border-dashed border-2 ${showError ? "border-red-500" : "border-gray-300"
+          } rounded-md w-full h-50 aspect-square flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100 transition`}
         onClick={() => inputRef.current?.click()}
       >
         {preview ? (
