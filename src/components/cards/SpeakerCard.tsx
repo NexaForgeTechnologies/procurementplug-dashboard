@@ -23,7 +23,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // ✅ Mutation for deleting a speaker record
+  // Mutation for deleting a speaker record
   const deleteSpeaker = useMutation({
     mutationFn: async (speakerData: SpeakerDM) => {
       const response = await axios.delete("/api/speakers", {
@@ -39,12 +39,12 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
     },
   });
 
-  // ✅ Handle delete confirmation popup
+  // Handle delete confirmation popup
   const handleDelete = () => {
     setIsConfirmOpen(true);
   };
 
-  // ✅ Confirm deletion logic — delete from S3 first, then DB
+  // Confirm deletion logic — delete from S3 first, then DB
   const confirmDeletion = async () => {
     setIsConfirmOpen(false);
     setIsDeleting(true);
@@ -69,11 +69,11 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
       <div
         style={{ backgroundColor: data.bg_color || "#faf8f5" }}
         className={`relative border px-4 pb-4 pt-14 rounded-xl w-full flex flex-col items-center gap-2 text-center shadow-md transition-transform duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-amber-200 ${data.bg_color
-            ? "text-white border-transparent"
-            : "text-[#363636] border-[#b08d57]"
+          ? "text-white border-transparent"
+          : "text-[#363636] border-[#b08d57]"
           }`}
       >
-        {/* 🧩 Top-right buttons */}
+        {/* Top-right buttons */}
         <div className="absolute top-2 right-2 flex gap-2">
           <button
             onClick={() => openEditForm(data)}
@@ -118,7 +118,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
           )}
         </div>
 
-        {/* 🖼️ Speaker Image */}
+        {/* Speaker Image */}
         <Image
           className="rounded-full w-32 h-32 object-cover"
           src={data?.img ? data.img : "/images/consultant-alternate.png"}
@@ -144,7 +144,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
         </div>
       </div>
 
-      {/* 🧩 Confirm Delete Dialog */}
+      {/* Confirm Delete Dialog */}
       <ConfirmDialog
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}

@@ -31,10 +31,7 @@ const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
   refetchSpeakers,
 }) => {
   const [formValues, setFormValues] = useState<SpeakerDM>(initialFormValues);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState({ name: false });
-
   const handleChange = (field: keyof SpeakerDM, value: string) => {
     setFormValues((prev) => ({
       ...prev,
@@ -45,7 +42,6 @@ const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
       setValidationErrors((prev) => ({ ...prev, [field]: false }));
     }
   };
-
   const validateForm = () => {
     const errors = {
       name: !formValues.name?.trim(),
@@ -53,6 +49,9 @@ const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
     setValidationErrors(errors);
     return !Object.values(errors).some((e) => e);
   };
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addSpeakerMutation = useMutation({
     mutationFn: async (data: SpeakerDM) => {
@@ -70,7 +69,6 @@ const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
       setIsSubmitting(false);
     },
   });
-
   const handleSubmit = async () => {
     if (!validateForm()) return;
     setIsSubmitting(true);
@@ -123,6 +121,7 @@ const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
       {active && (
         <div className="fixed inset-0 bg-black/70 z-50 px-4">
           <div className="max-w-[570px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+
             <div className="flex justify-between items-center">
               <h2 className="font-medium text-2xl text-[#565656]">
                 Add Speaker

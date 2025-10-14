@@ -49,14 +49,9 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
   refetchConsultant,
 }) => {
   const [formValues, setFormValues] = useState<ConsultantDM>(initialFormValues);
-
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [validationErrors, setValidationErrors] = useState({
     name: false,
   });
-
   const handleChange = <K extends keyof ConsultantDM>(
     field: K,
     value: ConsultantDM[K] | null
@@ -70,7 +65,6 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
       setValidationErrors(prev => ({ ...prev, [field]: false }));
     }
   };
-
   const validateForm = () => {
     const errors = {
       name: !formValues.name?.trim(),
@@ -79,6 +73,9 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
     setValidationErrors(errors);
     return !Object.values(errors).some((e) => e);
   };
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addConsultantMutation = useMutation({
     mutationFn: async (data: ConsultantDM) => {
@@ -97,11 +94,12 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
   });
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
     setIsSubmitting(true);
 
     let imageUrl = formValues.img;
 
-    // 👇 Upload image only when Save is clicked
+    // Upload image only when Save is clicked
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -205,7 +203,7 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
 
             <div className="my-4">
               <ImageUpload
-                label="Speaker Image"
+                label="Consultant Image"
                 value={formValues.img}
                 onImageSelect={(file) => setSelectedFile(file)}
               />

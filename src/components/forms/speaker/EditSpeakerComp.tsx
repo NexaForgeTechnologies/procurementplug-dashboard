@@ -21,7 +21,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
   onClose,
   refetchSpeakers,
 }) => {
-  // ✅ Initial values
+  // Initial values
   const initialFormValues: SpeakerDM = {
     img: speaker?.img || "",
     name: speaker?.name || "",
@@ -29,13 +29,8 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     company: speaker?.company || "",
     bio: speaker?.bio || "",
   };
-
   const [formValues, setFormValues] = useState<SpeakerDM>(initialFormValues);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [validationErrors, setValidationErrors] = useState({ name: false });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // ✅ Handle input change
   const handleChange = (field: keyof SpeakerDM, value: string) => {
     setFormValues((prev) => ({
       ...prev,
@@ -46,8 +41,6 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
       setValidationErrors((prev) => ({ ...prev, [field]: false }));
     }
   };
-
-  // ✅ Validate form
   const validateForm = () => {
     const errors = {
       name: !formValues.name?.trim(),
@@ -56,7 +49,10 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     return !Object.values(errors).some((e) => e);
   };
 
-  // ✅ Mutation for speaker update
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Mutation for speaker update
   const update = useMutation({
     mutationFn: async (data: SpeakerDM) => {
       const response = await axios.put("/api/speakers", data);
@@ -70,8 +66,6 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
       console.error("Failed to update speaker:", error);
     },
   });
-
-  // ✅ Handle form submit
   const handleUpdate = async () => {
     if (!validateForm()) return;
 
@@ -120,10 +114,10 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
   return (
     <div className="fixed inset-0 bg-black/70 z-50 px-4">
       <div className="max-w-[570px] max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+
         <div className="flex justify-between items-center">
           <h2 className="font-medium text-2xl text-[#565656]">Edit Speaker</h2>
-
-          {/* ✅ Buttons Section */}
+          {/* Buttons Section */}
           <div className="flex gap-3 items-center">
             {isSubmitting ? (
               <div className="bg-green-200 rounded-full p-3 flex items-center justify-center">
@@ -166,7 +160,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
           </div>
         </div>
 
-        {/* ✅ Image Upload */}
+        {/* Image Upload */}
         <div className="my-4">
           <ImageUpload
             label="Speaker Image"
@@ -185,7 +179,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
           />
         </div>
 
-        {/* ✅ Input Fields */}
+        {/* Input Fields */}
         <div className="grid gap-4 grid-cols-2">
           <div className="col-span-2">
             <InputComponent
