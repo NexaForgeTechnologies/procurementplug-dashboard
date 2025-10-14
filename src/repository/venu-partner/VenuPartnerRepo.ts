@@ -137,7 +137,8 @@ export class VenuPartnerRepo {
             await db.query(
                 `
                 UPDATE venu_partners
-                SET deleted_at = ?
+                SET deleted_at = ?,
+                img = ''
                 WHERE id = ?
                 `,
                 [currentTime, id]

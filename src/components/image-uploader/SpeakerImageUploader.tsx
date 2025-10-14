@@ -6,7 +6,7 @@ type Props = {
   label: string;
   onImageSelect: (file: File | null) => void;
   showError?: boolean;
-  value?: string; // optional preview URL if already uploaded
+  value?: string;
 };
 
 const ImageUpload: React.FC<Props> = ({ label, onImageSelect, showError, value }) => {

@@ -71,11 +71,12 @@ const AddSpeakerComp: React.FC<SpeakerFormProps> = ({
   });
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
     setIsSubmitting(true);
 
     let imageUrl = formValues.img;
 
-    // 👇 Upload image only when Save is clicked
+    // Upload image only when Save is clicked
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
