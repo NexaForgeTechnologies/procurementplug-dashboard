@@ -343,7 +343,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                 value={formValues.snapshots}
               />
             </div>
-            <div className="col-span-2 sm:col-span-1">
+            <div className="col-span-2">
               <CommaInputTextArea
                 label="Recommended For You"
                 placeholder="Enter comma-separated recommendation ( value 1,value 2, ...)"
