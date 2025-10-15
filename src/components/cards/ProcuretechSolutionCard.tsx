@@ -111,11 +111,11 @@ const ProcuretechSolutionCard: React.FC<ProcuretechSolutionProps> = ({
         </div>
 
         <Image
-          className="group-hover:transition-all duration-200 ease-in-out h-32 object-contain"
-          src={data.img || "/default-procuretech.webp"}
-          alt={data.img || "default procuretech"}
-          width={240}   // or remove width/height props if using next/image
-          height={240}
+          className="rounded-md h-36 w-full object-cover my-2"
+          src={data.img || "/images/default-rectangle.webp"}
+          alt={"Procuretech Solution Image"}
+          width={150}
+          height={150}
         />
 
         <h2 className="text-xl md:text-2xl font-extrabold">{data.name}</h2>

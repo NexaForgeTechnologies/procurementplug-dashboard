@@ -121,7 +121,7 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
         {/* Speaker Image */}
         <Image
           className="rounded-full w-32 h-32 object-cover"
-          src={data?.img ? data.img : "/images/consultant-alternate.png"}
+          src={data.img || "/images/default-circle.png"}
           alt="Speaker Image"
           width={130}
           height={130}
