@@ -10,7 +10,7 @@ import { ConsultantDM } from "@/domain-models/consultant/ConsultantDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
+import CircularImageUploader from "@/components/image-uploader/CircularImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
 
@@ -202,7 +202,7 @@ const AddConsultingPartner: React.FC<ConsultingFormProps> = ({
             </div>
 
             <div className="my-4">
-              <ImageUpload
+              <CircularImageUploader
                 label="Consultant Image"
                 value={formValues.img}
                 onImageSelect={(file) => setSelectedFile(file)}

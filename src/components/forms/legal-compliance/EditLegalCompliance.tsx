@@ -8,7 +8,7 @@ import { LegalComplianceDM } from "@/domain-models/legal-compliance/LegalComplia
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
+import CircularImageUploader from "@/components/image-uploader/CircularImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
 import MultipleImageUpload from "@/components/input-comps/ImgUploader";
@@ -139,7 +139,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                     </div>
 
                     <div className="my-4">
-                        <ImageUpload
+                        <CircularImageUploader
                             label="Legal & Compliance Image"
                             value={formValues.img}
                             onImageUpload={(img) => handleChange("img", img)}

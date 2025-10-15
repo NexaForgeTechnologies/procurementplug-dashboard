@@ -8,7 +8,7 @@ import { VenuPartnerDM } from "@/domain-models/venue-partner/VenuePartnerDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/image-uploader/VenuePartnerImgUploader";
+import RectangularImgUploader from "@/components/image-uploader/RectangularImgUploader";
 import DropdownComp from "@/components/select/DropdownComp";
 
 import { useGeneric } from "@/hooks/useGeneric";
@@ -181,7 +181,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
           </div>
 
           <div className="my-4">
-            <ImageUpload
+            <RectangularImgUploader
               label="Venue Partner Image (16:9 ratio)"
               value={formValues.img}
               onImageSelect={(file) => {

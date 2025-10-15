@@ -8,7 +8,7 @@ import { ProcuretechSolutionDM } from "@/domain-models/procuretech-solution/Proc
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/image-uploader/VenuePartnerImgUploader";
+import RectangularImgUploader from "@/components/image-uploader/RectangularImgUploader";
 import List from "@/components/input-comps/ListItemComponent";
 
 import { useProcuretechTypes } from "@/hooks/useProcuretechType";
@@ -148,7 +148,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
 
                     <div className="grid gap-4 grid-cols-2 mt-8">
                         <div className="col-span-2">
-                            <ImageUpload
+                            <RectangularImgUploader
                                 label="ProcureTech Solution Image"
                                 value={formValues.img}
                                 onImageUpload={(img) => handleChange("img", img)}

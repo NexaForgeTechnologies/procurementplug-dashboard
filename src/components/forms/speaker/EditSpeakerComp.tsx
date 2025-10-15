@@ -8,7 +8,7 @@ import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
 
 import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/image-uploader/SpeakerImageUploader";
+import CircularImageUploader from "@/components/image-uploader/CircularImageUploader";
 
 type SpeakerFormProps = {
   speaker?: SpeakerDM;
@@ -162,7 +162,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
 
         {/* Image Upload */}
         <div className="my-4">
-          <ImageUpload
+          <CircularImageUploader
             label="Speaker Image"
             value={formValues.img}
             onImageSelect={(file) => {
