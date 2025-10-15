@@ -111,7 +111,7 @@ const ProcuretechSolutionCard: React.FC<ProcuretechSolutionProps> = ({
         </div>
 
         <Image
-          className="group-hover:transition-all duration-200 ease-in-out"
+          className="group-hover:transition-all duration-200 ease-in-out h-32 object-contain"
           src={data.img || "/default-procuretech.webp"}
           alt={data.img || "default procuretech"}
           width={240}   // or remove width/height props if using next/image

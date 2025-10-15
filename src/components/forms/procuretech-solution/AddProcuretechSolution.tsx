@@ -32,16 +32,19 @@ const initialFormValues: ProcuretechSolutionDM = {
   overview: "",
   key_features: [],
   develpment: "",
-  integration: "",
   pricing: "",
+  integration: "",
+  snapshots: "",
   recommended: "",
 
   deployment_model_id: undefined,
   deployment_model_name: "",
-  pricing_model_id: undefined,
-  pricing_model_name: "",
   integration_model_id: undefined,
   integration_model_name: "",
+  pricing_model_id: undefined,
+  pricing_model_name: "",
+  snapshots_model_id: undefined,
+  snapshots_model_name: "",
 
   created_at: "",
   updated_at: "",
@@ -304,8 +307,8 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
 
               <div className="col-span-2 sm:col-span-1">
                 <CommaInputTextArea
-                  label="Development Model"
-                  placeholder="Enter comma-separated development models ( model 1, model 2, ...)"
+                  label="Development"
+                  placeholder="Enter comma-separated development ( development 1, development 2, ...)"
                   onChange={(val) => handleChange("develpment", val)}
                   rows={5}
                 />
@@ -313,8 +316,17 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
 
               <div className="col-span-2 sm:col-span-1">
                 <CommaInputTextArea
-                  label="Pricing Models"
-                  placeholder="Enter comma-separated pricing models ( model 1, model 2, ...)"
+                  label="Integration"
+                  placeholder="Enter comma-separated integration ( integration 1, integration 2, ...)"
+                  onChange={(val) => handleChange("integration", val)}
+                  rows={5}
+                />
+              </div>
+
+              <div className="col-span-2 sm:col-span-1">
+                <CommaInputTextArea
+                  label="Pricing"
+                  placeholder="Enter comma-separated pricing ( pricing 1, pricing 2, ...)"
                   onChange={(val) => handleChange("pricing", val)}
                   rows={5}
                 />
@@ -322,9 +334,9 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
 
               <div className="col-span-2 sm:col-span-1">
                 <CommaInputTextArea
-                  label="Integration Models"
-                  placeholder="Enter comma-separated integration models ( model 1, model 2, ...)"
-                  onChange={(val) => handleChange("integration", val)}
+                  label="DEI Snapshots"
+                  placeholder="Enter comma-separated DEI snapshots ( snapshots 1, snapshots 2, ...)"
+                  onChange={(val) => handleChange("snapshots", val)}
                   rows={5}
                 />
               </div>

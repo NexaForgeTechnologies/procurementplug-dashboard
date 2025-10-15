@@ -28,8 +28,6 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
   onClose,
   refetchProcuretech,
 }) => {
-  console.log(procuretech);
-
 
   // Initial state for form
   const initialFormValues: ProcuretechSolutionDM = {
@@ -43,6 +41,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
     develpment: procuretech?.develpment,
     integration: procuretech?.integration,
     pricing: procuretech?.pricing,
+    snapshots: procuretech?.snapshots,
     recommended: procuretech?.recommended,
 
     deployment_model_id: procuretech?.deployment_model_id,
@@ -311,7 +310,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
             <div className="col-span-2 sm:col-span-1">
               <CommaInputTextArea
                 label="Development"
-                placeholder="Enter comma-separated development ( model 1, model 2, ...)"
+                placeholder="Enter comma-separated development ( development 1, development 2, ...)"
                 onChange={(val) => handleChange("develpment", val)}
                 rows={5}
                 value={formValues.develpment}
@@ -319,8 +318,17 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
             </div>
             <div className="col-span-2 sm:col-span-1">
               <CommaInputTextArea
-                label="Pricing Models"
-                placeholder="Enter comma-separated pricing models ( model 1, model 2, ...)"
+                label="Integration"
+                placeholder="Enter comma-separated integration ( integration 1, integration 2, ...)"
+                onChange={(val) => handleChange("integration", val)}
+                rows={5}
+                value={formValues.integration}
+              />
+            </div>
+            <div className="col-span-2 sm:col-span-1">
+              <CommaInputTextArea
+                label="Pricing"
+                placeholder="Enter comma-separated pricing ( pricing 1, pricing 2, ...)"
                 onChange={(val) => handleChange("pricing", val)}
                 rows={5}
                 value={formValues.pricing}
@@ -328,11 +336,11 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
             </div>
             <div className="col-span-2 sm:col-span-1">
               <CommaInputTextArea
-                label="Integration Models"
-                placeholder="Enter comma-separated integration models ( model 1, model 2, ...)"
-                onChange={(val) => handleChange("integration", val)}
+                label="DEI Snapshots"
+                placeholder="Enter comma-separated DEI snapshots ( snapshots 1, snapshots 2, ...)"
+                onChange={(val) => handleChange("snapshots", val)}
                 rows={5}
-                value={formValues.integration}
+                value={formValues.snapshots}
               />
             </div>
             <div className="col-span-2 sm:col-span-1">

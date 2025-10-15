@@ -7,16 +7,19 @@ export interface ProcuretechSolutionDM {
     overview?: string;
     key_features?: string[];
     develpment?: string;
-    integration?: string;
     pricing?: string;
+    integration?: string;
+    snapshots?: string;
     recommended?: string;
 
     deployment_model_id?: number;
     deployment_model_name?: string;
-    pricing_model_id?: number;
-    pricing_model_name?: string;
     integration_model_id?: number;
     integration_model_name?: string;
+    pricing_model_id?: number;
+    pricing_model_name?: string;
+    snapshots_model_id?: number,
+    snapshots_model_name?: string,
 
     procuretech_type_id?: number;
     procuretech_type_name?: string;
