@@ -10,11 +10,10 @@ import IconComponent from "@/components/icon/IconComp";
 import InputComponent from "@/components/input-comps/InputTxt";
 import RectangularImgUploader from "@/components/image-uploader/RectangularImgUploader";
 import List from "@/components/input-comps/ListItemComponent";
-
-import { useProcuretechTypes } from "@/hooks/useProcuretechType";
 import DropdownComp from "@/components/select/DropdownComp";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 
+import { useProcuretechTypes } from "@/hooks/useProcuretechType";
 import { useGeneric } from "@/hooks/useGeneric";
 
 type ProcureTechSolutionProps = {
@@ -55,11 +54,6 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
   refetchProcuretech,
 }) => {
   const [formValues, setFormValues] = useState<ProcuretechSolutionDM>(initialFormValues);
-
-  const [validationErrors, setValidationErrors] = useState({
-    name: false,
-  });
-
   const handleChange = <K extends keyof ProcuretechSolutionDM>(
     field: K,
     value: ProcuretechSolutionDM[K] | null
@@ -73,7 +67,9 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
       setValidationErrors(prev => ({ ...prev, [field]: false }));
     }
   };
-
+  const [validationErrors, setValidationErrors] = useState({
+    name: false,
+  });
   const validateForm = () => {
     const errors = {
       name: !formValues.name?.trim(),
@@ -82,6 +78,9 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
     setValidationErrors(errors);
     return !Object.values(errors).some((e) => e);
   };
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addProcureTechSolution = useMutation({
     mutationFn: async (data: ProcuretechSolutionDM) => {
@@ -96,13 +95,40 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
       console.error("Failed to add LegalCompliance:", error);
     },
   });
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    const newProcuretechSolution: Omit<ProcuretechSolutionDM, "id"> = formValues
+    setIsSubmitting(true);
 
-    addProcureTechSolution.mutate(newProcuretechSolution);
+    let imageUrl = formValues.img;
 
+    // Upload image only when Save is clicked
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        const res = await fetch("/api/img-uploads", {
+          method: "POST",
+          body: formData,
+        });
+        if (!res.ok) throw new Error("Image upload failed");
+        const data = await res.json();
+        imageUrl = data.url;
+      } catch (error) {
+        console.error("Upload failed:", error);
+        alert("Image upload failed");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    const newVenuePartner: Omit<ProcuretechSolutionDM, "id"> = {
+      ...formValues,
+      img: imageUrl,
+    };
+
+    addProcureTechSolution.mutate(newVenuePartner);
   };
 
   useEffect(() => {
@@ -111,6 +137,8 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
         name: false,
       });
       setFormValues(initialFormValues);
+      setSelectedFile(null);
+      setIsSubmitting(false);
     }
   }, [active]);
 
@@ -123,11 +151,9 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
     value: t.value!
   }));
 
-
   const handleKeyFeaturesChange = (keyFeatures: string[]) => {
     handleChange("key_features", keyFeatures)
   };
-
 
   // fetching extra information like industry, location etc
   const { data: deploymentModel } = useGeneric("deployment_model");
@@ -139,17 +165,44 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
       {active && (
         <div className="fixed inset-0 bg-black/70 z-50 px-4">
           <div className="max-w-[670px] max-h-[90vh] scroll overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+
             <div className="flex justify-between items-center">
               <h2 className="font-medium text-2xl text-[#565656]">
                 Add Procuretech Solution
               </h2>
               <div className="flex gap-3">
-                <div
-                  className="bg-green-200 rounded-full p-3 cursor-pointer"
-                  onClick={handleSubmit}
-                >
-                  <IconComponent color="#565656" size={16} name="save" />
-                </div>
+                {isSubmitting ? (
+                  <div className="bg-green-200 rounded-full p-3 flex items-center justify-center">
+                    {/* Loader Spinner */}
+                    <svg
+                      className="animate-spin h-4 w-4 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                      ></path>
+                    </svg>
+                  </div>
+                ) : (
+                  <div
+                    className="bg-green-200 rounded-full p-3 cursor-pointer"
+                    onClick={handleSubmit}
+                  >
+                    <IconComponent color="#565656" size={16} name="save" />
+                  </div>
+                )}
                 <div
                   className="bg-red-300 rounded-full p-3 cursor-pointer"
                   onClick={onClose}
@@ -164,7 +217,7 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
                 <RectangularImgUploader
                   label="ProcureTech Solution Image"
                   value={formValues.img}
-                  onImageUpload={(img) => handleChange("img", img)}
+                  onImageSelect={(file) => setSelectedFile(file)}
                 />
               </div>
 
@@ -217,6 +270,7 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
                   value={formValues.pricing_model_name || ""}
                 />
               </div>
+
               <div className="col-span-2 sm:col-span-1">
                 <DropdownComp
                   label="Integration Modal"
@@ -256,6 +310,7 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
                   rows={5}
                 />
               </div>
+
               <div className="col-span-2 sm:col-span-1">
                 <CommaInputTextArea
                   label="Pricing Models"
@@ -264,6 +319,7 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
                   rows={5}
                 />
               </div>
+
               <div className="col-span-2 sm:col-span-1">
                 <CommaInputTextArea
                   label="Integration Models"
@@ -272,6 +328,7 @@ const AddLegalCompliance: React.FC<ProcureTechSolutionProps> = ({
                   rows={5}
                 />
               </div>
+
               <div className="col-span-2 sm:col-span-1">
                 <CommaInputTextArea
                   label="Recommended For You"

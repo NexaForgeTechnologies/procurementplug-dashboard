@@ -70,8 +70,8 @@ export class ProcuretechRepo {
                 pricing_model_name: row.pricing_model_name,
                 integration_model_id: row.integration_model_id,
                 integration_model_name: row.integration_model_name,
-                procuretech_type_id: row.procuretech_type_id,
-                procuretech_type_name: row.procuretech_type_name,
+                procuretech_type_id: row.type_id,
+                procuretech_type_name: row.type_name,
                 created_at: row.created_at,
                 updated_at: row.updated_at,
                 deleted_at: row.deleted_at,
@@ -82,32 +82,134 @@ export class ProcuretechRepo {
         }
     }
 
+    // static async addProcuretechSolution(
+    //     solution: Omit<ProcuretechSolutionDM, "id" | "created_at" | "updated_at" | "deleted_at">
+    // ): Promise<ProcuretechSolutionDM> {
+    //     try {
+    //         const [result] = await db.execute(
+    //             `INSERT INTO procuretech_solutions (
+    //             img,
+    //             name,
+    //             type_id,
+    //             overview,
+    //             key_features,
+    //             develpment,
+    //             integration,
+    //             pricing,
+    //             recommended,
+    //             deployment_model_id,
+    //             pricing_model_id,
+    //             integration_model_id,
+    //             procuretech_type_id
+    //         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    //             [
+    //                 solution.img ?? null,
+    //                 solution.name ?? null,
+    //                 solution.type_id ?? null,
+    //                 solution.overview ?? null,
+    //                 JSON.stringify(solution.key_features || []),
+    //                 solution.develpment,
+    //                 solution.integration,
+    //                 solution.pricing,
+    //                 solution.recommended,
+    //                 solution.deployment_model_id ?? null,
+    //                 solution.pricing_model_id ?? null,
+    //                 solution.integration_model_id ?? null,
+    //                 solution.procuretech_type_id ?? null,
+    //             ]
+    //         ) as [ResultSetHeader, unknown];
+
+    //         return {
+    //             id: result.insertId,
+    //             ...solution,
+    //             created_at: new Date().toISOString(),
+    //             updated_at: new Date().toISOString(),
+    //             deleted_at: null,
+    //         };
+    //     } catch (error) {
+    //         console.error("Error inserting procuretech solution:", error);
+    //         throw new Error("Failed to insert procuretech solution");
+    //     }
+    // }
+
+    // static async updateProcuretechSolution(solution: ProcuretechSolutionDM) {
+    //     try {
+    //         const currentTime = getFormattedTimestamp();
+
+    //         await db.execute(
+    //             `UPDATE procuretech_solutions
+    //              SET 
+    //                 img = ?,
+    //                 name = ?,
+    //                 type_id = ?,
+    //                 overview = ?,
+    //                 key_features = ?,
+    //                 develpment = ?,
+    //                 integration = ?,
+    //                 pricing = ?,
+    //                 recommended = ?,
+    //                 deployment_model_id = ?,
+    //                 pricing_model_id = ?,
+    //                 integration_model_id = ?,
+    //                 procuretech_type_id = ?,
+    //                 updated_at = ?
+    //              WHERE id = ?`,
+    //             [
+    //                 this.toNull(solution.img),
+    //                 this.toNull(solution.name),
+    //                 this.toNull(solution.type_id),
+    //                 this.toNull(solution.overview),
+    //                 this.toNull(safeJsonStringify((JSON.stringify(solution.key_features || [])))),
+    //                 this.toNull(solution.develpment),
+    //                 this.toNull(solution.integration),
+    //                 this.toNull(solution.pricing),
+    //                 this.toNull(solution.recommended),
+    //                 this.toNull(solution.deployment_model_id),
+    //                 this.toNull(solution.pricing_model_id),
+    //                 this.toNull(solution.integration_model_id),
+    //                 this.toNull(solution.procuretech_type_id),
+    //                 currentTime,
+    //                 this.toNull(solution.id),
+    //             ]
+    //         );
+
+    //         return { message: "Procuretech solution updated successfully" };
+    //     } catch (error) {
+    //         console.error("Error updating procuretech solution:", error);
+    //         throw new Error("Unable to update procuretech solution");
+    //     }
+    // }
     static async addProcuretechSolution(
         solution: Omit<ProcuretechSolutionDM, "id" | "created_at" | "updated_at" | "deleted_at">
     ): Promise<ProcuretechSolutionDM> {
         try {
+            // ✅ Prevent double JSON encoding
+            const keyFeaturesToSave = Array.isArray(solution.key_features)
+                ? JSON.stringify(solution.key_features)
+                : solution.key_features || "[]";
+
             const [result] = await db.execute(
                 `INSERT INTO procuretech_solutions (
-                img,
-                name,
-                type_id,
-                overview,
-                key_features,
-                develpment,
-                integration,
-                pricing,
-                recommended,
-                deployment_model_id,
-                pricing_model_id,
-                integration_model_id,
-                procuretech_type_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        img,
+        name,
+        type_id,
+        overview,
+        key_features,
+        develpment,
+        integration,
+        pricing,
+        recommended,
+        deployment_model_id,
+        pricing_model_id,
+        integration_model_id,
+        procuretech_type_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     solution.img ?? null,
                     solution.name ?? null,
                     solution.type_id ?? null,
                     solution.overview ?? null,
-                    JSON.stringify(solution.key_features || []),
+                    keyFeaturesToSave,
                     solution.develpment,
                     solution.integration,
                     solution.pricing,
@@ -136,30 +238,35 @@ export class ProcuretechRepo {
         try {
             const currentTime = getFormattedTimestamp();
 
+            // ✅ Prevent double JSON encoding
+            const keyFeaturesToSave = Array.isArray(solution.key_features)
+                ? JSON.stringify(solution.key_features)
+                : solution.key_features || "[]";
+
             await db.execute(
                 `UPDATE procuretech_solutions
-                 SET 
-                    img = ?,
-                    name = ?,
-                    type_id = ?,
-                    overview = ?,
-                    key_features = ?,
-                    develpment = ?,
-                    integration = ?,
-                    pricing = ?,
-                    recommended = ?,
-                    deployment_model_id = ?,
-                    pricing_model_id = ?,
-                    integration_model_id = ?,
-                    procuretech_type_id = ?,
-                    updated_at = ?
-                 WHERE id = ?`,
+       SET 
+          img = ?,
+          name = ?,
+          type_id = ?,
+          overview = ?,
+          key_features = ?,
+          develpment = ?,
+          integration = ?,
+          pricing = ?,
+          recommended = ?,
+          deployment_model_id = ?,
+          pricing_model_id = ?,
+          integration_model_id = ?,
+          procuretech_type_id = ?,
+          updated_at = ?
+       WHERE id = ?`,
                 [
                     this.toNull(solution.img),
                     this.toNull(solution.name),
                     this.toNull(solution.type_id),
                     this.toNull(solution.overview),
-                    this.toNull(safeJsonStringify((JSON.stringify(solution.key_features || [])))),
+                    this.toNull(keyFeaturesToSave),
                     this.toNull(solution.develpment),
                     this.toNull(solution.integration),
                     this.toNull(solution.pricing),
@@ -180,13 +287,15 @@ export class ProcuretechRepo {
         }
     }
 
+
     static async deleteProcuretechSolution(id: number) {
         try {
             const currentTime = getFormattedTimestamp();
 
             await db.execute(
                 `UPDATE procuretech_solutions
-                 SET deleted_at = ?
+                 SET deleted_at = ?,
+                 img = NULL
                  WHERE id = ?`,
                 [currentTime, id]
             );
