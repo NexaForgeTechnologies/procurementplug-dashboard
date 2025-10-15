@@ -170,11 +170,11 @@ export class LegalComplianceRepo {
 
     static async DeleteLegalCompliance(id: number): Promise<{ message: string }> {
         const currentTime = getFormattedTimestamp();
-
         try {
             await db.query(
                 `UPDATE legal_compliance
-                 SET deleted_at = ?
+                 SET deleted_at = ?,
+                 img = NULL
                  WHERE id = ?`,
                 [currentTime, id]
             );

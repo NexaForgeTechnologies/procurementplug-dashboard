@@ -70,7 +70,6 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
     const errors = {
       name: !formValues.name?.trim(),
     };
-
     setValidationErrors(errors);
     return !Object.values(errors).some((e) => e);
   };
