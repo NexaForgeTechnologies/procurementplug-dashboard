@@ -37,10 +37,6 @@ const EventComp: React.FC<EventProps> = ({ data, refetchEvents, openEditForm }) 
         setIsConfirmOpen(true);
     };
 
-    // const confirmDeletion = async () => {
-    //     deleteEvent.mutate({ id: data.id });
-    //     setIsConfirmOpen(false);
-    // };
     const confirmDeletion = async () => {
         setIsConfirmOpen(false);
         setIsDeleting(true);
@@ -85,13 +81,38 @@ const EventComp: React.FC<EventProps> = ({ data, refetchEvents, openEditForm }) 
                     >
                         ✏️
                     </button>
-                    <button
-                        onClick={handleDelete}
-                        className="cursor-pointer p-2 bg-white/90 hover:bg-red-100 text-red-600 rounded-full shadow-md transition-all duration-200"
-                        title="Delete"
-                    >
-                        🗑️
-                    </button>
+                    {isDeleting ? (
+                        <div className="p-2 bg-white/90 rounded-full shadow-md flex items-center justify-center">
+                            <svg
+                                className="animate-spin h-4 w-4 text-red-600"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                ></circle>
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                                ></path>
+                            </svg>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleDelete}
+                            className="cursor-pointer p-2 bg-white/90 hover:bg-red-100 text-red-600 rounded-full shadow-md transition-all duration-200"
+                            title="Delete"
+                        >
+                            🗑️
+                        </button>
+                    )}
                 </div>
 
                 <h3 className="text-[20px] font-semibold text-[#85009D] mb-3">{data.event_name}</h3>

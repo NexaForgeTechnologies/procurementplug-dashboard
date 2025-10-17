@@ -16,7 +16,6 @@ import MultiSelect from "@/components/select-comps/MultiSelectSpeakers";
 import PdfUploader from "@/components/PdfUploader";
 import IconComponent from "@/components/icon/IconComp";
 import DropdownComp from "@/components/select/DropdownComp";
-import CalendarPicker from "@/components/input-comps/CalendarComp";
 import CalendarDateTimePicker from "@/components/input-comps/CalendarComp";
 
 type EventFormProps = {

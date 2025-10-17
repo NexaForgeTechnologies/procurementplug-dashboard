@@ -11,11 +11,10 @@ import InputComponent from "@/components/input-comps/InputTxt";
 import CircularImageUploader from "@/components/image-uploader/CircularImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
-import MultipleImageUpload from "@/components/image-uploader/MultiRectangularImgUploader";
 import ServicesList from "@/components/input-comps/ListItemComponent";
+import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectangularImgUploader";
 
 import { useGeneric } from "@/hooks/useGeneric";
-import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectangularImgUploader";
 
 type SpeakerFormProps = {
    compliance?: LegalComplianceDM;
