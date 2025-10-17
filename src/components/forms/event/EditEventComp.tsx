@@ -11,9 +11,10 @@ import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
 
 import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/input-comps/ImgUploader";
+import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectangularImgUploader";
 import MultiSelect from "@/components/select-comps/MultiSelectSpeakers";
 import PdfUploader from "@/components/PdfUploader";
+import IconComponent from "@/components/icon/IconComp";
 
 type EventFormProps = {
   event?: EventDM;
@@ -26,7 +27,6 @@ const EditEventForm: React.FC<EventFormProps> = ({
   onClose,
   refetchEvents,
 }) => {
-  console.log(event);
 
   // Initial state for form
   const initialFormValues: EventDM = {
@@ -65,9 +65,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
     hightlight_subheading_2: event?.hightlight_subheading_2 || "",
     hightlight_subdetail_2: event?.hightlight_subdetail_2 || "",
   };
-
   const [formValues, setFormValues] = useState<EventDM>(initialFormValues);
-
   const handleChange = (
     field: keyof EventDM,
     value: string | number[] | string[]
@@ -77,6 +75,9 @@ const EditEventForm: React.FC<EventFormProps> = ({
       [field]: value,
     }));
   };
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
     const response = await axios.get<SpeakerDM[]>("/api/speakers");
@@ -182,7 +183,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
   }, [workshopSections]);
 
   // Updated form submission logic
-  const addEventMutation = useMutation({
+  const update = useMutation({
     mutationFn: async (data: EventDM) => {
       const response = await axios.put("/api/events", data);
       return response.data;
@@ -195,9 +196,58 @@ const EditEventForm: React.FC<EventFormProps> = ({
       console.error("Failed to add event:", error);
     },
   });
-  const handleSubmit = () => {
-    const newEvent: EventDM = formValues;
-    addEventMutation.mutate(newEvent);
+  const handleSubmit = async () => {
+
+    setIsSubmitting(true);
+
+    try {
+      let imageUrls: string[] = formValues.collaboration || [];
+
+      // 🧩 Step 1 — Handle deleted images
+      // Compare old event images with current form values
+      const oldUrls = event?.collaboration || []; // from DB
+      const removedUrls = oldUrls.filter((url: string) => !imageUrls.includes(url));
+
+      // Delete removed images from S3
+      if (removedUrls.length > 0) {
+        await Promise.all(
+          removedUrls.map(async (url) =>
+            axios.delete("/api/img-uploads", { data: { url } })
+          )
+        );
+      }
+
+      // 🧩 Step 2 — Upload new images if any selected
+      if (selectedFiles.length > 0) {
+        const formData = new FormData();
+        selectedFiles.forEach((file) => formData.append("file", file));
+
+        const res = await fetch("/api/img-uploads", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Image upload failed");
+
+        const data = await res.json();
+        const uploadedUrls = data.urls || [data.url];
+
+        // Combine existing URLs + new uploads
+        imageUrls = [...imageUrls.filter((url) => !removedUrls.includes(url)), ...uploadedUrls];
+      }
+
+      // 🧩 Step 3 — Update event in DB
+      await update.mutateAsync({
+        ...formValues,
+        collaboration: imageUrls,
+        id: event?.id, // your existing event id
+      });
+    } catch (error) {
+      console.error("Update error:", error);
+      alert("Failed to update event");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -210,12 +260,38 @@ const EditEventForm: React.FC<EventFormProps> = ({
           <div className="flex justify-between items-center">
             <h2 className="font-semibold text-2xl text-[#565656]">Edit Event</h2>
             <div className="flex gap-3">
-              <div
-                className="bg-green-200 rounded-full p-3 cursor-pointer"
-                onClick={handleSubmit}
-              >
-                <Icon color="#565656" size={16} name="save" />
-              </div>
+              {isSubmitting ? (
+                <div className="bg-green-200 rounded-full p-3 flex items-center justify-center">
+                  {/* Loader Spinner */}
+                  <svg
+                    className="animate-spin h-4 w-4 text-gray-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                <div
+                  className="bg-green-200 rounded-full p-3 cursor-pointer"
+                  onClick={handleSubmit}
+                >
+                  <IconComponent color="#565656" size={16} name="save" />
+                </div>
+              )}
               <div
                 className="bg-red-300 rounded-full p-3 cursor-pointer"
                 onClick={onClose}
@@ -249,13 +325,24 @@ const EditEventForm: React.FC<EventFormProps> = ({
                   />
                 </div>
                 <div className="col-span-2">
-                  <ImageUpload
-                    label="In Collaboration With"
-                    multiple
+                  <MultiRectangularImgUploader
+                    label="In Collaboration With (You can upload multiple)"
                     value={formValues.collaboration}
-                    onImageUpload={(paths) =>
-                      handleChange("collaboration", paths)
-                    }
+                    onImageUpload={(files) => {
+                      if (files && files.length > 0) {
+                        // Only keep selected files for upload, not for preview in formValues
+                        setSelectedFiles((prev) => [...(prev || []), ...files]);
+                      } else {
+                        setSelectedFiles([]);
+                      }
+                    }}
+                    onImageRemove={(url) => {
+                      // Remove from collaboration array immediately
+                      setFormValues((prev) => ({
+                        ...prev,
+                        collaboration: prev.collaboration?.filter((img) => img !== url),
+                      }));
+                    }}
                   />
                 </div>
                 <div className="col-span-2">
@@ -425,13 +512,13 @@ const EditEventForm: React.FC<EventFormProps> = ({
                   }
                   value={formValues.event_highlight_detail}
                 />
-                <ImageUpload
+                {/* <MultiRectangularImgUploader
                   label="Events Highlight"
                   value={formValues.event_highlight_img}
                   onImageUpload={(event_highlight_img) =>
                     handleChange("event_highlight_img", event_highlight_img)
                   }
-                />
+                /> */}
                 <InputText
                   label="Heading"
                   placeholder="Enter Highlights Heading"

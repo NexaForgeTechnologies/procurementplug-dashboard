@@ -158,15 +158,13 @@ export class EventRepo {
 
     static async DeleteEvent(id: EventDM) {
         const currentTime = getFormattedTimestamp();
-        console.log(id);
 
         try {
             await db.query(
                 `UPDATE event
-                    SET 
-                        deleted_at = ? 
-                    WHERE id = ?;`,
-                [currentTime, id]
+     SET deleted_at = ?, collaboration = ?
+     WHERE id = ?;`,
+                [currentTime, JSON.stringify([]), id]
             );
         } catch (error) {
             console.error("Error deleting event:", error);

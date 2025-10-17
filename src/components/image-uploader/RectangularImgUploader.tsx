@@ -9,7 +9,7 @@ type Props = {
   value?: string;
 };
 
-const ImageUpload: React.FC<Props> = ({ label, onImageSelect, showError, value }) => {
+const RectangularImgUploader: React.FC<Props> = ({ label, onImageSelect, showError, value }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | undefined>(value);
 
@@ -77,4 +77,4 @@ const ImageUpload: React.FC<Props> = ({ label, onImageSelect, showError, value }
   );
 };
 
-export default ImageUpload;
+export default RectangularImgUploader;

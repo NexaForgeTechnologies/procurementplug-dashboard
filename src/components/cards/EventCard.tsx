@@ -13,6 +13,10 @@ type EventProps = {
 };
 
 const EventComp: React.FC<EventProps> = ({ data, refetchEvents, openEditForm }) => {
+
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     // Mutation for deleting a event
     const deleteEvent = useMutation({
         mutationFn: async (data: EventDM) => {
@@ -29,16 +33,43 @@ const EventComp: React.FC<EventProps> = ({ data, refetchEvents, openEditForm }) 
         },
     });
 
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-
     const handleDelete = () => {
         setIsConfirmOpen(true);
     };
 
-    const confirmDeletion = () => {
-        deleteEvent.mutate({ id: data.id });
+    // const confirmDeletion = async () => {
+    //     deleteEvent.mutate({ id: data.id });
+    //     setIsConfirmOpen(false);
+    // };
+    const confirmDeletion = async () => {
         setIsConfirmOpen(false);
+        setIsDeleting(true);
+
+        try {
+            // 🗑️ Delete all collaboration images from AWS S3
+            if (Array.isArray(data.collaboration) && data.collaboration.length > 0) {
+                await Promise.all(
+                    data.collaboration.map(async (url) => {
+                        if (!url) return;
+                        try {
+                            await axios.delete("/api/img-uploads", { data: { url } });
+                        } catch (err) {
+                            console.error(`❌ Failed to delete image: ${url}`, err);
+                        }
+                    })
+                );
+            }
+
+            // 🗑️ Finally delete the event record
+            await deleteEvent.mutateAsync({ id: data.id });
+        } catch (error) {
+            console.error("Error deleting event and images:", error);
+        } finally {
+            setIsDeleting(false);
+        }
     };
+
+
 
     return (
         <>

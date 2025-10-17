@@ -11,10 +11,11 @@ import InputComponent from "@/components/input-comps/InputTxt";
 import CircularImageUploader from "@/components/image-uploader/CircularImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
-import MultipleImageUpload from "@/components/input-comps/ImgUploader";
+import MultipleImageUpload from "@/components/image-uploader/MultiRectangularImgUploader";
 import ServicesList from "@/components/input-comps/ListItemComponent";
 
 import { useGeneric } from "@/hooks/useGeneric";
+import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectangularImgUploader";
 
 type LegalComplianceProps = {
   active: boolean;
@@ -75,6 +76,7 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
   };
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addLegalCompliance = useMutation({
@@ -96,6 +98,7 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
     setIsSubmitting(true);
 
     let imageUrl = formValues.img;
+    let companyImgUrl: string[] = formValues.company_logo || []
 
     // Upload image only when Save is clicked
     if (selectedFile) {
@@ -121,10 +124,30 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
       }
     }
 
+    if (selectedFiles.length > 0) {
+      const formData = new FormData();
+
+      // Append all files under the same field name ("file")
+      selectedFiles.forEach((file) => formData.append("file", file));
+
+      const res = await fetch("/api/img-uploads", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Image upload failed");
+
+      const data = await res.json();
+
+      // ✅ Handles both single and multiple file responses
+      companyImgUrl = data.urls || [data.url];
+    }
+
     // use imageUrl directly here
     const newCompliance: Omit<LegalComplianceDM, "id"> = {
       ...formValues,
       img: imageUrl,
+      company_logo: companyImgUrl,
     };
     addLegalCompliance.mutate(newCompliance);
   };
@@ -295,13 +318,10 @@ const AddLegalCompliance: React.FC<LegalComplianceProps> = ({
                 />
               </div>
               <div className="col-span-2">
-                <MultipleImageUpload
-                  label="Company Logo"
-                  multiple
+                <MultiRectangularImgUploader
+                  label="Company Logo (You can upload multiple)"
                   value={formValues.company_logo}
-                  onImageUpload={(paths) =>
-                    handleChange("company_logo", paths)
-                  }
+                  onImageUpload={(files) => setSelectedFiles(files || [])}
                 />
               </div>
               <div className="col-span-2">

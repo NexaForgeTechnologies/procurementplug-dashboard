@@ -11,10 +11,11 @@ import InputComponent from "@/components/input-comps/InputTxt";
 import CircularImageUploader from "@/components/image-uploader/CircularImageUploader";
 import CommaInputTextArea from "@/components/input-comps/CommaSeperatedTextAria";
 import DropdownComp from "@/components/select/DropdownComp";
-import MultipleImageUpload from "@/components/input-comps/ImgUploader";
+import MultipleImageUpload from "@/components/image-uploader/MultiRectangularImgUploader";
 import ServicesList from "@/components/input-comps/ListItemComponent";
 
 import { useGeneric } from "@/hooks/useGeneric";
+import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectangularImgUploader";
 
 type SpeakerFormProps = {
    compliance?: LegalComplianceDM;
@@ -76,6 +77,7 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
    };
 
    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
    const [isSubmitting, setIsSubmitting] = useState(false);
 
    const update = useMutation({
@@ -97,41 +99,128 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
       setIsSubmitting(true);
 
       try {
-         let imageUrl = formValues.img;
+         let imageUrl = formValues.img; // single image
+         let companyImgUrls: string[] = formValues.company_logo || [];
 
-         // If user selected a new image
+         // 🔹 STEP 1 — Handle single image (img)
          if (selectedFile) {
             // Delete old image if exists
             if (compliance?.img && compliance.img !== "") {
                await axios.delete("/api/img-uploads", { data: { url: compliance.img } });
             }
 
-            // Upload new image
+            // Upload new single image
             const formData = new FormData();
             formData.append("file", selectedFile);
-            const uploadRes = await axios.post("/api/img-uploads", formData);
-            imageUrl = uploadRes.data.url;
+
+            const res = await fetch("/api/img-uploads", {
+               method: "POST",
+               body: formData,
+            });
+            if (!res.ok) throw new Error("Single image upload failed");
+            const data = await res.json();
+
+            imageUrl = data.url;
          }
 
-         // If user removed image manually
+         // If user manually cleared the image
          if (!formValues.img && compliance?.img) {
             await axios.delete("/api/img-uploads", { data: { url: compliance.img } });
             imageUrl = "";
          }
 
-         // Update database with full formValues
+         // 🔹 STEP 2 — Handle multiple company logos
+         const oldCompanyImgs = compliance?.company_logo || [];
+         const removedImgs = oldCompanyImgs.filter((url: string) => !companyImgUrls.includes(url));
+
+         // Delete removed company logos
+         if (removedImgs.length > 0) {
+            await Promise.all(
+               removedImgs.map(async (url) =>
+                  axios.delete("/api/img-uploads", { data: { url } })
+               )
+            );
+         }
+
+         // Upload new company logos if any selected
+         if (selectedFiles.length > 0) {
+            const formData = new FormData();
+            selectedFiles.forEach((file) => formData.append("file", file));
+
+            const res = await fetch("/api/img-uploads", {
+               method: "POST",
+               body: formData,
+            });
+            if (!res.ok) throw new Error("Multiple image upload failed");
+
+            const data = await res.json();
+            const uploadedUrls = data.urls || [data.url];
+
+            // Keep existing (not removed) + add new ones
+            companyImgUrls = [
+               ...companyImgUrls.filter((url) => !removedImgs.includes(url)),
+               ...uploadedUrls,
+            ];
+         }
+
+         // 🔹 STEP 3 — Update DB
          await update.mutateAsync({
             ...formValues,
-            img: imageUrl,        // ensure image is latest
-            id: compliance?.id,   // include id for PUT update
+            id: compliance?.id,
+            img: imageUrl,
+            company_logo: companyImgUrls,
          });
 
       } catch (error) {
          console.error("Update error:", error);
+         alert("Failed to update compliance");
       } finally {
          setIsSubmitting(false);
       }
    };
+
+
+   // const handleUpdate = async () => {
+   //    if (!validateForm()) return;
+
+   //    setIsSubmitting(true);
+
+   //    try {
+   //       let imageUrl = formValues.img;
+
+   //       // If user selected a new image
+   //       if (selectedFile) {
+   //          // Delete old image if exists
+   //          if (compliance?.img && compliance.img !== "") {
+   //             await axios.delete("/api/img-uploads", { data: { url: compliance.img } });
+   //          }
+
+   //          // Upload new image
+   //          const formData = new FormData();
+   //          formData.append("file", selectedFile);
+   //          const uploadRes = await axios.post("/api/img-uploads", formData);
+   //          imageUrl = uploadRes.data.url;
+   //       }
+
+   //       // If user removed image manually
+   //       if (!formValues.img && compliance?.img) {
+   //          await axios.delete("/api/img-uploads", { data: { url: compliance.img } });
+   //          imageUrl = "";
+   //       }
+
+   //       // Update database with full formValues
+   //       await update.mutateAsync({
+   //          ...formValues,
+   //          img: imageUrl,        // ensure image is latest
+   //          id: compliance?.id,   // include id for PUT update
+   //       });
+
+   //    } catch (error) {
+   //       console.error("Update error:", error);
+   //    } finally {
+   //       setIsSubmitting(false);
+   //    }
+   // };
 
    // fetching extra information like industry, location etc
    const { data: legal_compliance_type } = useGeneric("legal_compliance_types");
@@ -302,13 +391,24 @@ const EditSpeakerComp: React.FC<SpeakerFormProps> = ({
                   </div>
 
                   <div className="col-span-2">
-                     <MultipleImageUpload
-                        label="Company Logo"
-                        multiple
+                     <MultiRectangularImgUploader
+                        label="Company Logo (You can upload multiple)"
                         value={formValues.company_logo}
-                        onImageUpload={(paths) =>
-                           handleChange("company_logo", paths)
-                        }
+                        onImageUpload={(files) => {
+                           if (files && files.length > 0) {
+                              // Only keep selected files for upload, not for preview in formValues
+                              setSelectedFiles((prev) => [...(prev || []), ...files]);
+                           } else {
+                              setSelectedFiles([]);
+                           }
+                        }}
+                        onImageRemove={(url) => {
+                           // Remove from collaboration array immediately
+                           setFormValues((prev) => ({
+                              ...prev,
+                              company_logo: prev.company_logo?.filter((img) => img !== url),
+                           }));
+                        }}
                      />
                   </div>
 

@@ -6,14 +6,15 @@ import axios from "axios";
 
 import { EventDM } from "@/domain-models/event/EventDm";
 import { SpeakerDM } from "@/domain-models/speaker/SpeakerDM";
+import { SelectedSpeaker } from "@/domain-models/speaker/SelectedSpeaker";
+import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
 
 import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
-import ImageUpload from "@/components/input-comps/ImgUploader";
+import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectangularImgUploader";
 import MultiSelect from "@/components/select-comps/MultiSelectSpeakers";
 import PdfUploader from "@/components/PdfUploader";
-import { SelectedSpeaker } from "@/domain-models/speaker/SelectedSpeaker";
-import { WorkshopSection } from "@/domain-models/WorkshopSectionDM";
+import IconComponent from "@/components/icon/IconComp";
 
 type EventFormProps = {
   event?: EventDM;
@@ -65,30 +66,15 @@ const AddEventForm: React.FC<EventFormProps> = ({
   refetchEvents,
 }) => {
   const [formValues, setFormValues] = useState<EventDM>(initialFormValues);
-  // const [validationErrors, setValidationErrors] = useState({
-  //    event_name: false,
-  // });
   const handleChange = (field: keyof EventDM, value: unknown) => {
     setFormValues((prev) => ({
       ...prev,
       [field]: value,
     }));
-
-    // if (value.trim()) {
-    //    setValidationErrors((prev) => ({ ...prev, [field]: false }));
-    // }
-    // if (typeof value === "string" && value.trim()) {
-    //    setValidationErrors((prev) => ({ ...prev, [field]: false }));
-    // }
   };
-  // const validateForm = () => {
-  //    const errors = {
-  //       event_name: !formValues.event_name?.trim(),
-  //    };
 
-  //    setValidationErrors(errors);
-  //    return !Object.values(errors).some((e) => e);
-  // };
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addEventMutation = useMutation({
     mutationFn: async (data: EventDM) => {
@@ -103,21 +89,48 @@ const AddEventForm: React.FC<EventFormProps> = ({
       console.error("Failed to add event:", error);
     },
   });
-  const handleSubmit = () => {
-    // if (!validateForm()) return;
+  const handleSubmit = async () => {
 
-    const newEvent: Omit<EventDM, "id"> = formValues;
-    addEventMutation.mutate(newEvent);
+    setIsSubmitting(true);
+
+    let imageUrls: string[] = formValues.collaboration || [];
+
+    try {
+      // ✅ Upload all images at once (if new ones selected)
+      if (selectedFiles.length > 0) {
+        const formData = new FormData();
+
+        // Append all files under the same field name ("file")
+        selectedFiles.forEach((file) => formData.append("file", file));
+
+        const res = await fetch("/api/img-uploads", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Image upload failed");
+
+        const data = await res.json();
+
+        // ✅ Handles both single and multiple file responses
+        imageUrls = data.urls || [data.url];
+      }
+
+      // ✅ Build new event object
+      const newEvent: Omit<EventDM, "id"> = {
+        ...formValues,
+        collaboration: imageUrls,
+      };
+
+      // ✅ Submit to DB via mutation
+      addEventMutation.mutate(newEvent);
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Image upload failed");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
-  // useEffect(() => {
-  //    if (active) {
-  //       setValidationErrors({
-  //          event_name: false,
-  //       });
-  //       setFormValues(initialFormValues);
-  //    }
-  // }, [active]);
 
   // Fetch Speaker
   const fetchSpeakers = async (): Promise<SpeakerDM[]> => {
@@ -136,11 +149,17 @@ const AddEventForm: React.FC<EventFormProps> = ({
   }, [selectedSpeakers]);
 
   const handlePdfUpload = (file: File | null) => {
-    if (file) {
-      handleChange("agenda", file);
-    } else {
-      // console.log("File remove");
+    if (!file) {
+      handleChange("agenda", "");
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      handleChange("agenda", base64String);
+    };
+    reader.readAsDataURL(file); // Converts to base64
   };
 
   //Handle workshop section
@@ -207,12 +226,38 @@ const AddEventForm: React.FC<EventFormProps> = ({
                 Add Event
               </h2>
               <div className="flex gap-3">
-                <div
-                  className="bg-green-200 rounded-full p-3 cursor-pointer"
-                  onClick={handleSubmit}
-                >
-                  <Icon color="#565656" size={16} name="save" />
-                </div>
+                {isSubmitting ? (
+                  <div className="bg-green-200 rounded-full p-3 flex items-center justify-center">
+                    {/* Loader Spinner */}
+                    <svg
+                      className="animate-spin h-4 w-4 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                      ></path>
+                    </svg>
+                  </div>
+                ) : (
+                  <div
+                    className="bg-green-200 rounded-full p-3 cursor-pointer"
+                    onClick={handleSubmit}
+                  >
+                    <IconComponent color="#565656" size={16} name="save" />
+                  </div>
+                )}
                 <div
                   className="bg-red-300 rounded-full p-3 cursor-pointer"
                   onClick={onClose}
@@ -235,8 +280,6 @@ const AddEventForm: React.FC<EventFormProps> = ({
                       placeholder="Enter event name"
                       onChange={(value) => handleChange("event_name", value)}
                       value={formValues.event_name}
-                    // required
-                    // showError={validationErrors.event_name}
                     />
                   </div>
                   <div className="col-span-2 sm:col-span-1">
@@ -248,13 +291,10 @@ const AddEventForm: React.FC<EventFormProps> = ({
                     />
                   </div>
                   <div className="col-span-2">
-                    <ImageUpload
-                      label="In Collaboration With"
-                      multiple
+                    <MultiRectangularImgUploader
+                      label="In Collaboration With (You can upload multiple)"
                       value={formValues.collaboration}
-                      onImageUpload={(paths) =>
-                        handleChange("collaboration", paths)
-                      }
+                      onImageUpload={(files) => setSelectedFiles(files || [])}
                     />
                   </div>
                   <div className="col-span-2">
@@ -429,13 +469,13 @@ const AddEventForm: React.FC<EventFormProps> = ({
                     }
                     value={formValues.event_highlight_detail}
                   />
-                  <ImageUpload
+                  {/* <MultiRectangularImgUploader
                     label="Events Highlight"
                     value={formValues.event_highlight_img}
                     onImageUpload={(event_highlight_img) =>
                       handleChange("event_highlight_img", event_highlight_img)
                     }
-                  />
+                  /> */}
                   <InputText
                     label="Heading"
                     placeholder="Enter Highlights Heading"
@@ -483,7 +523,7 @@ const AddEventForm: React.FC<EventFormProps> = ({
                 </div>
               </div>
 
-              {/* YOutube Link */}
+              {/* Youtube Link */}
               <div>
                 <h3 className="font-semibold text-2xl text-[#565656]">
                   Youtube Link
