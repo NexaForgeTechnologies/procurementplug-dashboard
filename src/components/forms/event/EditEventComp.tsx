@@ -15,6 +15,8 @@ import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectan
 import MultiSelect from "@/components/select-comps/MultiSelectSpeakers";
 import PdfUploader from "@/components/PdfUploader";
 import IconComponent from "@/components/icon/IconComp";
+import DropdownComp from "@/components/select/DropdownComp";
+import CalendarDateTimePicker from "@/components/input-comps/CalendarComp";
 
 type EventFormProps = {
   event?: EventDM;
@@ -33,6 +35,8 @@ const EditEventForm: React.FC<EventFormProps> = ({
     id: event?.id || undefined,
     // hero Detail
     event_name: event?.event_name || "",
+    event_tag_id: event?.event_tag_id || undefined,
+    event_tag_name: event?.event_tag_name || "",
     event_date: event?.event_date || "",
     collaboration: event?.collaboration || [],
     event_heading: event?.event_heading || "",
@@ -66,10 +70,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
     hightlight_subdetail_2: event?.hightlight_subdetail_2 || "",
   };
   const [formValues, setFormValues] = useState<EventDM>(initialFormValues);
-  const handleChange = (
-    field: keyof EventDM,
-    value: string | number[] | string[]
-  ) => {
+  const handleChange = (field: keyof EventDM, value: unknown) => {
     setFormValues((prev) => ({
       ...prev,
       [field]: value,
@@ -317,6 +318,22 @@ const EditEventForm: React.FC<EventFormProps> = ({
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
+                  <DropdownComp
+                    label="Event Tag"
+                    placeholder="Select event tag"
+                    options={[
+                      { id: 1, value: "Bloom" },
+                      { id: 2, value: "Next Gen" },
+                      { id: 3, value: "Xec" },
+                    ]}
+                    onSelect={(id, value) => {
+                      handleChange("event_tag_id", id); // allow null
+                      handleChange("event_tag_name", value); // allow null
+                    }}
+                    value={formValues.event_tag_name || ""}
+                  />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
                   <InputText
                     label="Event Date"
                     placeholder="Enter event date"
@@ -364,11 +381,10 @@ const EditEventForm: React.FC<EventFormProps> = ({
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <InputText
+                  <CalendarDateTimePicker
                     label="Event Date & Time"
-                    placeholder="Enter event date & time"
-                    onChange={(value) => handleChange("event_date_time", value)}
-                    value={formValues.event_date_time}
+                    value={formValues.event_date_time || ""}
+                    onSelect={(val) => handleChange("event_date_time", val)}
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">

@@ -30,6 +30,8 @@ export class EventRepo {
             const [result] = await db.execute<ResultSetHeader>(
                 `INSERT INTO event (
                     event_name,
+                    event_tag_id,
+                    event_tag_name,
                     event_date,
                     collaboration,
                     event_heading,
@@ -51,9 +53,11 @@ export class EventRepo {
                     hightlight_subheading_2,
                     hightlight_subdetail_2,
                     youtube_link
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     sanitize(event.event_name),
+                    sanitize(event.event_tag_id),
+                    sanitize(event.event_tag_name),
                     sanitize(event.event_date),
                     sanitize(JSON.stringify(event.collaboration)),
                     sanitize(event.event_heading),
@@ -98,6 +102,8 @@ export class EventRepo {
             await db.execute(
                 `UPDATE event SET
                 event_name = ?,
+                event_tag_id = ?,
+                event_tag_name = ?,
                 event_date = ?,
                 collaboration = ?,
                 event_heading = ?,
@@ -123,6 +129,8 @@ export class EventRepo {
             WHERE id = ?`,
                 [
                     sanitize(event.event_name),
+                    sanitize(event.event_tag_id),
+                    sanitize(event.event_tag_name),
                     sanitize(event.event_date),
                     sanitize(JSON.stringify(event.collaboration)),
                     sanitize(event.event_heading),

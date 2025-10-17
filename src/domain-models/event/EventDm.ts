@@ -4,6 +4,8 @@ export interface EventDM {
     id?: number;
     // Hero section
     event_name?: string;
+    event_tag_id?: number;
+    event_tag_name?: string;
     event_date?: string;
     collaboration?: string[];
     event_heading?: string;
