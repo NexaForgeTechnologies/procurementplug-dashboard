@@ -114,18 +114,23 @@ const ConsultantCard: React.FC<ConsultantProps> = ({
         </div>
 
         <Image
-          className="rounded-full w-32 h-32 object-cover"
+          className="rounded-full w-40 h-40 object-cover"
           src={data.img || "/images/default-circle.png"}
           alt={"Consultant Image"}
-          width={130}
-          height={130}
+          width={160}
+          height={160}
         />
 
-        <h2 className="text-xl md:text-2xl font-semibold">{data.name}</h2>
-
-        <div className="my-2">
-          <p className="text-[#1B1B1B] text-base group-hover:text-white">{data.company}</p>
-          <p className="text-[#1B1B1B] text-base group-hover:text-white">{data.designation}</p>
+        <div>
+          <h2 className="text-xl md:text-2xl font-semibold my-2">{data.name}</h2>
+          <p className="text-[#1B1B1B] text-base group-hover:text-white">
+            {data.company}
+          </p>
+          {data.designation && (
+            <p className="text-[#1B1B1B] text-base group-hover:text-white">
+              {data.designation}
+            </p>
+          )}
         </div>
 
         <button onClick={() => openEditForm(data)} className="mt-auto flex items-center cursor-pointer bg-[#b08d57] text-white px-4 py-2 rounded-[6px]">View Details

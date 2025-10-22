@@ -112,11 +112,11 @@ const ConsultantCard: React.FC<ComplianceProps> = ({
         </div>
 
         <Image
-          className="rounded-full w-32 h-32 object-cover"
+          className="rounded-full w-40 h-40 object-cover"
           src={data.img || "/images/default-circle.png"}
           alt={"Legal Compliance Image"}
-          width={130}
-          height={130}
+          width={160}
+          height={160}
         />
 
         <h2 className="text-xl md:text-2xl font-semibold">{data.name}</h2>
