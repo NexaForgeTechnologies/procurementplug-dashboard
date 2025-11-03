@@ -39,7 +39,7 @@ const CalendarDateTimePicker: React.FC<CalendarDateTimePickerProps> = ({
       onClick={handleContainerClick}
       className={`flex flex-col bg-white rounded-lg p-2 gap-1 shadow-input w-full cursor-pointer transition-colors duration-200`}
     >
-      {label && <label className="text-sm font-medium">{label}</label>}
+      {label && <label className="text-[#707070] text-sm font-medium">{label}</label>}
       <input
         ref={inputRef}
         type="datetime-local"

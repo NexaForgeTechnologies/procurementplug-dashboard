@@ -147,6 +147,8 @@ const AddEventForm: React.FC<EventFormProps> = ({
   });
 
   const [selectedSpeakers, setSelectedSpeakers] = useState<SelectedSpeaker[]>();
+  console.log(selectedSpeakers);
+  
 
   useEffect(() => {
     handleChange("speakers", selectedSpeakers);

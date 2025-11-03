@@ -68,6 +68,8 @@ const EditEventForm: React.FC<EventFormProps> = ({
     hightlight_subdetail_1: event?.hightlight_subdetail_1 || "",
     hightlight_subheading_2: event?.hightlight_subheading_2 || "",
     hightlight_subdetail_2: event?.hightlight_subdetail_2 || "",
+
+    youtube_link: event?.youtube_link || "",
   };
   const [formValues, setFormValues] = useState<EventDM>(initialFormValues);
   const handleChange = (field: keyof EventDM, value: unknown) => {
@@ -578,6 +580,23 @@ const EditEventForm: React.FC<EventFormProps> = ({
                   value={formValues.hightlight_subdetail_2}
                   isTextArea
                   rows={5}
+                />
+              </div>
+            </div>
+
+            {/* Youtube Link */}
+            <div>
+              <h3 className="font-semibold text-2xl text-[#565656]">
+                Youtube Link
+              </h3>
+              <div className="my-4 space-y-4">
+                <InputText
+                  label="Youtube Link"
+                  placeholder="Enter youtube link"
+                  onChange={(value) =>
+                    handleChange("youtube_link", value)
+                  }
+                  value={formValues.youtube_link}
                 />
               </div>
             </div>
