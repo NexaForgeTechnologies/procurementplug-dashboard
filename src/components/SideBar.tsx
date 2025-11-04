@@ -16,6 +16,7 @@ export default function SideBar() {
     { name: "Legal & Compliance", href: "/legal-compliance", icon: "partner" },
     { name: "Venue Partners", href: "/venue-partner", icon: "venue" },
     { name: "ProcureTech Solution", href: "/procuretech-solution", icon: "procuretech-solution" },
+    { name: "Exclusive Partners", href: "/exclusive-partners", icon: "consulting-partner" },
   ];
 
   return (
