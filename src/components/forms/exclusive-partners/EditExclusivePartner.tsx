@@ -17,12 +17,23 @@ type EditExclusivePartnerProps = {
   refetchPartner: () => void;
 };
 
+// Define a proper type for form values
+interface FormValues {
+  id: number;
+  title: string;
+  tagline: string;
+  description: string;
+  logo: string;
+  website: string;
+  category_id?: number;
+}
+
 const EditExclusivePartner: React.FC<EditExclusivePartnerProps> = ({
   partner,
   onClose,
   refetchPartner,
 }) => {
-  // Dropdown options for category (same as Add form)
+  // Dropdown options for category
   const categoryOptions = [
     { id: 1, value: "E-commerce" },
     { id: 2, value: "CyberSecurity" },
@@ -30,39 +41,35 @@ const EditExclusivePartner: React.FC<EditExclusivePartnerProps> = ({
     { id: 4, value: "Software Development" },
   ];
 
-  // Find matching category option if we have a name or ID
+  // Find matching category option if partner has a name or ID
   const initialCategory = categoryOptions.find(
     (opt) =>
-      opt.id === (partner as any)?.category_id ||
-      opt.value === (partner as any)?.category_name
+      opt.id === partner.category_id ||
+      opt.value === partner.category_name
   );
 
-  // Initialize form values
-  const [formValues, setFormValues] = useState({
-    id: partner?.id,
-    title: partner?.title || "",
-    tagline: partner?.tagline || "",
-    description: partner?.description || "",
-    logo: partner?.logo || "",
-    website: partner?.website || "",
-    category_id: initialCategory?.id ?? undefined,
+  const [formValues, setFormValues] = useState<FormValues>({
+    id: partner.id,
+    title: partner.title || "",
+    tagline: partner.tagline || "",
+    description: partner.description || "",
+    logo: partner.logo || "",
+    website: partner.website || "",
+    category_id: initialCategory?.id,
   });
 
-  const [validationErrors, setValidationErrors] = useState({ title: false });
+  const [validationErrors, setValidationErrors] = useState<{ title: boolean }>({ title: false });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // If partner didn’t have category before but categoryOptions got updated, recheck
+    // Update category_id if not already set
     if (!formValues.category_id && initialCategory?.id) {
       setFormValues((prev) => ({ ...prev, category_id: initialCategory.id }));
     }
-  }, [partner]);
+  }, [formValues.category_id, initialCategory?.id]);
 
-  const handleChange = <K extends keyof typeof formValues>(
-    field: K,
-    value: (typeof formValues)[K]
-  ) => {
+  const handleChange = <K extends keyof FormValues>(field: K, value: FormValues[K]) => {
     setFormValues((prev) => ({ ...prev, [field]: value }));
     if (typeof value === "string" && value.trim()) {
       setValidationErrors((prev) => ({ ...prev, [field]: false }));
@@ -76,7 +83,7 @@ const EditExclusivePartner: React.FC<EditExclusivePartnerProps> = ({
   };
 
   const update = useMutation({
-    mutationFn: async (data: typeof formValues) => {
+    mutationFn: async (data: FormValues) => {
       const response = await axios.put("/api/exclusive-partners", data);
       return response.data;
     },
@@ -232,11 +239,9 @@ const EditExclusivePartner: React.FC<EditExclusivePartnerProps> = ({
               options={categoryOptions}
               onSelect={(id) => handleChange("category_id", id ?? undefined)}
               value={
-                // Display the category name corresponding to the selected ID
                 categoryOptions.find((option) => option.id === formValues.category_id)?.value || ""
               }
             />
-
           </div>
 
           <div className="col-span-2 sm:col-span-1">

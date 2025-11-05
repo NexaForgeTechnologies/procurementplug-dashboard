@@ -95,8 +95,6 @@ export class ExclusivePartnerRepo {
   // 🔹 Update partner
   static async updatePartner(partner: ExclusivePartnerDM) {
     try {
-      const currentTime = getFormattedTimestamp();
-
       await sqldb.execute(
         `
         UPDATE exclusive_business_partners
@@ -117,7 +115,7 @@ export class ExclusivePartnerRepo {
           partner.description,
           partner.category_id || null,
           partner.website,
-          currentTime,
+          getFormattedTimestamp(), // directly call instead of storing in a variable
           partner.id,
         ]
       );
@@ -131,8 +129,6 @@ export class ExclusivePartnerRepo {
 
   // 🔹 Delete partner (soft delete)
   static async deletePartner(id: number) {
-    const currentTime = getFormattedTimestamp();
-
     try {
       await sqldb.query(
         `DELETE FROM exclusive_business_partners WHERE id = ?`,
