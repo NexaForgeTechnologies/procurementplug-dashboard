@@ -10,4 +10,6 @@ export const db = mysql.createPool({
     user: process.env.DATABASE_USER,       // Use env variable for user
     password: process.env.DATABASE_PASSWORD, // Use env variable for password
     database: process.env.DATABASE_NAME,   // Use env variable for database
-});
+}
+);
+

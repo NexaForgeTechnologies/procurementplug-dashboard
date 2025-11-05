@@ -1,4 +1,4 @@
-import { sqldb } from "@/lib/sqldb";
+import { db } from "@/lib/db";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { getFormattedTimestamp } from "@/utils/FormattedDate";
 
@@ -20,7 +20,7 @@ export class ExclusivePartnerRepo {
   // 🔹 Get all exclusive partners
   static async getAllPartners(): Promise<ExclusivePartnerDM[]> {
     try {
-      const [rows] = await sqldb.query<RowDataPacket[]>(`
+      const [rows] = await db.query<RowDataPacket[]>(`
         SELECT 
           id,
           logo,
@@ -60,7 +60,7 @@ export class ExclusivePartnerRepo {
     partner: Omit<ExclusivePartnerDM, "id" | "created_at" | "updated_at" | "deleted_at">
   ): Promise<ExclusivePartnerDM> {
     try {
-      const [result] = await sqldb.execute(
+      const [result] = await db.execute(
         `
         INSERT INTO exclusive_business_partners (
           logo,
@@ -95,7 +95,7 @@ export class ExclusivePartnerRepo {
   // 🔹 Update partner
   static async updatePartner(partner: ExclusivePartnerDM) {
     try {
-      await sqldb.execute(
+      await db.execute(
         `
         UPDATE exclusive_business_partners
         SET 
@@ -130,7 +130,7 @@ export class ExclusivePartnerRepo {
   // 🔹 Delete partner (soft delete)
   static async deletePartner(id: number) {
     try {
-      await sqldb.query(
+      await db.query(
         `DELETE FROM exclusive_business_partners WHERE id = ?`,
         [id]
       );
