@@ -21,13 +21,6 @@ const InnovationCard: React.FC<InnovationCardProps> = ({
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const categoryOptions = [
-        { id: 1, value: "live" },
-        { id: 2, value: "Beta Access" },
-        { id: 3, value: "Pilot Open" },
-        { id: 4, value: "In Development - download deck" },
-    ];
-
     // Mutation for deleting innovation
     const deleteInnovationMutation = useMutation({
         mutationFn: async (innovationId: number) => {

@@ -115,26 +115,25 @@ const AddInnovationCard: React.FC<AddInnovationProps> = ({
         console.log(formValues);
 
         let imageUrl = formValues.logo;
-        alert("Image upload Commented Out for now, need to uncomment it later.");
-        // if (selectedFile) {
-        //   const formData = new FormData();
-        //   formData.append("file", selectedFile);
-        //   try {
-        //     const res = await fetch("/api/img-uploads", {
-        //       method: "POST",
-        //       body: formData,
-        //     });
-        //     if (!res.ok) throw new Error("Image upload failed");
-        //     const data = await res.json();
-        //     imageUrl = data.url;
-        //     handleChange("logo", imageUrl);
-        //   } catch (error) {
-        //     console.error("Upload failed:", error);
-        //     alert("Image upload failed");
-        //     setIsSubmitting(false);
-        //     return;
-        //   }
-        // }
+        if (selectedFile) {
+          const formData = new FormData();
+          formData.append("file", selectedFile);
+          try {
+            const res = await fetch("/api/img-uploads", {
+              method: "POST",
+              body: formData,
+            });
+            if (!res.ok) throw new Error("Image upload failed");
+            const data = await res.json();
+            imageUrl = data.url;
+            handleChange("logo", imageUrl);
+          } catch (error) {
+            console.error("Upload failed:", error);
+            alert("Image upload failed");
+            setIsSubmitting(false);
+            return;
+          }
+        }
 
         const newInnovation: Innovation = {
           ...formValues,

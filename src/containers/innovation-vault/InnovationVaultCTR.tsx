@@ -75,7 +75,7 @@ function InnovationVaultCTR() {
                     filteredInnovations.map((innovation) => {
                         // Map category_id to category string
                         const categoryName =
-                            categoryOptions.find((c) => c.id === (innovation as any).category_id)?.value || "";
+                            categoryOptions.find((c) => c.id === innovation.category_id)?.value || "";
 
                         return (
                             <InnovationCard
