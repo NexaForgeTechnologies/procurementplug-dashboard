@@ -47,10 +47,11 @@ export class InnovationVaultRepo {
                         row.key_features && typeof row.key_features === "string"
                             ? JSON.parse(row.key_features)
                             : [];
-                } catch (err) {
-                    console.warn(`⚠️ Invalid JSON in key_features for innovation id=${row.id}:`, row.key_features);
-                    parsedKeyFeatures = [];
-                }
+                } catch {
+    console.warn(`⚠️ Invalid JSON in key_features for innovation id=${row.id}:`, row.key_features);
+    parsedKeyFeatures = [];
+}
+
 
                 return {
                     id: row.id,
@@ -66,11 +67,10 @@ export class InnovationVaultRepo {
                     deleted_at: row.deleted_at,
                 };
             });
-        } catch (_err) {
-            console.error("Error fetching innovations from DB");
-            throw new Error("Unable to fetch innovations from the database");
-        }
-
+       } catch {
+    console.error("Error fetching innovations from DB");
+    throw new Error("Unable to fetch innovations from the database");
+}
     }
 
 
@@ -101,17 +101,16 @@ export class InnovationVaultRepo {
                     innovation.sponsoredBy,
                 ]
             ) as [ResultSetHeader, unknown];
-
-
             return {
                 id: result.insertId,
                 ...innovation,
                 created_at: new Date().toISOString(),
             };
-        } catch (error) {
-            console.error("Error inserting innovation:", error);
+        } catch {
+            console.error("Error inserting innovation");
             throw new Error("Failed to insert innovation");
         }
+
     }
 
     // 🔹 Update innovation
