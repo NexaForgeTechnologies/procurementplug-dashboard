@@ -19,9 +19,9 @@ export type InnovationVaultDM = {
 
 export class InnovationVaultRepo {
     // 🔹 Get all innovations
-static async getAllInnovations(): Promise<InnovationVaultDM[]> {
-  try {
-    const [rows] = await db.query<RowDataPacket[]>(`
+    static async getAllInnovations(): Promise<InnovationVaultDM[]> {
+        try {
+            const [rows] = await db.query<RowDataPacket[]>(`
       SELECT 
         id,
         logo,
@@ -39,38 +39,39 @@ static async getAllInnovations(): Promise<InnovationVaultDM[]> {
       ORDER BY id DESC;
     `);
 
-    return rows.map((row) => {
-      let parsedKeyFeatures: string[] = [];
+            return rows.map((row) => {
+                let parsedKeyFeatures: string[] = [];
 
-      try {
-        parsedKeyFeatures =
-          row.key_features && typeof row.key_features === "string"
-            ? JSON.parse(row.key_features)
-            : [];
-      } catch (err) {
-        console.warn(`⚠️ Invalid JSON in key_features for innovation id=${row.id}:`, row.key_features);
-        parsedKeyFeatures = [];
-      }
+                try {
+                    parsedKeyFeatures =
+                        row.key_features && typeof row.key_features === "string"
+                            ? JSON.parse(row.key_features)
+                            : [];
+                } catch (err) {
+                    console.warn(`⚠️ Invalid JSON in key_features for innovation id=${row.id}:`, row.key_features);
+                    parsedKeyFeatures = [];
+                }
 
-      return {
-        id: row.id,
-        logo: row.logo,
-        title: row.title,
-        category_id: row.category_id,
-        description: row.description,
-        keyFeatures: parsedKeyFeatures,
-        categoryDescription: row.category_description,
-        sponsoredBy: row.sponsored_by,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-        deleted_at: row.deleted_at,
-      };
-    });
-  } catch (error) {
-    console.error("❌ Error fetching innovations:", error);
-    throw new Error("Unable to fetch innovations from the database");
-  }
-}
+                return {
+                    id: row.id,
+                    logo: row.logo,
+                    title: row.title,
+                    category_id: row.category_id,
+                    description: row.description,
+                    keyFeatures: parsedKeyFeatures,
+                    categoryDescription: row.category_description,
+                    sponsoredBy: row.sponsored_by,
+                    created_at: row.created_at,
+                    updated_at: row.updated_at,
+                    deleted_at: row.deleted_at,
+                };
+            });
+        } catch (_err) {
+            console.error("Error fetching innovations from DB");
+            throw new Error("Unable to fetch innovations from the database");
+        }
+
+    }
 
 
     // 🔹 Add new innovation
