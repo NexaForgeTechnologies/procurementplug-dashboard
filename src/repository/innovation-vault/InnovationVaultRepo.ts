@@ -10,6 +10,7 @@ export type InnovationVaultDM = {
     category_id?: number;
     description: string;
     keyFeatures: string[]; // stored as JSON
+    relatedTools: string[]; // <-- added
     categoryDescription: string;
     sponsoredBy: string;
     created_at?: string;
@@ -22,25 +23,27 @@ export class InnovationVaultRepo {
     static async getAllInnovations(): Promise<InnovationVaultDM[]> {
         try {
             const [rows] = await db.query<RowDataPacket[]>(`
-      SELECT 
-        id,
-        logo,
-        title,
-        category_id,
-        description,
-        key_features,
-        category_description,
-        sponsored_by,
-        created_at,
-        updated_at,
-        deleted_at
-      FROM innovation_vault
-      WHERE deleted_at IS NULL
-      ORDER BY id DESC;
-    `);
+                SELECT 
+                    id,
+                    logo,
+                    title,
+                    category_id,
+                    description,
+                    key_features,
+                    related_tools,        -- <-- added
+                    category_description,
+                    sponsored_by,
+                    created_at,
+                    updated_at,
+                    deleted_at
+                FROM innovation_vault
+                WHERE deleted_at IS NULL
+                ORDER BY id DESC;
+            `);
 
             return rows.map((row) => {
                 let parsedKeyFeatures: string[] = [];
+                let parsedRelatedTools: string[] = [];
 
                 try {
                     parsedKeyFeatures =
@@ -48,10 +51,17 @@ export class InnovationVaultRepo {
                             ? JSON.parse(row.key_features)
                             : [];
                 } catch {
-    console.warn(`⚠️ Invalid JSON in key_features for innovation id=${row.id}:`, row.key_features);
-    parsedKeyFeatures = [];
-}
+                    console.warn(`⚠️ Invalid JSON in key_features for innovation id=${row.id}:`, row.key_features);
+                }
 
+                try {
+                    parsedRelatedTools =
+                        row.related_tools && typeof row.related_tools === "string"
+                            ? JSON.parse(row.related_tools)
+                            : [];
+                } catch {
+                    console.warn(`⚠️ Invalid JSON in related_tools for innovation id=${row.id}:`, row.related_tools);
+                }
 
                 return {
                     id: row.id,
@@ -60,6 +70,7 @@ export class InnovationVaultRepo {
                     category_id: row.category_id,
                     description: row.description,
                     keyFeatures: parsedKeyFeatures,
+                    relatedTools: parsedRelatedTools,  // <-- added
                     categoryDescription: row.category_description,
                     sponsoredBy: row.sponsored_by,
                     created_at: row.created_at,
@@ -67,12 +78,11 @@ export class InnovationVaultRepo {
                     deleted_at: row.deleted_at,
                 };
             });
-       } catch {
-    console.error("Error fetching innovations from DB");
-    throw new Error("Unable to fetch innovations from the database");
-}
+        } catch (error) {
+            console.error("Error fetching innovations from DB:", error);
+            throw new Error("Unable to fetch innovations from the database");
+        }
     }
-
 
     // 🔹 Add new innovation
     static async addInnovation(
@@ -81,36 +91,38 @@ export class InnovationVaultRepo {
         try {
             const [result] = await db.execute(
                 `
-  INSERT INTO innovation_vault (
-    logo,
-    title,     
-    category_id,
-    description,
-    key_features,
-    category_description,
-    sponsored_by
-  ) VALUES (?, ?, ?, ?, ?, ?, ?)
-`,
+                INSERT INTO innovation_vault (
+                    logo,
+                    title,
+                    category_id,
+                    description,
+                    key_features,
+                    related_tools,             -- <-- added
+                    category_description,
+                    sponsored_by
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                `,
                 [
                     innovation.logo,
-                    innovation.title,   // matches column name
+                    innovation.title,
                     innovation.category_id || null,
                     innovation.description,
                     JSON.stringify(innovation.keyFeatures || []),
+                    JSON.stringify(innovation.relatedTools || []),  // <-- added
                     innovation.categoryDescription,
                     innovation.sponsoredBy,
                 ]
             ) as [ResultSetHeader, unknown];
+
             return {
                 id: result.insertId,
                 ...innovation,
                 created_at: new Date().toISOString(),
             };
-        } catch {
-            console.error("Error inserting innovation");
+        } catch (error) {
+            console.error("Error inserting innovation:", error);
             throw new Error("Failed to insert innovation");
         }
-
     }
 
     // 🔹 Update innovation
@@ -118,24 +130,26 @@ export class InnovationVaultRepo {
         try {
             await db.execute(
                 `
-        UPDATE innovation_vault
-        SET 
-          logo = ?,
-          title = ?,
-          category_id = ?,
-          description = ?,
-          key_features = ?,
-          category_description = ?,
-          sponsored_by = ?,
-          updated_at = ?
-        WHERE id = ?
-      `,
+                UPDATE innovation_vault
+                SET 
+                    logo = ?,
+                    title = ?,
+                    category_id = ?,
+                    description = ?,
+                    key_features = ?,
+                    related_tools = ?,           -- <-- added
+                    category_description = ?,
+                    sponsored_by = ?,
+                    updated_at = ?
+                WHERE id = ?
+                `,
                 [
                     innovation.logo,
                     innovation.title,
                     innovation.category_id || null,
                     innovation.description,
                     JSON.stringify(innovation.keyFeatures || []),
+                    JSON.stringify(innovation.relatedTools || []),  // <-- added
                     innovation.categoryDescription,
                     innovation.sponsoredBy,
                     getFormattedTimestamp(),

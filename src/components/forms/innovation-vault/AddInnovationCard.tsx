@@ -16,6 +16,7 @@ type Innovation = {
     categoryDescription: string;
     description: string;
     keyFeatures: string[];
+    relatedTools: string[];
     sponsoredBy: string;
 };
 
@@ -32,6 +33,7 @@ const initialFormValues: Innovation = {
     categoryDescription: "",
     description: "",
     keyFeatures: [""],
+    relatedTools: [""],
     sponsoredBy: "",
 };
 
@@ -72,6 +74,24 @@ const AddInnovationCard: React.FC<AddInnovationProps> = ({
         const updatedFeatures = [...formValues.keyFeatures];
         updatedFeatures[index] = value;
         setFormValues((prev) => ({ ...prev, keyFeatures: updatedFeatures }));
+    };
+    // Related Tools handlers
+    const handleRelatedToolChange = (index: number, value: string) => {
+        const updatedTools = [...formValues.relatedTools];
+        updatedTools[index] = value;
+        setFormValues((prev) => ({ ...prev, relatedTools: updatedTools }));
+    };
+
+    const addRelatedToolField = () => {
+        setFormValues((prev) => ({
+            ...prev,
+            relatedTools: [...prev.relatedTools, ""],
+        }));
+    };
+
+    const removeRelatedToolField = (index: number) => {
+        const updatedTools = formValues.relatedTools.filter((_, i) => i !== index);
+        setFormValues((prev) => ({ ...prev, relatedTools: updatedTools }));
     };
 
     const addFeatureField = () => {
@@ -116,28 +136,28 @@ const AddInnovationCard: React.FC<AddInnovationProps> = ({
 
         let imageUrl = formValues.logo;
         if (selectedFile) {
-          const formData = new FormData();
-          formData.append("file", selectedFile);
-          try {
-            const res = await fetch("/api/img-uploads", {
-              method: "POST",
-              body: formData,
-            });
-            if (!res.ok) throw new Error("Image upload failed");
-            const data = await res.json();
-            imageUrl = data.url;
-            handleChange("logo", imageUrl);
-          } catch (error) {
-            console.error("Upload failed:", error);
-            alert("Image upload failed");
-            setIsSubmitting(false);
-            return;
-          }
+            const formData = new FormData();
+            formData.append("file", selectedFile);
+            try {
+                const res = await fetch("/api/img-uploads", {
+                    method: "POST",
+                    body: formData,
+                });
+                if (!res.ok) throw new Error("Image upload failed");
+                const data = await res.json();
+                imageUrl = data.url;
+                handleChange("logo", imageUrl);
+            } catch (error) {
+                console.error("Upload failed:", error);
+                alert("Image upload failed");
+                setIsSubmitting(false);
+                return;
+            }
         }
 
         const newInnovation: Innovation = {
-          ...formValues,
-          logo: imageUrl,
+            ...formValues,
+            logo: imageUrl,
         };
 
         addInnovationMutation.mutate(newInnovation);
@@ -292,6 +312,38 @@ const AddInnovationCard: React.FC<AddInnovationProps> = ({
                                     + Add Feature
                                 </button>
                             </div>
+
+                            {/* Related Tools */}
+                            <div className="col-span-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Related Tools
+                                </label>
+                                {formValues.relatedTools.map((tool, index) => (
+                                    <div key={index} className="flex gap-2 mb-2">
+                                        <InputComponent
+                                            placeholder={`Tool ${index + 1}`}
+                                            onChange={(value) => handleRelatedToolChange(index, value)}
+                                            value={tool}
+                                        />
+                                        {tool.trim() && (
+                                            <button
+                                                onClick={() => removeRelatedToolField(index)}
+                                                className="bg-red-200 text-red-700 px-2 rounded-md"
+                                            >
+                                                ✕
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+
+                                <button
+                                    onClick={addRelatedToolField}
+                                    className="mt-2 text-blue-600 hover:underline text-sm"
+                                >
+                                    + Add Tool
+                                </button>
+                            </div>
+
 
                             {/* Sponsored By */}
                             <div className="col-span-2">

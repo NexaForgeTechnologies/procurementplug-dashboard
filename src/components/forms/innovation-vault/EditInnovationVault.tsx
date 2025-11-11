@@ -17,14 +17,14 @@ type EditInnovationVaultProps = {
     refetchInnovation: () => void;
 };
 
-// Form values type
 interface FormValues {
     id: number;
     title: string;
     description: string;
     logo: string;
     category_id?: number;
-    keyFeatures?: string[];
+    keyFeatures: string[];
+    relatedTools: string[];
     sponsoredBy?: string;
     categoryDescription?: string;
 }
@@ -34,7 +34,6 @@ const EditInnovationVault: React.FC<EditInnovationVaultProps> = ({
     onClose,
     refetchInnovation,
 }) => {
-    // Define category options
     const categoryOptions = [
         { id: 1, value: "Live" },
         { id: 2, value: "Beta Access" },
@@ -42,27 +41,26 @@ const EditInnovationVault: React.FC<EditInnovationVaultProps> = ({
         { id: 4, value: "In Development - download deck" },
     ];
 
-    // Find initial category by id or value
     const initialCategory = categoryOptions.find(
         (c) => c.value === innovation.category
     );
 
     const [formValues, setFormValues] = useState<FormValues>({
         id: innovation.id,
-        title: innovation.title || "not found",
-        description: innovation.description || "not found",
+        title: innovation.title || "",
+        description: innovation.description || "",
         logo: innovation.logo || "",
         category_id: initialCategory?.id,
-        keyFeatures: innovation.keyFeatures || [],
-        sponsoredBy: innovation.sponsoredBy || "not found",
-        categoryDescription: innovation.categoryDescription || "not found",
+        keyFeatures: innovation.keyFeatures || [""],
+        relatedTools: innovation.relatedTools || [""],
+        sponsoredBy: innovation.sponsoredBy || "",
+        categoryDescription: innovation.categoryDescription || "",
     });
 
     const [validationErrors, setValidationErrors] = useState<{ title: boolean }>({ title: false });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Ensure category_id is set if missing
     useEffect(() => {
         if (!formValues.category_id && initialCategory?.id) {
             setFormValues((prev) => ({ ...prev, category_id: initialCategory.id }));
@@ -74,6 +72,36 @@ const EditInnovationVault: React.FC<EditInnovationVaultProps> = ({
         if (typeof value === "string" && value.trim()) {
             setValidationErrors((prev) => ({ ...prev, [field]: false }));
         }
+    };
+
+    const handleFeatureChange = (index: number, value: string) => {
+        const updatedFeatures = [...formValues.keyFeatures];
+        updatedFeatures[index] = value;
+        setFormValues((prev) => ({ ...prev, keyFeatures: updatedFeatures }));
+    };
+
+    const addFeatureField = () => {
+        setFormValues((prev) => ({ ...prev, keyFeatures: [...prev.keyFeatures, ""] }));
+    };
+
+    const removeFeatureField = (index: number) => {
+        const updatedFeatures = formValues.keyFeatures.filter((_, i) => i !== index);
+        setFormValues((prev) => ({ ...prev, keyFeatures: updatedFeatures }));
+    };
+
+    const handleRelatedToolChange = (index: number, value: string) => {
+        const updatedTools = [...formValues.relatedTools];
+        updatedTools[index] = value;
+        setFormValues((prev) => ({ ...prev, relatedTools: updatedTools }));
+    };
+
+    const addRelatedToolField = () => {
+        setFormValues((prev) => ({ ...prev, relatedTools: [...prev.relatedTools, ""] }));
+    };
+
+    const removeRelatedToolField = (index: number) => {
+        const updatedTools = formValues.relatedTools.filter((_, i) => i !== index);
+        setFormValues((prev) => ({ ...prev, relatedTools: updatedTools }));
     };
 
     const validateForm = () => {
@@ -103,30 +131,22 @@ const EditInnovationVault: React.FC<EditInnovationVaultProps> = ({
         try {
             let imageUrl = formValues.logo;
 
-            // Upload new image if selected
             if (selectedFile) {
                 if (innovation?.logo) {
                     await axios.delete("/api/img-uploads", { data: { url: innovation.logo } });
                 }
-
                 const formData = new FormData();
                 formData.append("file", selectedFile);
                 const uploadRes = await axios.post("/api/img-uploads", formData);
                 imageUrl = uploadRes.data.url;
             }
 
-            // Handle image removal
             if (!formValues.logo && innovation?.logo) {
                 await axios.delete("/api/img-uploads", { data: { url: innovation.logo } });
                 imageUrl = "";
             }
 
-            // Save form with numeric category_id
-            await updateInnovation.mutateAsync({
-                ...formValues,
-                logo: imageUrl,
-                id: innovation.id,
-            });
+            await updateInnovation.mutateAsync({ ...formValues, logo: imageUrl, id: innovation.id });
         } catch (error) {
             console.error("Update error:", error);
         } finally {
@@ -143,25 +163,9 @@ const EditInnovationVault: React.FC<EditInnovationVaultProps> = ({
                     <div className="flex gap-3">
                         {isSubmitting ? (
                             <div className="bg-green-200 rounded-full p-3 flex items-center justify-center">
-                                <svg
-                                    className="animate-spin h-4 w-4 text-gray-600"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-                                    ></path>
+                                <svg className="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"></path>
                                 </svg>
                             </div>
                         ) : (
@@ -244,6 +248,66 @@ const EditInnovationVault: React.FC<EditInnovationVaultProps> = ({
                             isTextArea
                             rows={3}
                         />
+                    </div>
+
+                    {/* Key Features */}
+                    <div className="col-span-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Key Features</label>
+                        {formValues.keyFeatures.map((feature, index) => (
+                            <div key={index} className="flex gap-2 mb-2">
+                                <InputComponent
+                                    placeholder={`Feature ${index + 1}`}
+                                    onChange={(value) => handleFeatureChange(index, value)}
+                                    value={feature}
+                                />
+                                {feature.trim() && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeFeatureField(index)}
+                                        className="bg-red-200 text-red-700 px-2 rounded-md"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={addFeatureField}
+                            className="mt-2 text-blue-600 hover:underline text-sm"
+                        >
+                            + Add Feature
+                        </button>
+                    </div>
+
+                    {/* Related Tools */}
+                    <div className="col-span-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Related Tools</label>
+                        {formValues.relatedTools.map((tool, index) => (
+                            <div key={index} className="flex gap-2 mb-2">
+                                <InputComponent
+                                    placeholder={`Tool ${index + 1}`}
+                                    onChange={(value) => handleRelatedToolChange(index, value)}
+                                    value={tool}
+                                />
+                                {tool.trim() && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeRelatedToolField(index)}
+                                        className="bg-red-200 text-red-700 px-2 rounded-md"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={addRelatedToolField}
+                            className="mt-2 text-blue-600 hover:underline text-sm"
+                        >
+                            + Add Tool
+                        </button>
                     </div>
                 </div>
             </div>
