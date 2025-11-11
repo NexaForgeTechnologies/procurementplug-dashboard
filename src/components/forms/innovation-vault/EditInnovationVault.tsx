@@ -51,8 +51,9 @@ const EditInnovationVault: React.FC<EditInnovationVaultProps> = ({
         description: innovation.description || "",
         logo: innovation.logo || "",
         category_id: initialCategory?.id,
-        keyFeatures: innovation.keyFeatures || [""],
-        relatedTools: innovation.relatedTools || [""],
+        keyFeatures: innovation.keyFeatures?.length ? innovation.keyFeatures : [""],
+        relatedTools: innovation.relatedTools?.length ? innovation.relatedTools : [""],
+
         sponsoredBy: innovation.sponsoredBy || "",
         categoryDescription: innovation.categoryDescription || "",
     });
