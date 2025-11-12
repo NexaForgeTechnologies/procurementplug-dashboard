@@ -21,6 +21,7 @@ export default function SideBar() {
   const vipLoungeItems = [
     { name: "Exclusive Partners", href: "/exclusive-partners", icon: "consulting-partner" },
     { name: "Innovation Vault", href: "/innovation-vault", icon: "procuretech-solution" },
+    { name: "Host Round Table", href: "/host-roundtable", icon: "procuretech-solution" },
   ];
 
   const [openBusinessHub, setOpenBusinessHub] = useState(false);
