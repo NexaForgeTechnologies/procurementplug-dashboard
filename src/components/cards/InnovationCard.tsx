@@ -118,10 +118,18 @@ const InnovationCard: React.FC<InnovationCardProps> = ({
                         height={112}
                     />
                 )}
-
                 {/* Title */}
-                <h3 className="text-lg font-bold text-gray-900 mt-6">{data.title}</h3>
-
+                <h3 className="text-lg font-bold text-gray-900">{data.title}</h3>
+                {/* Tag */}
+                <p className="text-xs bg-[#b08d57] py-0.5 px-1 text-white rounded font-light">{data.category}</p>
+                {/* Sponsored by */}
+                <p className="text-xs text-gray-900/70 font-light mt-2">
+                    <span className="font-bold">
+                        Sponsored by:
+                        <br />
+                    </span>
+                    {data.sponsoredBy}
+                </p>
             </div>
 
             {/* Confirm Dialog */}

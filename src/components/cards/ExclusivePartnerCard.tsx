@@ -25,7 +25,6 @@ const getCategoryNameById = (id?: number) => {
   return categoryOptions.find((cat) => cat.id === id)?.value || "";
 };
 
-
 const ExclusivePartnerCard: React.FC<ExclusivePartnerCardProps> = ({
   data,
   refetchPartner,
@@ -33,6 +32,7 @@ const ExclusivePartnerCard: React.FC<ExclusivePartnerCardProps> = ({
 }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   // Mutation for deleting partner
   const deletePartnerMutation = useMutation({
@@ -40,23 +40,17 @@ const ExclusivePartnerCard: React.FC<ExclusivePartnerCardProps> = ({
       const response = await axios.delete(`/api/exclusive-partners?id=${partnerId}`);
       return response.data;
     },
-    onSuccess: () => {
-      refetchPartner(); // Refresh list after deletion
-    },
+    onSuccess: () => refetchPartner(),
     onError: (error) => console.error("Failed to delete partner:", error),
   });
 
-  const handleDeleteClick = () => {
-    setIsConfirmOpen(true);
-  };
-
+  const handleDeleteClick = () => setIsConfirmOpen(true);
 
   const confirmDeletion = async () => {
     setIsConfirmOpen(false);
     setIsDeleting(true);
 
     try {
-      // Delete partner image first (do not block DB deletion)
       if (data.logo) {
         try {
           await axios.delete("/api/img-uploads", { data: { url: data.logo } });
@@ -65,7 +59,6 @@ const ExclusivePartnerCard: React.FC<ExclusivePartnerCardProps> = ({
         }
       }
 
-      // Delete partner from DB
       await deletePartnerMutation.mutateAsync(data.id);
     } catch (err) {
       console.error("Error deleting partner:", err);
@@ -73,6 +66,14 @@ const ExclusivePartnerCard: React.FC<ExclusivePartnerCardProps> = ({
       setIsDeleting(false);
     }
   };
+
+  // Truncated description logic
+  const charLimit = 100;
+  const isLongDescription = data.description && data.description.length > charLimit;
+  const displayedDescription =
+    isLongDescription && !showFullDescription
+      ? data.description!.substring(0, charLimit) + "..."
+      : data.description;
 
   return (
     <>
@@ -135,15 +136,29 @@ const ExclusivePartnerCard: React.FC<ExclusivePartnerCardProps> = ({
         <div className="flex flex-col justify-center">
           <h2 className="text-lg md:text-xl font-semibold text-gray-800">{data.title}</h2>
           {data.tagline && <p className="text-gray-600 text-sm mt-1">{data.tagline}</p>}
-          {data.description && <p className="text-gray-500 text-xs mt-2">{data.description}</p>}
+          {data.description && (
+            <p className="text-gray-500 text-xs mt-2">
+              {displayedDescription}
+              {isLongDescription && (
+                <button
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="text-blue-500 ml-1 underline text-xs"
+                >
+                  {showFullDescription ? "View Less" : "View More"}
+                </button>
+              )}
+            </p>
+          )}
           {(data.category_name || data.category_id) && (
             <p className="text-[#9e8151] text-sm mt-2">
               <span className="text-black">Category : </span>
-              <span className="text-gray-600 text-sm">{data.category_name ?? getCategoryNameById(data.category_id)}</span>
+              <span className="text-gray-600 text-sm">
+                {data.category_name ?? getCategoryNameById(data.category_id)}
+              </span>
             </p>
           )}
-
         </div>
+
         {data.website && (
           <a
             href={data.website}

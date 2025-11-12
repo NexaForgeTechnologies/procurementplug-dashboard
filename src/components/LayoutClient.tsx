@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import SideBar from "@/components/SideBar";
+import TopBar from "./TopBar";
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
    const pathname = usePathname();
@@ -45,8 +46,13 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
             <SideBar />
          </aside>
 
+
+
          {/* Page content */}
-         <div className="p-4 sm:ml-64">{children}</div>
+         <div className="p-4 sm:ml-64">
+            <TopBar />
+            {children}
+         </div>
       </>
    );
 }
