@@ -13,10 +13,12 @@ function RoundTableCTR() {
     return response.data;
   };
 
-  const { data: roundTables, refetch } = useQuery<RoundTableDM[]>({
+  const { data: roundTables } = useQuery<RoundTableDM[]>({
     queryKey: ["round-tables"],
     queryFn: fetchRoundTable,
   });
+  console.log(roundTables);
+
 
   // --- State ---
   const [selectedRoundTable, setSelectedRoundTable] = useState<RoundTableDM | null>(null);
