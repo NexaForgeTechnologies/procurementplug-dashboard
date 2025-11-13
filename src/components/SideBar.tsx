@@ -6,10 +6,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/icon/IconComp";
 
+type SidebarItem = {
+  name: string;
+  href: string;
+  icon: string;
+  children?: SidebarItem[];
+};
+
 export default function SideBar() {
   const pathname = usePathname();
 
-  const businessHubItems = [
+
+  const businessHubItems: SidebarItem[] = [
     { name: "Events", href: "/events", icon: "event" },
     { name: "Speakers", href: "/speakers", icon: "speaker" },
     { name: "Consulting Partner", href: "/consulting-partner", icon: "consulting-partner" },
@@ -18,24 +26,115 @@ export default function SideBar() {
     { name: "ProcureTech Solution", href: "/procuretech-solution", icon: "procuretech-solution" },
   ];
 
-  const vipLoungeItems = [
+  const vipLoungeItems: SidebarItem[] = [
     { name: "Exclusive Partners", href: "/exclusive-partners", icon: "consulting-partner" },
-    { name: "Innovation Vault", href: "/innovation-vault", icon: "procuretech-solution" },
     { name: "Host Round Table", href: "/host-roundtable", icon: "procuretech-solution" },
+    { name: "Innovation Vault", href: "/innovation-vault", icon: "procuretech-solution" },
+    { name: "Talent Hiring Intelligence", href: "/talent-hiring-intelligence", icon: "speaker" },
   ];
 
-  const [openBusinessHub, setOpenBusinessHub] = useState(false);
-  const [openVipLounge, setOpenVipLounge] = useState(false);
+  const talentHiringItems: SidebarItem[] = [
+    { name: "Professionals", href: "/talent-hiring-intelligence/professionals", icon: "speaker" },
+    { name: "VIP Recruitment Partners", href: "/talent-hiring-intelligence/vip-recruitment", icon: "speaker" },
+  ];
 
-  // Detect if current pathname belongs to one of the dropdowns
-  const isBusinessHubActive = businessHubItems.some((item) => item.href === pathname);
-  const isVipLoungeActive = vipLoungeItems.some((item) => item.href === pathname);
+  // Add nested children
+  const vipLoungeStructure: SidebarItem[] = vipLoungeItems.map((item) =>
+    item.name === "Talent Hiring Intelligence"
+      ? { ...item, children: talentHiringItems }
+      : item
+  );
 
-  // Auto-open dropdown when visiting one of its child pages
+  // State: track which dropdowns are open, using href as key
+  const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+
+  // Open dropdowns if current path is active
+  // Inside your useEffect:
   useEffect(() => {
-    if (isBusinessHubActive) setOpenBusinessHub(true);
-    if (isVipLoungeActive) setOpenVipLounge(true);
-  }, [isBusinessHubActive, isVipLoungeActive]);
+    const newState: Record<string, boolean> = {};
+
+    const checkActive = (item: SidebarItem): boolean => {
+      let active = item.href === pathname;
+      if (item.children) {
+        const childActive = item.children.some(checkActive);
+        active = active || childActive;
+        newState[item.href] = childActive; // open parent if child is active
+      }
+      return active;
+    };
+
+    // Check Business Hub
+    businessHubItems.forEach(checkActive);
+    // Check VIP Lounge
+    vipLoungeStructure.forEach(checkActive);
+
+    // Optionally open top-level dropdowns if a child is active
+    if (businessHubItems.some((i) => i.href === pathname || i.children?.some((c) => c.href === pathname))) {
+      newState["business-hub"] = true;
+    }
+    if (vipLoungeStructure.some((i) => i.href === pathname || i.children?.some((c) => c.href === pathname))) {
+      newState["vip-lounge"] = true;
+    }
+
+    setOpenDropdowns(newState);
+  }, [pathname]);
+
+  const toggleDropdown = (href: string) => {
+    setOpenDropdowns((prev) => ({ ...prev, [href]: !prev[href] }));
+  };
+
+  const isActive = (item: SidebarItem): boolean => {
+    if (item.href === pathname) return true;
+    if (item.children) return item.children.some(isActive);
+    return false;
+  };
+
+const renderDropdown = (items: SidebarItem[]) => (
+  <ul className="mt-1 space-y-1 p-2 rounded-lg backdrop-blur-md bg-white/10">
+    {items.map((item) => (
+      <li key={item.href}>
+        {item.children ? (
+          <div>
+            <button
+              onClick={() => toggleDropdown(item.href)}
+              className={`flex items-center justify-between w-full p-2 rounded-lg text-white hover:bg-[#b08d57] transition-colors ${
+                isActive(item)
+                  ? "bg-[#b08d57]"
+                  : ""
+              }`}
+            >
+              <div className="flex items-center text-start">
+                <Icon name={item.icon} />
+                <span className="ms-3">{item.name}</span>
+              </div>
+              <span className="font-bold text-white">
+                {openDropdowns[item.href] ? "−" : "+"}
+              </span>
+            </button>
+            {openDropdowns[item.href] && (
+              <ul className="mt-1 space-y-1 pl-4">
+                {renderDropdown(item.children)}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <Link
+            href={item.href}
+            className={`flex items-center p-2 rounded-lg text-white hover:bg-[#b08d57] transition-colors ${
+              pathname === item.href
+                ? "bg-[#b08d57] border-1 border-white/50"
+                : ""
+            }`}
+          >
+            <Icon name={item.icon} />
+            <span className="ms-3">{item.name}</span>
+          </Link>
+        )}
+      </li>
+    ))}
+  </ul>
+);
+
 
   return (
     <div
@@ -50,90 +149,48 @@ export default function SideBar() {
         <li>
           <Link
             href="/home"
-            data-drawer-hide="default-sidebar"
-            className={`flex items-center p-2 rounded-lg group transition-colors text-white ${
-              pathname === "/home" ? "bg-[#b08d57]" : "hover:bg-[#b08d57]"
-            }`}
+            className={`flex items-center p-2 rounded-lg group transition-colors text-white ${pathname === "/home" ? "bg-[#b08d57]" : "hover:bg-[#b08d57]"
+              }`}
           >
             <Icon name="venue" />
             <span className="ms-3">Dashboard</span>
           </Link>
         </li>
 
-        {/* Business Hub Dropdown */}
+        {/* Business Hub */}
         <li>
           <button
-            onClick={() => setOpenBusinessHub(!openBusinessHub)}
-            className="flex items-center justify-between w-full p-2 rounded-lg text-white hover:bg-[#b08d57] transition-colors"
+            onClick={() => toggleDropdown("business-hub")}
+            className={`flex items-center justify-between w-full p-2 rounded-lg text-white hover:bg-[#b08d57] transition-colors ${businessHubItems.some(isActive) ? "bg-[#b08d57]" : ""
+              }`}
           >
             <div className="flex items-center">
               <Icon name="venue" />
               <span className="ms-3">Business Hub</span>
             </div>
-            {/* Plus/Minus indicator */}
             <span className="font-bold text-white">
-              {openBusinessHub ? "−" : "+"}
+              {openDropdowns["business-hub"] ? "−" : "+"}
             </span>
           </button>
-
-          {openBusinessHub && (
-            <ul
-              className="mt-1 space-y-1 p-2 rounded-lg backdrop-blur-md bg-white/20"
-              style={{ transition: "all 0.3s ease" }}
-            >
-              {businessHubItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center p-2 rounded-lg text-white hover:bg-[#b08d57] transition-colors ${
-                      pathname === item.href ? "bg-[#b08d57]" : ""
-                    }`}
-                  >
-                    <Icon name={item.icon} />
-                    <span className="ms-3">{item.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+          {openDropdowns["business-hub"] && renderDropdown(businessHubItems)}
         </li>
 
-        {/* VIP Lounge Dropdown */}
+        {/* VIP Lounge */}
         <li>
           <button
-            onClick={() => setOpenVipLounge(!openVipLounge)}
-            className="flex items-center justify-between w-full p-2 rounded-lg text-white hover:bg-[#b08d57] transition-colors"
+            onClick={() => toggleDropdown("vip-lounge")}
+            className={`flex items-center justify-between w-full p-2 rounded-lg text-white hover:bg-[#b08d57] transition-colors ${vipLoungeStructure.some(isActive) ? "bg-[#b08d57]" : ""
+              }`}
           >
             <div className="flex items-center">
               <Icon name="venue" />
               <span className="ms-3">VIP Lounge</span>
             </div>
-            {/* Plus/Minus indicator */}
             <span className="font-bold text-white">
-              {openVipLounge ? "−" : "+"}
+              {openDropdowns["vip-lounge"] ? "−" : "+"}
             </span>
           </button>
-
-          {openVipLounge && (
-            <ul
-              className="mt-1 space-y-1 p-2 rounded-lg backdrop-blur-md bg-white/20"
-              style={{ transition: "all 0.3s ease" }}
-            >
-              {vipLoungeItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center p-2 rounded-lg text-white hover:bg-[#b08d57] transition-colors ${
-                      pathname === item.href ? "bg-[#b08d57]" : ""
-                    }`}
-                  >
-                    <Icon name={item.icon} />
-                    <span className="ms-3">{item.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+          {openDropdowns["vip-lounge"] && renderDropdown(vipLoungeStructure)}
         </li>
       </ul>
     </div>
