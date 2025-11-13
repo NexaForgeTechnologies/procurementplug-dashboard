@@ -12,7 +12,7 @@ function InsightsPostCTR() {
     return response.data;
   };
 
-  const { data: insightsPosts, isLoading, isError, refetch } = useQuery<InsightsPostDM[]>({
+  const { data: insightsPosts, isLoading, isError } = useQuery<InsightsPostDM[]>({
     queryKey: ["insights-post"],
     queryFn: fetchInsightsPosts,
   });
@@ -26,6 +26,8 @@ function InsightsPostCTR() {
   };
 
   const handleApprove = (id?: number) => async () => {
+    console.log(id);
+
     // try {
     //   await axios.put("/api/insights-post", {
     //     id,
@@ -43,6 +45,8 @@ function InsightsPostCTR() {
   };
 
   const handleDecline = (id?: number) => async () => {
+    console.log(id);
+    
     // try {
     //   await axios.put("/api/insights-post", {
     //     id,
