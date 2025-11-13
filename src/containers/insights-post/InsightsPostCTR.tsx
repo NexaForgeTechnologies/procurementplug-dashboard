@@ -26,36 +26,38 @@ function InsightsPostCTR() {
   };
 
   const handleApprove = (id?: number) => async () => {
-    try {
-      await axios.put("/api/insights-post", {
-        id,
-        status: "Approved",
-        is_approved: 1,
-      });
-      // Refresh the data after approval
-      setSelectedPost(null);
-      refetch();
-    }
-    catch (error) {
-      console.error("Error approving roundtable:", error);
-    }
+    // try {
+    //   await axios.put("/api/insights-post", {
+    //     id,
+    //     status: "Approved",
+    //     is_approved: 1,
+    //   });
+    //   // Refresh the data after approval
+    //   setSelectedPost(null);
+    //   refetch();
+    // }
+    // catch (error) {
+    //   console.error("Error approving roundtable:", error);
+    // }
+    alert("Approve functionality is currently disabled.");
   };
 
   const handleDecline = (id?: number) => async () => {
-    try {
-      await axios.put("/api/insights-post", {
-        id,
-        status: "Declined",
-        is_approved: 0,
-      });
+    // try {
+    //   await axios.put("/api/insights-post", {
+    //     id,
+    //     status: "Declined",
+    //     is_approved: 0,
+    //   });
 
-      // Refresh the data after declining
-      setSelectedPost(null);
-      refetch();
-    }
-    catch (error) {
-      console.error("Error declining roundtable:", error);
-    }
+    //   // Refresh the data after declining
+    //   setSelectedPost(null);
+    //   refetch();
+    // }
+    // catch (error) {
+    //   console.error("Error declining roundtable:", error);
+    // }
+    alert("Reject functionality is currently disabled.");
   }
 
   if (isLoading) return <div>Loading insightsPosts...</div>;
