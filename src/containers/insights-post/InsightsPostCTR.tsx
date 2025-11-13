@@ -88,13 +88,21 @@ function InsightsPostCTR() {
               key={post.id}
               className="text-xs text-[#808080] py-2 border-t border-t-[#808080] grid grid-cols-8 gap-3 items-center"
             >
-              <span>{post.name || "N/A"}</span>
+              {/* <span>{post.name || "N/A"}</span>
               <span>{post.companyName || "N/A"}</span>
               <span>{post.title || "N/A"}</span>
               <span>{post.package || "N/A"}</span>
               <span>{post.date || "N/A"}</span>
               <span>£{post.payment || "N/A"}</span>
-              <span>{post.status || "N/A"}</span>
+              <span>{post.status || "N/A"}</span> */}
+              <span>How AI is Transforming
+                Procurement</span>
+              <span>Automation & AI</span>
+              <span>Article</span>
+              <span>Yes</span>
+              <span>Sarah Collins</span>
+              <span>15 Oct 2025</span>
+              <span>Pending</span>
               <button
                 className="cursor-pointer p-2 rounded-md bg-[#B08D58] text-white h-max"
                 onClick={() => handleViewDetails(post)}
@@ -112,7 +120,7 @@ function InsightsPostCTR() {
             Post Details Page
           </h3>
 
-          {/* Company Registration */}
+          {/* Details */}
           <div className="max-w-[500px] rounded border border-[#DBBB89] p-3 space-y-4">
             <img src="" alt="" className="w-full h-[150px] object-cover rounded-sm" />
             <p className="w-max border border-[#DBBB89] p-1 rounded-sm text-xs text-[#1B1B1B]">ARTICLE</p>
