@@ -105,7 +105,7 @@ export class TalentHiringIntelligenceRepo {
       `,
                 [
                     talent.name,
-                    talent.logo || null,  
+                    talent.logo || null,
                     talent.occupation,
                     talent.address,
                     talent.description || null,

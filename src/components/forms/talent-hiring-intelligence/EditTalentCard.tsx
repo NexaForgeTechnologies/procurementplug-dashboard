@@ -11,10 +11,11 @@ import CircularImageUploader from "@/components/image-uploader/CircularImageUplo
 type TalentHiringDM = {
   id: number; // assuming each talent has an id for update
   name: string;
+  logo?: string;
   occupation: string;
   address: string;
   description?: string;
-  imageUrl?: string;
+  
 };
 
 type EditTalentProps = {
@@ -78,7 +79,7 @@ const EditTalentCard: React.FC<EditTalentProps> = ({
     if (!validateForm()) return;
     setIsSubmitting(true);
 
-    let imageUrl = formValues.imageUrl || "";
+    let logo = formValues.logo || "";
 
     try {
       if (selectedFile) {
@@ -91,7 +92,7 @@ const EditTalentCard: React.FC<EditTalentProps> = ({
         });
         if (!res.ok) throw new Error("Image upload failed");
         const data = await res.json();
-        imageUrl = data.url;
+        logo = data.url;
       }
     } catch (error) {
       console.error("Image upload failed:", error);
@@ -100,7 +101,7 @@ const EditTalentCard: React.FC<EditTalentProps> = ({
       return;
     }
 
-    updateTalentMutation.mutate({ ...formValues, imageUrl });
+    updateTalentMutation.mutate({ ...formValues, logo });
   };
 
   if (!active) return null;
@@ -152,7 +153,7 @@ const EditTalentCard: React.FC<EditTalentProps> = ({
         <div className="grid gap-4 mt-4">
           <CircularImageUploader
             label="Upload Talent Image"
-            value={selectedFile ? URL.createObjectURL(selectedFile) : formValues.imageUrl || ""}
+            value={selectedFile ? URL.createObjectURL(selectedFile) : formValues.logo || ""}
             onImageSelect={(file) => setSelectedFile(file)}
           />
 
