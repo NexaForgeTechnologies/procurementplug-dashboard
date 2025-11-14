@@ -130,11 +130,17 @@ const AddInnovationCard: React.FC<AddInnovationProps> = ({
     });
 
     const handleSubmit = async () => {
+
         if (!validateForm()) return;
+        if (!formValues.category_id) {
+            alert("Please select a category");
+            return;
+        }
         setIsSubmitting(true);
-        console.log(formValues);
 
         let imageUrl = formValues.logo;
+
+        // If you want to enable file upload, uncomment this
         if (selectedFile) {
             const formData = new FormData();
             formData.append("file", selectedFile);
@@ -264,9 +270,12 @@ const AddInnovationCard: React.FC<AddInnovationProps> = ({
                                     label="Category"
                                     placeholder="Select category"
                                     options={categoryOptions}
-                                    onSelect={(id) => handleChange("category_id", id ?? undefined)}
+                                    onSelect={(id) => {
+                                        handleChange("category_id", id ?? undefined);
+                                    }}
                                     value={
-                                        categoryOptions.find((opt) => opt.id === formValues.category_id)
+                                        // Find the category name based on selected ID
+                                        categoryOptions.find((option) => option.id === formValues.category_id)
                                             ?.value || ""
                                     }
                                 />

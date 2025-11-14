@@ -24,14 +24,23 @@ const InnovationCard: React.FC<InnovationCardProps> = ({
     // Mutation for deleting innovation
     const deleteInnovationMutation = useMutation({
         mutationFn: async (innovationId: number) => {
-            const response = await axios.delete(`/api/innovations?id=${innovationId}`);
-            return response.data;
+            console.log("Sending DELETE for id:", innovationId);
+            try {
+                const response = await axios.delete(`/api/innovation-vault?id=${innovationId}`);
+                console.log("Response:", response.data);
+                return response.data;
+            } catch (err) {
+                console.error("DELETE failed:", err);
+                throw err; // so react-query triggers onError
+            }
         },
         onSuccess: () => {
+            console.log("Delete succeeded");
             refetchInnovation?.();
         },
         onError: (error) => console.error("Failed to delete innovation:", error),
     });
+
 
     const handleDeleteClick = () => {
         setIsConfirmOpen(true);
@@ -49,6 +58,7 @@ const InnovationCard: React.FC<InnovationCardProps> = ({
                     console.warn("Failed to delete logo, continuing DB deletion.", imgErr);
                 }
             }
+            console.log("innovation id : ", data.id);
             await deleteInnovationMutation.mutateAsync(data.id);
         } catch (err) {
             console.error("Error deleting innovation:", err);
@@ -112,7 +122,7 @@ const InnovationCard: React.FC<InnovationCardProps> = ({
                 {data.logo && (
                     <Image
                         className="w-28 h-28 object-contain rounded-full border border-gray-200"
-                        src={data.logo}
+                        src={data.logo || "/images/default-circle.png"}
                         alt={data.title}
                         width={112}
                         height={112}

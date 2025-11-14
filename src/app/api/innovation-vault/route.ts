@@ -55,14 +55,17 @@ export async function PUT(req: NextRequest) {
 // 🔹 DELETE — Remove an innovation
 export async function DELETE(req: NextRequest) {
   try {
-    const idParam = req.nextUrl.searchParams.get("id");
-    const id = Number(idParam);
+    const { searchParams } = req.nextUrl;  // Access query params
+    const id = searchParams.get("id");     // Get the "id" param
+    console.log("innovation id : ", id);
 
-    if (isNaN(id)) {
+    if (!id || isNaN(Number(id))) {
       return NextResponse.json({ error: "Invalid innovation ID" }, { status: 400 });
     }
 
-    await InnovationVaultRepo.deleteInnovation(id);
+    // Delete innovation
+    await InnovationVaultRepo.deleteInnovation(Number(id));
+
     return NextResponse.json({ message: "Innovation deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error deleting innovation:", error);

@@ -85,30 +85,31 @@ export class InnovationVaultRepo {
     }
 
     // 🔹 Add new innovation
+    // 🔹 Add new innovation
     static async addInnovation(
         innovation: Omit<InnovationVaultDM, "id" | "created_at" | "updated_at" | "deleted_at">
     ): Promise<InnovationVaultDM> {
         try {
             const [result] = await db.execute(
                 `
-                INSERT INTO innovation_vault (
-                    logo,
-                    title,
-                    category_id,
-                    description,
-                    key_features,
-                    related_tools,             -- <-- added
-                    category_description,
-                    sponsored_by
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                `,
+      INSERT INTO innovation_vault (
+        logo,
+        title,
+        category_id,
+        description,
+        key_features,
+        related_tools,
+        category_description,
+        sponsored_by
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `,
                 [
                     innovation.logo,
                     innovation.title,
-                    innovation.category_id || null,
+                    innovation.category_id ?? null,  // <-- explicit null handling
                     innovation.description,
                     JSON.stringify(innovation.keyFeatures || []),
-                    JSON.stringify(innovation.relatedTools || []),  // <-- added
+                    JSON.stringify(innovation.relatedTools || []),
                     innovation.categoryDescription,
                     innovation.sponsoredBy,
                 ]
@@ -130,26 +131,26 @@ export class InnovationVaultRepo {
         try {
             await db.execute(
                 `
-                UPDATE innovation_vault
-                SET 
-                    logo = ?,
-                    title = ?,
-                    category_id = ?,
-                    description = ?,
-                    key_features = ?,
-                    related_tools = ?,           -- <-- added
-                    category_description = ?,
-                    sponsored_by = ?,
-                    updated_at = ?
-                WHERE id = ?
-                `,
+      UPDATE innovation_vault
+      SET 
+        logo = ?,
+        title = ?,
+        category_id = ?,
+        description = ?,
+        key_features = ?,
+        related_tools = ?,
+        category_description = ?,
+        sponsored_by = ?,
+        updated_at = ?
+      WHERE id = ?
+      `,
                 [
                     innovation.logo,
                     innovation.title,
-                    innovation.category_id || null,
+                    innovation.category_id ?? null, // <-- explicit null handling
                     innovation.description,
                     JSON.stringify(innovation.keyFeatures || []),
-                    JSON.stringify(innovation.relatedTools || []),  // <-- added
+                    JSON.stringify(innovation.relatedTools || []),
                     innovation.categoryDescription,
                     innovation.sponsoredBy,
                     getFormattedTimestamp(),
@@ -166,10 +167,16 @@ export class InnovationVaultRepo {
 
     // 🔹 Delete innovation (soft delete)
     static async deleteInnovation(id: number) {
+        console.log("Deleting innovation with ID:", id);
+
+        if (!id || isNaN(id)) {
+            throw new Error("Invalid innovation ID");
+        }
+
         try {
             await db.execute(
-                `UPDATE innovation_vault SET deleted_at = ? WHERE id = ?`,
-                [getFormattedTimestamp(), id]
+                `DELETE FROM innovation_vault WHERE id = ?`,
+                [id]  // only pass the ID here
             );
 
             return { message: "Innovation deleted successfully" };
