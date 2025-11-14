@@ -122,7 +122,7 @@ const AddTalentCard: React.FC<AddTalentProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/70 z-50 px-4">
-            <div className="max-w-md max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
+            <div className="max-w-xl max-h-[90vh] overflow-y-auto py-4 px-3 bg-[#F7F9FB] relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 rounded-md">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <h2 className="font-medium text-2xl text-[#565656]">Add Talent</h2>

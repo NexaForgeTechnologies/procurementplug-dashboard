@@ -9,31 +9,32 @@ export type TalentHiringDM = {
     occupation: string;
     address: string;
     description?: string;
-    logo?: string;              // <-- added logo field
+    logo?: string;
     created_at?: string;
     updated_at?: string;
     deleted_at?: string | null;
 };
 
 export class TalentHiringIntelligenceRepo {
+    
     // 🔹 Get all talents
     static async getAllTalents(): Promise<TalentHiringDM[]> {
         try {
             const [rows] = await db.query<RowDataPacket[]>(`
-        SELECT
-          id,
-          name,
-          occupation,
-          address,
-          description,
-          logo,                -- added here
-          created_at,
-          updated_at,
-          deleted_at
-        FROM talent_hiring_intelligence
-        WHERE deleted_at IS NULL
-        ORDER BY id DESC;
-      `);
+                SELECT
+                    id,
+                    name,
+                    occupation,
+                    address,
+                    description,
+                    logo,
+                    created_at,
+                    updated_at,
+                    deleted_at
+                FROM talent_hiring_intelligence
+                WHERE deleted_at IS NULL
+                ORDER BY id DESC;
+            `);
 
             return rows.map((row) => ({
                 id: row.id,
@@ -41,7 +42,7 @@ export class TalentHiringIntelligenceRepo {
                 occupation: row.occupation,
                 address: row.address,
                 description: row.description,
-                logo: row.logo,       // added here
+                logo: row.logo,
                 created_at: row.created_at,
                 updated_at: row.updated_at,
                 deleted_at: row.deleted_at,
@@ -59,21 +60,20 @@ export class TalentHiringIntelligenceRepo {
         try {
             const [result] = await db.execute(
                 `
-        INSERT INTO talent_hiring_intelligence (
-          name,
-          logo,
-          occupation,
-          address,
-          description,
-        ) VALUES (?, ?, ?, ?, ?)
-      `,
+                INSERT INTO talent_hiring_intelligence (
+                    name,
+                    logo,
+                    occupation,
+                    address,
+                    description
+                ) VALUES (?, ?, ?, ?, ?)
+                `,
                 [
                     talent.name,
                     talent.logo || null,
                     talent.occupation,
                     talent.address,
                     talent.description || null,
-                    // handle optional logo
                 ]
             ) as [ResultSetHeader, unknown];
 
@@ -93,16 +93,16 @@ export class TalentHiringIntelligenceRepo {
         try {
             await db.execute(
                 `
-        UPDATE talent_hiring_intelligence
-        SET
-          name = ?,
-          logo = ?, 
-          occupation = ?,
-          address = ?,
-          description = ?,    
-          updated_at = ?
-        WHERE id = ?
-      `,
+                UPDATE talent_hiring_intelligence
+                SET
+                    name = ?,
+                    logo = ?, 
+                    occupation = ?,
+                    address = ?,
+                    description = ?,    
+                    updated_at = ?
+                WHERE id = ?
+                `,
                 [
                     talent.name,
                     talent.logo || null,

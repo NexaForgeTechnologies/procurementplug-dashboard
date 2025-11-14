@@ -1,4 +1,4 @@
-import { TalentHiringIntelligenceRepo } from "@/repository/talent-hiring-intelligence/TalentHiringIntellingenceRepo"; 
+import { TalentHiringIntelligenceRepo } from "@/repository/talent-hiring-intelligence/TalentHiringIntellingenceRepo";
 import { NextRequest, NextResponse } from "next/server";
 
 // 🔹 GET — Fetch all talent hiring records
@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log(body);
     await TalentHiringIntelligenceRepo.updateTalent(body);
 
     return NextResponse.json({
@@ -58,6 +59,8 @@ export async function DELETE(req: NextRequest) {
   try {
     const idParam = req.nextUrl.searchParams.get("id");
     const id = Number(idParam);
+
+    console.log(id);
 
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid talent ID" }, { status: 400 });

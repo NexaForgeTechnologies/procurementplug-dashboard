@@ -25,7 +25,7 @@ const TalentHiringCard: React.FC<TalentCardProps> = ({
     const deleteTalent = useMutation({
         mutationFn: async (talentId: number) => {
             const response = await axios.delete(
-                `/api/talent-hiring-intelligence?id=${talentId}`
+                `/api/talent-hiring-intelligence/professionals?id=${talentId}`
             );
             return response.data;
         },
