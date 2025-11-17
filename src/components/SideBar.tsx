@@ -16,7 +16,6 @@ type SidebarItem = {
 export default function SideBar() {
   const pathname = usePathname();
 
-
   const businessHubItems: SidebarItem[] = [
     { name: "Events", href: "/events", icon: "event" },
     { name: "Speakers", href: "/speakers", icon: "speaker" },
@@ -36,7 +35,7 @@ export default function SideBar() {
 
   const talentHiringItems: SidebarItem[] = [
     { name: "Professionals", href: "/talent-hiring-intelligence/professionals", icon: "speaker" },
-    { name: "VIP Recruitment Partners", href: "/talent-hiring-intelligence/vip-recruitment", icon: "speaker" },
+    { name: "VIP Recruitment Partners", href: "/talent-hiring-intelligence/vip-recruitment-partners", icon: "speaker" },
   ];
 
   // Add nested children

@@ -65,7 +65,6 @@ export async function DELETE(req: NextRequest) {
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid talent ID" }, { status: 400 });
     }
-
     await TalentHiringIntelligenceRepo.deleteTalent(id);
     return NextResponse.json({ message: "Talent deleted successfully" }, { status: 200 });
   } catch (error) {
