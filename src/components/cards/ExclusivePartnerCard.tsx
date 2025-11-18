@@ -34,6 +34,19 @@ const ExclusivePartnerCard: React.FC<ExclusivePartnerCardProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
+  // 🔥 URL FORMATTER LOGIC
+  const formatUrl = (url: string) => {
+    if (!url) return "";
+
+    // Already valid
+    if (url.startsWith("https://") || url.startsWith("http://")) {
+      return url;
+    }
+
+    // No protocol → add https://
+    return "https://" + url;
+  };
+
   // Mutation for deleting partner
   const deletePartnerMutation = useMutation({
     mutationFn: async (partnerId: number) => {
@@ -161,7 +174,7 @@ const ExclusivePartnerCard: React.FC<ExclusivePartnerCardProps> = ({
 
         {data.website && (
           <a
-            href={data.website}
+            href={formatUrl(data.website)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-white py-1 px-1 bg-[#b08d57] hover:bg-[#b08d57] mt-auto w-full rounded"

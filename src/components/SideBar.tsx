@@ -112,7 +112,7 @@ const renderDropdown = (items: SidebarItem[]) => (
               </span>
             </button>
             {openDropdowns[item.href] && (
-              <ul className="mt-1 space-y-1 pl-4">
+              <ul className="mt-1 space-y-1">
                 {renderDropdown(item.children)}
               </ul>
             )}

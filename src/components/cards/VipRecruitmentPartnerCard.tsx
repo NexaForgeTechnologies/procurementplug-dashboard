@@ -23,6 +23,24 @@ const VipRecruitmentPartnerCard: React.FC<VipPartnerProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFullAbout, setShowFullAbout] = useState(false);
 
+  const formatUrl = (url: string) => {
+    if (!url) return "";
+
+    // If already has http or https, return it
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+
+    // If it starts with www, add https://
+    if (url.startsWith("www.")) {
+      return "https://" + url;
+    }
+
+    // Default: assume https://
+    return "https://" + url;
+  };
+
+  //View more/View less Char limit 100 logic
   const truncatedAbout =
     data.company_about && data.company_about.length > 100
       ? data.company_about.slice(0, 100) + "..."
@@ -149,7 +167,7 @@ const VipRecruitmentPartnerCard: React.FC<VipPartnerProps> = ({
 
         {data.website_url && (
           <a
-            href={data.website_url}
+            href={formatUrl(data.website_url)}
             target="_blank"
             rel="noopener noreferrer"
             title={data.website_url} // shows full URL on hover
