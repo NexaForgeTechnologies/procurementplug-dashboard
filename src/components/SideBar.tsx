@@ -31,6 +31,7 @@ export default function SideBar() {
     { name: "Insight Post Request", href: "/insights-post", icon: "insight" },
     { name: "Innovation Vault", href: "/innovation-vault", icon: "procuretech-solution" },
     { name: "Talent Hiring Intelligence", href: "/talent-hiring-intelligence", icon: "speaker" },
+    { name: "Exclusive Intelligence Reports", href: "/exclusive-intelligence-reports", icon: "partner" },
   ];
 
   const talentHiringItems: SidebarItem[] = [
