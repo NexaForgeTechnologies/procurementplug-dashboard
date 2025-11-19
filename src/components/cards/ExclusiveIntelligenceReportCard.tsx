@@ -21,7 +21,6 @@ const ExclusiveIntelligenceReportCard: React.FC<ExclusiveIntelligenceReportCardP
 }) => {
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [showFullDescription, setShowFullDescription] = useState(false);
 
     // Mutation for deleting report
     const deleteReportMutation = useMutation({
@@ -62,13 +61,6 @@ const ExclusiveIntelligenceReportCard: React.FC<ExclusiveIntelligenceReportCardP
         }
     };
 
-    // Truncated description logic
-    const charLimit = 120;
-    const isLongDescription = data.reportTitle && data.reportTitle.length > charLimit;
-    const displayedDescription =
-        isLongDescription && !showFullDescription
-            ? data.reportTitle!.substring(0, charLimit) + "..."
-            : data.reportTitle;
 
     return (
         <>
