@@ -6,4 +6,5 @@ export type ExclusiveIntelligenceReportsDM = {
     category_industry: string[];
     reportType: string[];
     sponsor: string[];
+    intelligence_tracker: string[];
 };

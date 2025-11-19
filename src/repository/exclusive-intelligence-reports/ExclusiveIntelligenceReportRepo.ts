@@ -18,6 +18,7 @@ export class ExclusiveIntelligenceReportRepo {
         category_industry: JSON.parse(row.category_industry || "[]"),
         reportType: JSON.parse(row.report_type || "[]"),
         sponsor: JSON.parse(row.sponsor || "[]"),
+        intelligence_tracker: JSON.parse(row.intelligence_tracker || "[]"), // ✅ new field
       }));
     } catch (error) {
       console.error("Error fetching reports:", error);
@@ -44,6 +45,7 @@ export class ExclusiveIntelligenceReportRepo {
         category_industry: JSON.parse(row.category_industry || "[]"),
         reportType: JSON.parse(row.report_type || "[]"),
         sponsor: JSON.parse(row.sponsor || "[]"),
+        intelligence_tracker: JSON.parse(row.intelligence_tracker || "[]"), // ✅ new field
       };
     } catch (error) {
       console.error(`Error fetching report with ID ${id}:`, error);
@@ -58,8 +60,8 @@ export class ExclusiveIntelligenceReportRepo {
     try {
       const sql = `
         INSERT INTO exclusive_intelligence_reports 
-        (image_path, report_title, file_path, category_industry, report_type, sponsor)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (image_path, report_title, file_path, category_industry, report_type, sponsor, intelligence_tracker)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
 
       const params = [
@@ -69,6 +71,7 @@ export class ExclusiveIntelligenceReportRepo {
         JSON.stringify(report.category_industry),
         JSON.stringify(report.reportType),
         JSON.stringify(report.sponsor),
+        JSON.stringify(report.intelligence_tracker || []), // ✅ new field
       ];
 
       const [result] = await db.execute<ResultSetHeader>(sql, params);
@@ -88,7 +91,7 @@ export class ExclusiveIntelligenceReportRepo {
       const sql = `
         UPDATE exclusive_intelligence_reports
         SET image_path = ?, report_title = ?, file_path = ?, 
-            category_industry = ?, report_type = ?, sponsor = ?
+            category_industry = ?, report_type = ?, sponsor = ?, intelligence_tracker = ?
         WHERE id = ?
       `;
 
@@ -99,6 +102,7 @@ export class ExclusiveIntelligenceReportRepo {
         JSON.stringify(report.category_industry),
         JSON.stringify(report.reportType),
         JSON.stringify(report.sponsor),
+        JSON.stringify(report.intelligence_tracker || []), // ✅ new field
         id,
       ];
 

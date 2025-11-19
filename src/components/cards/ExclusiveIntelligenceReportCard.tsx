@@ -147,6 +147,13 @@ const ExclusiveIntelligenceReportCard: React.FC<ExclusiveIntelligenceReportCardP
                             <span className="text-gray-600">{data.sponsor.join(", ")}</span>
                         </p>
                     )}
+
+                    {data.intelligence_tracker?.length > 0 && (
+                        <p className="text-[#9e8151] text-sm mt-1">
+                            <span className="text-black">Intelligence Tracker:</span>{" "}
+                            <span className="text-gray-600">{data.intelligence_tracker.join(", ")}</span>
+                        </p>
+                    )}
                 </div>
             </div>
 
