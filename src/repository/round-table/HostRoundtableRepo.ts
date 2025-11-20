@@ -35,6 +35,8 @@ export class HostRoundtableRepo {
                 subscription_type: row.subscription_type,
                 meta_quantity: row.meta_quantity,
                 status: row.status,
+                is_approved: row.is_approved,
+                alread_partner: row.alread_partner,
                 createdAt: row.created_at,
                 updatedAt: row.updated_at,
             }));

@@ -31,6 +31,7 @@ function RoundTableCTR() {
         id,
         status: "Approved",
         is_approved: 1,
+        selectedRoundTable
       });
       // Refresh the data after approval
       setSelectedRoundTable(null);
@@ -47,6 +48,7 @@ function RoundTableCTR() {
         id,
         status: "Declined",
         is_approved: 0,
+        selectedRoundTable
       });
 
       // Refresh the data after declining

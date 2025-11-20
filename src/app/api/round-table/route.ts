@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { HostRoundtableRepo } from "@/repository/round-table/HostRoundtableRepo";
 
+import { ApproveRoundtableEmail, RejectRoundtableEmail } from "@/lib/emails/RoundtableEmail";
+
 // 🔹 GET — Fetch
 export async function GET() {
     try {
@@ -22,6 +24,13 @@ export async function PUT(req: NextRequest) {
         const body = await req.json();
 
         await HostRoundtableRepo.updateRoundtable(body);
+
+        // Send email
+        if (body.is_approved == 1) {
+            await ApproveRoundtableEmail(body.selectedRoundTable);
+        } else {
+            await RejectRoundtableEmail(body.selectedRoundTable);
+        }
 
         return NextResponse.json({
             message: "Roundtable updated successfully",
