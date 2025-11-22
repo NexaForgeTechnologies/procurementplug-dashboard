@@ -19,6 +19,9 @@ export interface RoundTableDM {
     meta_quantity?: string;
     status?: string;
     is_approved?: number;
+    public_url?: string;
+    secret_url?: string;
+    alread_partner?: string;
 
     createdAt?: Date | null;
     updatedAt?: Date | null;

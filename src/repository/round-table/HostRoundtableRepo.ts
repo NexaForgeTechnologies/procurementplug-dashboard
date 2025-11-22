@@ -37,6 +37,8 @@ export class HostRoundtableRepo {
                 status: row.status,
                 is_approved: row.is_approved,
                 alread_partner: row.alread_partner,
+                public_url: row.public_url,
+                secret_url: row.secret_url,
                 createdAt: row.created_at,
                 updatedAt: row.updated_at,
             }));

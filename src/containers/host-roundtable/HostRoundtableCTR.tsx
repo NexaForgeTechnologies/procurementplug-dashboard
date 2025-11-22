@@ -11,7 +11,6 @@ function RoundTableCTR() {
     const response = await axios.get<RoundTableDM[]>("/api/round-table");
     return response.data;
   };
-
   const { data: roundTables, isLoading, isError, refetch } = useQuery<RoundTableDM[]>({
     queryKey: ["round-tables"],
     queryFn: fetchRoundTable,
