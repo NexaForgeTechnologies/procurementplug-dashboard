@@ -22,6 +22,7 @@ export interface RoundTableDM {
     public_url?: string;
     secret_url?: string;
     alread_partner?: string;
+    access_token?: string;
 
     createdAt?: Date | null;
     updatedAt?: Date | null;

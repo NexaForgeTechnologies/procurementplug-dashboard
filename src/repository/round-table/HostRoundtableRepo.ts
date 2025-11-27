@@ -39,6 +39,7 @@ export class HostRoundtableRepo {
                 alread_partner: row.alread_partner,
                 public_url: row.public_url,
                 secret_url: row.secret_url,
+                access_token: row.access_token,
                 createdAt: row.created_at,
                 updatedAt: row.updated_at,
             }));

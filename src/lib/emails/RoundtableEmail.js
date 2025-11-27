@@ -1,7 +1,7 @@
 import { sendEmail } from "@/lib/EmailsService";
 
 // ------------------------- Roundtable Emails
-export async function ApproveRoundtableEmail({ email, name, title, package: roundtablePackage, date, secret_url }) {
+export async function ApproveRoundtableEmail({ email, name, title, package: roundtablePackage, date, secret_url, access_token }) {
     await sendEmail({
         type: "round-table",
         to: email,
@@ -11,6 +11,7 @@ export async function ApproveRoundtableEmail({ email, name, title, package: roun
             <p>Great news—your Roundtable ${title} is now live on our forum for ${roundtablePackage} starting ${date}.</p>
             <ul style="list-style-type: disc; padding-left: 15px; margin: 0;">
                 <li><b>Manage Invites & View Banner/Logo: </b> ${secret_url || "N/A"}</li>
+                <li><b>Manage comments using this secure token: </b> ${access_token || "N/A"}</li>
             </ul>
             <p>Feel free to monitor RSVPs and post discussion prompts.</p>
             <p>Best regards,<br/>The Procurement Plug Team</p>
