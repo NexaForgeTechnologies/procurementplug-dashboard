@@ -1,25 +1,20 @@
 export interface InsightsPostDM {
     id?: number;
-    session_id?: string;
-    name?: string;
-    email?: string;
-    website?: string;
-    companyName?: string;
-    package?: string;
-    title?: string;
-    duration?: string;
+    heading?: string;
+    category?: string;
     description?: string;
-    targetAudience?: string;
-    date?: string;
-    banner_image?: string;
-    logo_image?: string;
-    quantity?: string;
+    content_type?: string;
+    content?: string;
+    banner_img?: string;
+    profile_logo?: string;
+    sponsor?: string;
     payment?: string;
-    subscription_type?: string;
-    meta_quantity?: string;
-    status?: string;
     is_approved?: number;
-
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
+    public_url?: string;
+    secret_url?: string;
+    access_token?: string;
+    session_id?: string;
+    created_at?: Date | null;
+    updated_at?: Date | null;
+    deleted_at?: Date | null;
 }

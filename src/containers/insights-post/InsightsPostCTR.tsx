@@ -11,8 +11,7 @@ function InsightsPostCTR() {
     const response = await axios.get<InsightsPostDM[]>("/api/insights-post");
     return response.data;
   };
-
-  const { data: insightsPosts, isLoading, isError } = useQuery<InsightsPostDM[]>({
+  const { data: insightsPosts, isLoading, isError, refetch } = useQuery<InsightsPostDM[]>({
     queryKey: ["insights-post"],
     queryFn: fetchInsightsPosts,
   });
@@ -28,40 +27,35 @@ function InsightsPostCTR() {
   const handleApprove = (id?: number) => async () => {
     console.log(id);
 
-    // try {
-    //   await axios.put("/api/insights-post", {
-    //     id,
-    //     status: "Approved",
-    //     is_approved: 1,
-    //   });
-    //   // Refresh the data after approval
-    //   setSelectedPost(null);
-    //   refetch();
-    // }
-    // catch (error) {
-    //   console.error("Error approving roundtable:", error);
-    // }
-    alert("Approve functionality is currently disabled.");
+    try {
+      await axios.put("/api/insights-post", {
+        id,
+        is_approved: 1,
+      });
+      // Refresh the data after approval
+      setSelectedPost(null);
+      refetch();
+    }
+    catch (error) {
+      console.error("Error approving post:", error);
+    }
   };
 
   const handleDecline = (id?: number) => async () => {
-    console.log(id);
-    
-    // try {
-    //   await axios.put("/api/insights-post", {
-    //     id,
-    //     status: "Declined",
-    //     is_approved: 0,
-    //   });
 
-    //   // Refresh the data after declining
-    //   setSelectedPost(null);
-    //   refetch();
-    // }
-    // catch (error) {
-    //   console.error("Error declining roundtable:", error);
-    // }
-    alert("Reject functionality is currently disabled.");
+    try {
+      await axios.put("/api/insights-post", {
+        id,
+        is_approved: 0,
+      });
+
+      // Refresh the data after declining
+      setSelectedPost(null);
+      refetch();
+    }
+    catch (error) {
+      console.error("Error declining post:", error);
+    }
   }
 
   if (isLoading) return <div>Loading insightsPosts...</div>;
@@ -77,13 +71,12 @@ function InsightsPostCTR() {
           </h3>
 
           {/* Post Header */}
-          <div className="grid grid-cols-8 gap-3 mb-3 font-medium">
+          <div className="grid grid-cols-7 gap-3 mb-3 font-medium">
             <span>Post Title</span>
             <span>Category</span>
             <span>Type</span>
             <span>Sponsored</span>
-            <span>Submitted By</span>
-            <span>Date</span>
+            <span>Payment</span>
             <span>Status</span>
             <span>Action</span>
           </div>
@@ -92,23 +85,14 @@ function InsightsPostCTR() {
           {insightsPosts?.map((post) => (
             <div
               key={post.id}
-              className="text-xs text-[#808080] py-2 border-t border-t-[#808080] grid grid-cols-8 gap-3 items-center"
+              className="text-xs text-[#808080] py-2 border-t border-t-[#808080] grid grid-cols-7 gap-3 items-center"
             >
-              {/* <span>{post.name || "N/A"}</span>
-              <span>{post.companyName || "N/A"}</span>
-              <span>{post.title || "N/A"}</span>
-              <span>{post.package || "N/A"}</span>
-              <span>{post.date || "N/A"}</span>
-              <span>£{post.payment || "N/A"}</span>
-              <span>{post.status || "N/A"}</span> */}
-              <span>How AI is Transforming
-                Procurement</span>
-              <span>Automation & AI</span>
-              <span>Article</span>
-              <span>Yes</span>
-              <span>Sarah Collins</span>
-              <span>15 Oct 2025</span>
-              <span>Pending</span>
+              <span>{post.heading || "N/A"}</span>
+              <span>{post.category || "N/A"}</span>
+              <span>{post.content_type || "N/A"}</span>
+              <span>{post.sponsor == "1" ? "Yes" : "No"}</span>
+              <span>{post.payment || "N/A"}</span>
+              <span>{post.is_approved == 1 ? "Approved" : "Pending"}</span>
               <button
                 className="cursor-pointer p-2 rounded-md bg-[#B08D58] text-white h-max"
                 onClick={() => handleViewDetails(post)}
@@ -128,35 +112,26 @@ function InsightsPostCTR() {
 
           {/* Details */}
           <div className="max-w-[500px] rounded border border-[#DBBB89] p-3 space-y-4">
-            <img src="" alt="" className="w-full h-[150px] object-cover rounded-sm" />
-            <p className="w-max border border-[#DBBB89] p-1 rounded-sm text-xs text-[#1B1B1B]">ARTICLE</p>
+            <img src={selectedPost.banner_img || "/images/default-rectangle.webp"} alt="" className="w-full h-[150px] object-cover rounded-sm" />
+            <p className="w-max border border-[#DBBB89] p-1 rounded-sm text-xs text-[#1B1B1B]">{selectedPost.content_type}</p>
+
             <div className="space-y-1">
-              <h3 className="text-xl text-[#85009D] font-bold">The Future of Sustainable Energy</h3>
-              <p className="text-[#1B1B1B] text-sm">As the world moves toward cleaner and more efficient
-                technologies, sustainable energy is at the forefront of
-                innovation.</p>
+              <h3 className="text-xl text-[#85009D] font-bold">{selectedPost.heading}</h3>
+              <p className="text-[#1B1B1B] text-sm">{selectedPost.description}</p>
             </div>
+
             <div className="text-[#1B1B1B]">
               <div>
                 <span className="font-bold" >Category: </span>
-                <span>
-                  {/* £{selectedPost.payment} {selectedPost.package} */}
-                  Energy
-                </span>
+                <span>{selectedPost.category}</span>
               </div>
               <div>
                 <span className="font-bold" >Type: </span>
-                <span>
-                  {/* £{selectedPost.payment} {selectedPost.package} */}
-                  Article
-                </span>
+                <span>{selectedPost.content_type}</span>
               </div>
               <div>
                 <span className="font-bold" >Sponsored: </span>
-                <span>
-                  {/* £{selectedPost.payment} {selectedPost.package} */}
-                  Yes
-                </span>
+                <span>{selectedPost.sponsor == "1" ? "Yes" : "No"}</span>
               </div>
             </div>
           </div>
@@ -171,12 +146,18 @@ function InsightsPostCTR() {
             </button>
 
             {/* Approve Button */}
-            <button onClick={handleApprove(selectedPost.id)} className="cursor-pointer text-white bg-[#B08D57] border border-[#B08D57] rounded-sm px-6 py-2">
+            <button
+              onClick={handleApprove(selectedPost.id)}
+              className="cursor-pointer text-white bg-[#B08D57] border border-[#B08D57] rounded-sm
+               px-6 py-2">
               Approve & Publish
             </button>
 
             {/* Decline Button */}
-            <button onClick={handleDecline(selectedPost.id)} className="cursor-pointer text-[#B08D57] bg-white border border-[#B08D57] rounded-sm px-6 py-2">
+            <button
+              onClick={handleDecline(selectedPost.id)}
+              className="cursor-pointer text-[#B08D57] bg-white border border-[#B08D57] rounded-sm
+               px-6 py-2">
               Reject Submission
             </button>
           </div>
