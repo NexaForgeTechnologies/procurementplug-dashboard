@@ -17,6 +17,8 @@ export class InsightPostRepo {
 
             const posts: InsightsPostDM[] = rows.map((row) => ({
                 id: row.id,
+                name: row.name,
+                email: row.email,
                 heading: row.heading,
                 category: row.category,
                 description: row.description,

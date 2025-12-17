@@ -1,5 +1,7 @@
 export interface InsightsPostDM {
     id?: number;
+    name?: string;
+    email?: string;
     heading?: string;
     category?: string;
     description?: string;

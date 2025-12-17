@@ -18,14 +18,13 @@ function InsightsPostCTR() {
 
   const [selectedPost, setSelectedPost] = useState<InsightsPostDM | null>(null);
 
-  const handleViewDetails = (table: InsightsPostDM) => {
+  const handleViewDetails = (post: InsightsPostDM) => {
     setSelectedPost((prev) =>
-      prev?.id === table.id ? null : table
+      prev?.id === post.id ? null : post
     );
   };
 
   const handleApprove = (id?: number) => async () => {
-
     try {
       await axios.put("/api/insights-post", {
         id,

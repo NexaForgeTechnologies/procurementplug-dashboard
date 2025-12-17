@@ -3,7 +3,7 @@ import { sendEmail } from "@/lib/EmailsService";
 // ------------------------- Insight Post Emails
 export async function ApprovePostEmail({ email, name, heading, public_url }) {
     await sendEmail({
-        type: "insight-post",
+        type: "insightPost",
         to: email,
         subject: "Your Insight Has Been Approved and Published",
         html: `
@@ -18,7 +18,7 @@ export async function ApprovePostEmail({ email, name, heading, public_url }) {
 
 export async function RejectPostEmail({ email, name, heading }) {
     await sendEmail({
-        type: "insight-post",
+        type: "insightPost",
         to: email,
         subject: "Update on Your Insight Submission",
         html: `
