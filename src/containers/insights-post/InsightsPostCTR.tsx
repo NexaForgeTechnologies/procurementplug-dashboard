@@ -25,12 +25,12 @@ function InsightsPostCTR() {
   };
 
   const handleApprove = (id?: number) => async () => {
-    console.log(id);
 
     try {
       await axios.put("/api/insights-post", {
         id,
         is_approved: 1,
+        selectedPost
       });
       // Refresh the data after approval
       setSelectedPost(null);
@@ -47,6 +47,7 @@ function InsightsPostCTR() {
       await axios.put("/api/insights-post", {
         id,
         is_approved: 0,
+        selectedPost
       });
 
       // Refresh the data after declining

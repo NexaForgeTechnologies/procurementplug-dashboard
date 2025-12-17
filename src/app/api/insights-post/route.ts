@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { InsightPostRepo } from "@/repository/insight-posts/InsightPostRepo";
 
+import { ApprovePostEmail, RejectPostEmail } from "@/lib/emails/InsightPostEmail";
+
 // 🔹 GET — Fetch
 export async function GET() {
     try {
@@ -23,7 +25,12 @@ export async function PUT(req: NextRequest) {
 
         await InsightPostRepo.updatePost(body);
 
-        // await ApproveRoundtableEmail(body.selectedRoundTable);
+        // Send email
+        if (body.is_approved == 1) {
+            await ApprovePostEmail(body.selectedPost);
+        } else {
+            await RejectPostEmail(body.selectedPost);
+        }
 
         return NextResponse.json({
             message: "Insight Post updated successfully",

@@ -19,6 +19,11 @@ export async function sendEmail({ type, to, subject, html }) {
             pass: process.env.SMTP_ROUNDTABLE_PASS,
             label: "VIP Business Lounge",
         },
+        "insight-post": {
+            user: process.env.SMTP_ROUNDTABLE_USER,
+            pass: process.env.SMTP_ROUNDTABLE_USER,
+            label: "Insight Posts - The Procurement Plug",
+        },
         // Add more accounts as needed
     };
 
