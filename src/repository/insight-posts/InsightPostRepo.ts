@@ -6,7 +6,6 @@ import { InsightsPostDM } from "@/domain-models/insights-post/InsightsPostDM";
 
 import { getFormattedTimestamp } from "@/utils/FormattedDate";
 
-
 export class InsightPostRepo {
     static async getAllPosts(): Promise<InsightsPostDM[]> {
         try {

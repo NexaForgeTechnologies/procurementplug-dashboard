@@ -21,7 +21,7 @@ export async function sendEmail({ type, to, subject, html }) {
         },
         "insightPost": {
             user: process.env.SMTP_ROUNDTABLE_USER,
-            pass: process.env.SMTP_ROUNDTABLE_USER,
+            pass: process.env.SMTP_ROUNDTABLE_PASS,
             label: "Insight Posts - The Procurement Plug",
         },
         // Add more accounts as needed
