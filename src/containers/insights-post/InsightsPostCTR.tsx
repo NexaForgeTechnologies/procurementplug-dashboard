@@ -18,6 +18,11 @@ function InsightsPostCTR() {
 
   const [selectedPost, setSelectedPost] = useState<InsightsPostDM | null>(null);
 
+  const [actionLoading, setActionLoading] = useState<{ approve: boolean; decline: boolean }>({
+    approve: false,
+    decline: false,
+  });
+
   const handleViewDetails = (post: InsightsPostDM) => {
     setSelectedPost((prev) =>
       prev?.id === post.id ? null : post
@@ -26,22 +31,24 @@ function InsightsPostCTR() {
 
   const handleApprove = (id?: number) => async () => {
     try {
+      setActionLoading(prev => ({ ...prev, approve: true }));
+
       await axios.put("/api/insights-post", {
         id,
         is_approved: 1,
         selectedPost
       });
-      // Refresh the data after approval
+    } catch (error) {
+      console.error("Error approving post:", error);
+    } finally {
+      setActionLoading(prev => ({ ...prev, approve: false }));
       setSelectedPost(null);
       refetch();
-    }
-    catch (error) {
-      console.error("Error approving post:", error);
     }
   };
 
   const handleDecline = (id?: number) => async () => {
-
+    setActionLoading({ ...actionLoading, decline: true });
     try {
       await axios.put("/api/insights-post", {
         id,
@@ -49,12 +56,13 @@ function InsightsPostCTR() {
         selectedPost
       });
 
+    } catch (error) {
+      console.error("Error declining post:", error);
+    } finally {
       // Refresh the data after declining
       setSelectedPost(null);
       refetch();
-    }
-    catch (error) {
-      console.error("Error declining post:", error);
+      setActionLoading({ ...actionLoading, decline: false });
     }
   }
 
@@ -148,17 +156,31 @@ function InsightsPostCTR() {
             {/* Approve Button */}
             <button
               onClick={handleApprove(selectedPost.id)}
-              className="cursor-pointer text-white bg-[#B08D57] border border-[#B08D57] rounded-sm
-               px-6 py-2">
-              Approve & Publish
+              className="w-[200px] h-[42px] flex item-center justify-center cursor-pointer text-white bg-[#B08D57] border border-[#B08D57] rounded-sm
+               px-6 py-2"
+              disabled={actionLoading.approve}
+            >
+              {/* Approve & Publish */}
+              {actionLoading.approve ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                "Approve & Publish"
+              )}
             </button>
 
             {/* Decline Button */}
             <button
               onClick={handleDecline(selectedPost.id)}
-              className="cursor-pointer text-[#B08D57] bg-white border border-[#B08D57] rounded-sm
-               px-6 py-2">
-              Reject Submission
+              className="w-[200px] h-[42px] flex item-center justify-center cursor-pointer text-[#B08D57] bg-white border border-[#B08D57] rounded-sm
+               px-6 py-2"
+              disabled={actionLoading.decline}
+            >
+              {actionLoading.decline ? (
+                <div className="w-4 h-4 border-2 border-[#B08D57] border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                "Reject Submission"
+              )}
+              {/* Reject Submission */}
             </button>
           </div>
         </div>
