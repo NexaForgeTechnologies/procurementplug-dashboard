@@ -13,7 +13,7 @@ import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
 import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectangularImgUploader";
 import MultiSelect from "@/components/select-comps/MultiSelectSpeakers";
-import PdfUploader from "@/components/PdfUploader";
+// import PdfUploader from "@/components/PdfUploader";
 import IconComponent from "@/components/icon/IconComp";
 import DropdownComp from "@/components/select/DropdownComp";
 import CalendarDateTimePicker from "@/components/input-comps/CalendarComp";
@@ -45,7 +45,7 @@ const initialFormValues: EventDM = {
   workshops: "",
 
   // Agenda PDF
-  agenda: "",
+  // agenda: "",
 
   // Speakers
   speakers_heading: "",
@@ -147,26 +147,26 @@ const AddEventForm: React.FC<EventFormProps> = ({
   });
 
   const [selectedSpeakers, setSelectedSpeakers] = useState<SelectedSpeaker[]>();
-  console.log(selectedSpeakers);
+  // console.log(selectedSpeakers);
   
 
   useEffect(() => {
     handleChange("speakers", selectedSpeakers);
   }, [selectedSpeakers]);
 
-  const handlePdfUpload = (file: File | null) => {
-    if (!file) {
-      handleChange("agenda", "");
-      return;
-    }
+  // const handlePdfUpload = (file: File | null) => {
+  //   if (!file) {
+  //     handleChange("agenda", "");
+  //     return;
+  //   }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      handleChange("agenda", base64String);
-    };
-    reader.readAsDataURL(file); // Converts to base64
-  };
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     const base64String = reader.result as string;
+  //     handleChange("agenda", base64String);
+  //   };
+  //   reader.readAsDataURL(file); // Converts to base64
+  // };
 
   //Handle workshop section
   type WorkshopTile = {
@@ -442,12 +442,12 @@ const AddEventForm: React.FC<EventFormProps> = ({
               </div>
 
               {/* Agenda Section */}
-              <div>
+              {/* <div>
                 <h3 className="mb-2 font-semibold text-2xl text-[#565656]">
                   Agenda
                 </h3>
                 <PdfUploader onUpload={handlePdfUpload} />
-              </div>
+              </div> */}
 
               {/* Speaker Section */}
               <div>

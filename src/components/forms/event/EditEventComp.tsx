@@ -13,7 +13,7 @@ import Icon from "@/components/icon/IconComp";
 import InputText from "@/components/input-comps/InputTxt";
 import MultiRectangularImgUploader from "@/components/image-uploader/MultiRectangularImgUploader";
 import MultiSelect from "@/components/select-comps/MultiSelectSpeakers";
-import PdfUploader from "@/components/PdfUploader";
+// import PdfUploader from "@/components/PdfUploader";
 import IconComponent from "@/components/icon/IconComp";
 import DropdownComp from "@/components/select/DropdownComp";
 import CalendarDateTimePicker from "@/components/input-comps/CalendarComp";
@@ -51,7 +51,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
     workshops: event?.workshops || "",
 
     // Agenda PDF
-    agenda: event?.agenda || "",
+    // agenda: event?.agenda || "",
 
     // Speakers
     speakers_heading: event?.speakers_heading || "",
@@ -100,39 +100,39 @@ const EditEventForm: React.FC<EventFormProps> = ({
   }, [selectedSpeakers]);
 
   // Default FIle
-  const [defaultAgendaFile, setDefaultAgendaFile] = useState<
-    File | undefined
-  >();
-  const urlToFile = async (url: string, filename: string): Promise<File> => {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    return new File([blob], filename, { type: blob.type });
-  };
-  useEffect(() => {
-    const loadAgendaFile = async () => {
-      if (formValues.agenda && typeof formValues.agenda === "string") {
-        const file = await urlToFile(formValues.agenda, "Agenda.pdf");
-        setDefaultAgendaFile(file);
-      }
-    };
+  // const [defaultAgendaFile, setDefaultAgendaFile] = useState<
+  //   File | undefined
+  // >();
+  // const urlToFile = async (url: string, filename: string): Promise<File> => {
+  //   const res = await fetch(url);
+  //   const blob = await res.blob();
+  //   return new File([blob], filename, { type: blob.type });
+  // };
+  // useEffect(() => {
+  //   const loadAgendaFile = async () => {
+  //     if (formValues.agenda && typeof formValues.agenda === "string") {
+  //       const file = await urlToFile(formValues.agenda, "Agenda.pdf");
+  //       setDefaultAgendaFile(file);
+  //     }
+  //   };
 
-    loadAgendaFile();
-  }, [formValues.agenda]);
+  //   loadAgendaFile();
+  // }, [formValues.agenda]);
 
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-    });
+  // const toBase64 = (file: File): Promise<string> =>
+  //   new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => resolve(reader.result as string);
+  //     reader.onerror = reject;
+  //   });
 
-  const handlePdfUpload = async (file: File | null) => {
-    if (file) {
-      const base64 = await toBase64(file);
-      handleChange("agenda", base64);
-    }
-  };
+  // const handlePdfUpload = async (file: File | null) => {
+  //   if (file) {
+  //     const base64 = await toBase64(file);
+  //     handleChange("agenda", base64);
+  //   }
+  // };
 
   //Handle workshop section
   const [workshopSections, setWorkshopSections] = useState<WorkshopSection[]>(
@@ -483,7 +483,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
             </div>
 
             {/* Agenda Section */}
-            <div>
+            {/* <div>
               <h3 className="mb-2 font-semibold text-2xl text-[#565656]">
                 Agenda
               </h3>
@@ -491,7 +491,7 @@ const EditEventForm: React.FC<EventFormProps> = ({
                 onUpload={handlePdfUpload}
                 defaultFile={defaultAgendaFile}
               />
-            </div>
+            </div> */}
 
             {/* Speaker Section */}
             <div>
